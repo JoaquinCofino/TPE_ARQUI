@@ -3,6 +3,7 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
+#include "videoDriver.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -82,23 +83,29 @@ void * initializeKernelBinary()
 
 int main()
 {	
-	ncPrint("[Kernel Main]");
-	ncNewline();
-	ncPrint("  Sample code module at 0x");
-	ncPrintHex((uint64_t)sampleCodeModuleAddress);
-	ncNewline();
-	ncPrint("  Calling the sample code module returned: ");
-	ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
-	ncNewline();
-	ncNewline();
+	// ncPrint("[Kernel Main]");
+	// ncNewline();
+	// ncPrint("  Sample code module at 0x");
+	// ncPrintHex((uint64_t)sampleCodeModuleAddress);
+	// ncNewline();
+	// ncPrint("  Calling the sample code module returned: ");
+	// ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
+	// ncNewline();
+	// ncNewline();
 
-	ncPrint("  Sample data module at 0x");
-	ncPrintHex((uint64_t)sampleDataModuleAddress);
-	ncNewline();
-	ncPrint("  Sample data module contents: ");
-	ncPrint((char*)sampleDataModuleAddress);
-	ncNewline();
+	// ncPrint("  Sample data module at 0x");
+	// ncPrintHex((uint64_t)sampleDataModuleAddress);
+	// ncNewline();
+	// ncPrint("  Sample data module contents: ");
+	// ncPrint((char*)sampleDataModuleAddress);
+	// ncNewline();
 
-	ncPrint("[Finished]");
+	// ncPrint("[Finished]");
+
+	for(int i = 0; i < 800; i++) {
+		for(int j = 0; j < 600; j++) {
+			putPixel(0x00FF00, i, j); // Green color
+		}
+	}
 	return 0;
 }
