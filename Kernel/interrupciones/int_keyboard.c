@@ -14,7 +14,7 @@ static uint8_t caps_lock = 0;
 #define RALT_SCANCODE   0xB8  // AltGr (extendido)
 #define CAPS_SCANCODE   0x3A
 
-// Tabla básica (sin modificadores) - Teclado Latinoamericano
+// Tabla básica (sin modificadores) - Teclado Argentino
 static char makeCodeToAscii[128] = {
     0,      // 0x00 - unused
     '\e',   // 0x01 - ESC
@@ -29,7 +29,7 @@ static char makeCodeToAscii[128] = {
     '9',    // 0x0A
     '0',    // 0x0B
     '\'',   // 0x0C - ' (apostrofe)
-    191,    // 0x0D - ¿
+    191,    // 0x0D - ¿ (inverted question mark)
     '\b',   // 0x0E - Backspace
     '\t',   // 0x0F - Tab
     'q',    // 0x10
@@ -42,7 +42,7 @@ static char makeCodeToAscii[128] = {
     'i',    // 0x17
     'o',    // 0x18
     'p',    // 0x19
-    '`',    // 0x1A - ` (acento grave)
+    180,    // 0x1A - ´ (acute accent) - dead key en argentino
     '+',    // 0x1B - +
     '\n',   // 0x1C - Enter
     0,      // 0x1D - Left Ctrl
@@ -56,8 +56,8 @@ static char makeCodeToAscii[128] = {
     'k',    // 0x25
     'l',    // 0x26
     241,    // 0x27 - ñ
-    '{',    // 0x28 - {
-    '|',    // 0x29 - |
+    '{',    // 0x28 - { (en layout argentino)
+    170,    // 0x29 - ª (ordinal a)
     0,      // 0x2A - Left Shift
     '}',    // 0x2B - }
     'z',    // 0x2C
@@ -110,7 +110,7 @@ static char makeCodeToAscii[128] = {
     0                              // 0x7F unused
 };
 
-// Tabla con Shift presionado - Teclado Latinoamericano
+// Tabla con Shift presionado - Teclado Argentino
 static char shiftCodeToAscii[128] = {
     0,      // 0x00 - unused
     '\e',   // 0x01 - ESC
@@ -125,7 +125,7 @@ static char shiftCodeToAscii[128] = {
     ')',    // 0x0A - )
     '=',    // 0x0B - =
     '?',    // 0x0C - ?
-    161,    // 0x0D - ¡
+    161,    // 0x0D - ¡ (inverted exclamation)
     '\b',   // 0x0E - Backspace
     '\t',   // 0x0F - Tab
     'Q',    // 0x10
@@ -138,7 +138,7 @@ static char shiftCodeToAscii[128] = {
     'I',    // 0x17
     'O',    // 0x18
     'P',    // 0x19
-    '^',    // 0x1A - ^ (acento circunflejo)
+    168,    // 0x1A - ¨ (diaeresis) - dead key
     '*',    // 0x1B - *
     '\n',   // 0x1C - Enter
     0,      // 0x1D - Left Ctrl
@@ -153,7 +153,7 @@ static char shiftCodeToAscii[128] = {
     'L',    // 0x26
     209,    // 0x27 - Ñ
     '[',    // 0x28 - [
-    176,    // 0x29 - °
+    186,    // 0x29 - º (ordinal o)
     0,      // 0x2A - Left Shift
     ']',    // 0x2B - ]
     'Z',    // 0x2C
@@ -196,27 +196,27 @@ static char shiftCodeToAscii[128] = {
     0                              // 0x7F unused
 };
 
-// Tabla con AltGr presionado - Teclado Latinoamericano
+// Tabla con AltGr presionado - Teclado Argentino
 static char altgrCodeToAscii[128] = {
     0,      // 0x00 - unused
     0,      // 0x01 - ESC
-    0,      // 0x02 - no AltGr para 1
+    '|',    // 0x02 - | (pipe)
     '@',    // 0x03 - @
-    0,      // 0x04 - no AltGr para 3
-    0,      // 0x05 - no AltGr para 4
-    0,      // 0x06 - no AltGr para 5
-    0,      // 0x07 - no AltGr para 6
-    0,      // 0x08 - no AltGr para 7
-    0,      // 0x09 - no AltGr para 8
-    0,      // 0x0A - no AltGr para 9
+    '#',    // 0x04 - #
+    '~',    // 0x05 - ~ (tilde)
+    0,      // 0x06 - no AltGr para 6
+    0,      // 0x07 - no AltGr para 7
+    0,      // 0x08 - no AltGr para 8
+    0,      // 0x09 - no AltGr para 9
+    0,      // 0x0A - no AltGr para 0
     0,      // 0x0B - no AltGr para 0
-    '\\',   // 0x0C - \ (barra invertida)
+    '\\',   // 0x0C - \ (backslash)
     0,      // 0x0D - no AltGr para ¿
     '\b',   // 0x0E - Backspace
     '\t',   // 0x0F - Tab
-    0,      // 0x10 - no AltGr para q
+    '@',    // 0x10 - @ (alternativo en q)
     0,      // 0x11 - no AltGr para w
-    '€',    // 0x12 - € (euro) - puede usar valor 128
+    '€',    // 0x12 - € (euro symbol)
     0,      // 0x13 - no AltGr para r
     0,      // 0x14 - no AltGr para t
     0,      // 0x15 - no AltGr para y
@@ -224,8 +224,8 @@ static char altgrCodeToAscii[128] = {
     0,      // 0x17 - no AltGr para i
     0,      // 0x18 - no AltGr para o
     0,      // 0x19 - no AltGr para p
-    0,      // 0x1A - no AltGr para `
-    '~',    // 0x1B - ~ (tilde)
+    '`',    // 0x1A - ` (grave accent)
+    '[',    // 0x1B - [
     '\n',   // 0x1C - Enter
     0,      // 0x1D - Left Ctrl
     0,      // 0x1E - no AltGr para a
@@ -238,10 +238,10 @@ static char altgrCodeToAscii[128] = {
     0,      // 0x25 - no AltGr para k
     0,      // 0x26 - no AltGr para l
     0,      // 0x27 - no AltGr para ñ
-    0,      // 0x28 - no AltGr para {
-    0,      // 0x29 - no AltGr para |
+    '^',    // 0x28 - ^ (circumflex)
+    '\\',   // 0x29 - \ (backslash alternativo)
     0,      // 0x2A - Left Shift
-    0,      // 0x2B - no AltGr para }
+    ']',    // 0x2B - ]
     0,      // 0x2C - no AltGr para z
     0,      // 0x2D - no AltGr para x
     0,      // 0x2E - no AltGr para c
@@ -261,7 +261,8 @@ static char altgrCodeToAscii[128] = {
     0,      // 0x45 - Num Lock
     0,      // 0x46 - Scroll Lock
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x47-0x50 Keypad
-    0, 0, 0, 0, 0, 0,              // 0x51-0x56
+    0, 0, 0, 0, 0, 0,              // 0x51-0x55
+    '\\',   // 0x56 - \ (backslash con AltGr)
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x57-0x60 unused
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x61-0x6A unused
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x6B-0x74 unused
