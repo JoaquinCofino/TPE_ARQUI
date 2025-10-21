@@ -12,6 +12,16 @@ GLOBAL _irq02Handler
 GLOBAL _irq03Handler
 GLOBAL _irq04Handler
 GLOBAL _irq05Handler
+GLOBAL _irq06Handler
+GLOBAL _irq07Handler
+GLOBAL _irq08Handler
+GLOBAL _irq09Handler
+GLOBAL _irq10Handler
+GLOBAL _irq11Handler
+GLOBAL _irq12Handler
+GLOBAL _irq13Handler
+GLOBAL _irq14Handler
+GLOBAL _irq15Handler
 
 GLOBAL _exception0Handler
 
@@ -73,6 +83,21 @@ SECTION .text
 	; signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al
+
+	popState
+	iretq
+%endmacro
+
+%macro irqHandlerSlave 1
+	pushState
+
+	mov rdi, %1 ; pasaje de parametro
+	call irqDispatcher
+
+	; signal pic EOI (End of Interrupt) - SLAVE primero
+	mov al, 20h
+	out 0A0h, al ; EOI al PIC esclavo
+	out 20h, al  ; EOI al PIC maestro
 
 	popState
 	iretq
@@ -149,6 +174,48 @@ _irq04Handler:
 ;USB
 _irq05Handler:
 	irqHandlerMaster 5
+
+;Floppy Disk Controller
+_irq06Handler:
+	irqHandlerMaster 6
+
+;Parallel Port / Spurious
+_irq07Handler:
+	irqHandlerMaster 7
+
+;-------- PIC ESCLAVO (IRQ8-IRQ15) --------
+
+;Real Time Clock
+_irq08Handler:
+	irqHandlerSlave 8
+
+;ACPI
+_irq09Handler:
+	irqHandlerSlave 9
+
+;Available
+_irq10Handler:
+	irqHandlerSlave 10
+
+;Available
+_irq11Handler:
+	irqHandlerSlave 11
+
+;PS/2 Mouse
+_irq12Handler:
+	irqHandlerSlave 12
+
+;FPU Exception
+_irq13Handler:
+	irqHandlerSlave 13
+
+;Primary IDE
+_irq14Handler:
+	irqHandlerSlave 14
+
+;Secondary IDE
+_irq15Handler:
+	irqHandlerSlave 15
 
 
 ;Zero Division Exception
