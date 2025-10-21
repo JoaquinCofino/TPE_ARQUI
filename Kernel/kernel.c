@@ -84,7 +84,7 @@ void * initializeKernelBinary()
 
 int main()
 {	
-
+	initIRQHandlers();
 	load_idt();
 	// ncPrint("[Kernel Main]");
 	// ncNewline();
@@ -110,8 +110,11 @@ int main()
 	// 		putPixel(0x00FF00, i, j); // Green color
 	// 	}
 	// }
-
-	while(1);
+	
+	while(1)
+	{
+		process_keyboard();
+	}
 
 	return 0;
 

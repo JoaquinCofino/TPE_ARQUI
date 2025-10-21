@@ -20,6 +20,10 @@ EXTERN exceptionDispatcher
 
 SECTION .text
 
+;-----------------------------------------
+; Macros para guardar/restaurar registros
+;-----------------------------------------
+
 %macro pushState 0
 	push rax
 	push rbx
@@ -56,6 +60,10 @@ SECTION .text
 	pop rax
 %endmacro
 
+
+;-----------------------------------------
+; Macro principal de handler de interrupción
+;-----------------------------------------
 %macro irqHandlerMaster 1
 	pushState
 
@@ -113,6 +121,10 @@ picSlaveMask:
     pop     rbp
     retn
 
+
+;-----------------------------------------
+; Handlers concretos
+;-----------------------------------------
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
