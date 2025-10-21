@@ -3,46 +3,10 @@
 
 extern uint8_t read_port(uint16_t num);
 void int_20();
-void process_keyboard();
-
+extern void keyboard_handler();
+extern void timer_handler();
 void int_20(){
     timer_handler();
-}
-
-#define SCANCODE_BUFFER_SIZE 32
-uint8_t scancodeBuffer[SCANCODE_BUFFER_SIZE];
-volatile uint8_t bufferHead = 0;
-volatile uint8_t bufferTail = 0;
-
-void keyboard_handler() {
-    uint8_t scancode = read_port(0x60);
-
-    // Guardar en buffer circular
-    uint8_t nextHead = (bufferHead + 1) % SCANCODE_BUFFER_SIZE;
-    if (nextHead != bufferTail) { // evitar sobreescribir
-        scancodeBuffer[bufferHead] = scancode;
-        bufferHead = nextHead;
-    }
-}
-
-void process_keyboard() {                        //se llama dentro del bucle en el kernel
-    while (bufferTail != bufferHead) {           //obs : sin el if se imprimen dos códigos (make y break) al apretar una sola tecla por cómo funcionan los teclados
-        uint8_t sc = scancodeBuffer[bufferTail];
-        bufferTail = (bufferTail + 1) % SCANCODE_BUFFER_SIZE;
-
-        //si el bit más alto está en 1, no imprime nada, es un break code.
-        if (sc & 0x80) return;
-
-        // // Convertir a hexadecimal para mostrar
-        char hex[3];
-        hex[0] = "0123456789ABCDEF"[(sc >> 4) & 0xF];
-        hex[1] = "0123456789ABCDEF"[sc & 0xF];
-        hex[2] = '\0';
-
-        ncPrint("Key pressed! Scancode: ");
-        ncPrint(hex);
-        ncPrint("\n");
-    }
 }
 
 void irq_default() {

@@ -61,6 +61,21 @@ void ncClear()
 	currentVideo = video;
 }
 
+void ncBackspace()
+{
+	if (currentVideo > video) {
+		currentVideo -= 2;  // Mover cursor hacia atrás
+		*currentVideo = ' '; // Borrar carácter
+	}
+}
+
+void ncTab()
+{
+	do {
+		ncPrintChar(' ');
+	} while (((currentVideo - video) / 2) % 4 != 0);
+}
+
 static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base)
 {
 	char *p = buffer;
