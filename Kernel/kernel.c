@@ -4,6 +4,7 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include "videoDriver.h"
+#include <idtLoader.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -83,6 +84,8 @@ void * initializeKernelBinary()
 
 int main()
 {	
+
+	load_idt();
 	// ncPrint("[Kernel Main]");
 	// ncNewline();
 	// ncPrint("  Sample code module at 0x");
@@ -107,5 +110,9 @@ int main()
 			putPixel(0x00FF00, i, j); // Green color
 		}
 	}
+
+	while(1);
+	
 	return 0;
+
 }
