@@ -14,6 +14,5 @@ void irqDispatcher(uint64_t irq) {
 }
 
 void int_20() {
-	ncPrint("Timer interrupt");
 	timer_handler();
 }

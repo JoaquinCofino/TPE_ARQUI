@@ -105,14 +105,14 @@ int main()
 
 	// ncPrint("[Finished]");
 
-	for(int i = 0; i < 800; i++) {
-		for(int j = 0; j < 600; j++) {
-			putPixel(0x00FF00, i, j); // Green color
-		}
-	}
+	// for(int i = 0; i < 800; i++) {
+	// 	for(int j = 0; j < 600; j++) {
+	// 		putPixel(0x00FF00, i, j); // Green color
+	// 	}
+	// }
 
 	while(1);
-	
+
 	return 0;
 
 }
