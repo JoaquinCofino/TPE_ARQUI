@@ -49,3 +49,23 @@ void putPixel(uint32_t hexColor, uint64_t x, uint64_t y) {
     framebuffer[offset+1]   =  (hexColor >> 8) & 0xFF; 
     framebuffer[offset+2]   =  (hexColor >> 16) & 0xFF;
 }
+
+void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
+	if (c < 32 || c > 127) c = '?';
+	const uint8_t *glyph = font8x8[c - 32];
+	for (int row = 0; row < 8; ++row) {
+		uint8_t bits = glyph[row];
+		for (int col = 0; col < 8; ++col) {
+			if (bits & (1 << (7 - col))) {
+				putPixel(color, x + col, y + row);
+			}
+		}
+	}
+}
+
+void drawString(const char *s, uint64_t x, uint64_t y, uint32_t color) {
+	while (*s) {
+		drawChar(*s++, x, y, color);
+		x += 8; // ancho del glyph
+	}
+}

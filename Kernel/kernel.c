@@ -81,9 +81,22 @@ void * initializeKernelBinary()
 	ncNewline();
 	return getStackBase();
 }
+/*
+extern void putPixel(uint32_t hexColor, uint64_t x, uint64_t y);
 
-int main()
-{	
+void clear_screen(uint32_t hexColor) {
+	uint32_t width  = 1000;
+	uint32_t height = 1000;
+
+	for (uint64_t y = 0; y < height; y++) {
+		for (uint64_t x = 0; x < width; x++) {
+			putPixel(hexColor, x, y);
+		}
+	}
+}
+*/
+
+int main(){
 	initIRQHandlers();
 	load_idt();
 	

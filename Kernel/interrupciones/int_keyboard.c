@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <naiveConsole.h>
 extern uint8_t read_port(uint16_t num);
+void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
+
 
 // Estados de las teclas modificadoras
 static uint8_t shift_pressed = 0;
@@ -350,6 +352,7 @@ void process_keyboard() {                        //se llama dentro del bucle en 
                 } else if (ascii == '\t') {
                     ncTab();  // Usar la función específica para tab
                 } else {
+					//drawChar(ascii, ncGetCursorX() * 8, ncGetCursorY() * 8, 0xFFFFFF); // blanco
                     ncPrintChar(ascii);
                 }
             }
