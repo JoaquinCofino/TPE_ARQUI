@@ -20,7 +20,7 @@ _syscall_handler:
     push r15
     
     ; Llamar al dispatcher en C
-    call syscall_dispatcher
+    call syscall_delegator
     
     ; Restaurar contexto
     pop r15
