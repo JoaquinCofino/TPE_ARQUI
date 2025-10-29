@@ -1,8 +1,7 @@
 #include <stdint.h>
 #include <naiveConsole.h>
-extern uint8_t read_port(uint16_t num);
-void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
 
+extern uint8_t read_port(uint16_t num);
 
 // Estados de las teclas modificadoras
 static uint8_t shift_pressed = 0;
@@ -102,9 +101,9 @@ static char makeCodeToAscii[128] = {
     '3',    // 0x51 - Keypad 3
     '0',    // 0x52 - Keypad 0
     '.',    // 0x53 - Keypad .
-     0,     // 0x54
-     0,     // 0x55
-     '<',   // 0x56 '<'
+    0,      // 0x54
+    0,      // 0x55
+    '<',    // 0x56 '<'
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x57-0x60 unused
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x61-0x6A unused
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  // 0x6B-0x74 unused
@@ -218,7 +217,7 @@ static char altgrCodeToAscii[128] = {
     '\t',   // 0x0F - Tab
     '@',    // 0x10 - @ (alternativo en q)
     0,      // 0x11 - no AltGr para w
-    '€',    // 0x12 - € (euro symbol)
+    164,    // 0x12 - € (euro symbol) - usando código extendido ASCII
     0,      // 0x13 - no AltGr para r
     0,      // 0x14 - no AltGr para t
     0,      // 0x15 - no AltGr para y
@@ -309,12 +308,12 @@ void keyboard_handler() {
     }
 }
 
-void process_keyboard() {                        //se llama dentro del bucle en el kernel
-    while (bufferTail != bufferHead) {           //obs : sin el if se imprimen dos códigos (make y break) al apretar una sola tecla por cómo funcionan los teclados
+void process_keyboard() {
+    while (bufferTail != bufferHead) {
         uint8_t sc = scancodeBuffer[bufferTail];
         bufferTail = (bufferTail + 1) % SCANCODE_BUFFER_SIZE;
 
-        //si el bit más alto está en 1, no imprime nada, es un break code.
+        // Si el bit más alto está en 1, no imprime nada, es un break code.
         if (sc & 0x80) continue;
 
         // Convertir scancode a ASCII usando la tabla apropiada
@@ -344,15 +343,16 @@ void process_keyboard() {                        //se llama dentro del bucle en 
                 ascii = ascii - 'a' + 'A';
             }
             
-            if (ascii != 0) {  // Solo imprimir si hay un carácter ASCII válido
+            if (ascii != 0) {
+                // ncPrintChar ya maneja internamente el dibujo usando el bitmap font
+                // No necesitas llamar a drawChar directamente
                 if (ascii == '\n') {
-                    ncNewline();  // Usar la función específica para salto de línea
+                    ncNewline();
                 } else if (ascii == '\b') {
-                    ncBackspace();  // Usar la función específica para backspace
+                    ncBackspace();
                 } else if (ascii == '\t') {
-                    ncTab();  // Usar la función específica para tab
+                    ncTab();
                 } else {
-					//drawChar(ascii, ncGetCursorX() * 8, ncGetCursorY() * 8, 0xFFFFFF); // blanco
                     ncPrintChar(ascii);
                 }
             }

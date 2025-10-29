@@ -97,6 +97,7 @@ void clear_screen(uint32_t hexColor) {
 */
 
 int main(){
+	ncClear();
 	initIRQHandlers();
 	load_idt();
 	

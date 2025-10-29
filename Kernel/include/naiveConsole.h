@@ -14,4 +14,8 @@ void ncClear();
 void ncBackspace();
 void ncTab();
 
+// Nuevas funciones auxiliares para modo gráfico
+uint16_t ncGetCursorX(void);
+uint16_t ncGetCursorY(void);
+
 #endif

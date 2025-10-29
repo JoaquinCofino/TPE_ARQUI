@@ -1,9 +1,4 @@
-// Bitmap font info struct def.
-typedef struct {
-	int width;
-	int height;
-	int nChars;
-} bmp_font_inf;
+#include "font.h"
 
 bmp_font_inf FuenteTPE_16_inf = { 8, 17, 256 };
 
