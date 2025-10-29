@@ -1,8 +1,8 @@
-; push_all_no_ret.asm
-GLOBAL syscall_handler
-EXTERN syscall_delegator
+GLOBAL _syscall_handler
+EXTERN syscall_delegator   ; Tu función en C que maneja syscalls
 
-%macro PUSH_ALL 0
+_syscall_handler:
+    ; Guardar contexto
     push rax
     push rbx
     push rcx
@@ -18,9 +18,11 @@ EXTERN syscall_delegator
     push r13
     push r14
     push r15
-%endmacro
-
-%macro POP_ALL 0
+    
+    ; Llamar al dispatcher en C
+    call syscall_dispatcher
+    
+    ; Restaurar contexto
     pop r15
     pop r14
     pop r13
@@ -36,21 +38,5 @@ EXTERN syscall_delegator
     pop rcx
     pop rbx
     pop rax
-%endmacro
-
-section .text
-
-syscall_handler:
-    PUSH_ALL                    ; No introduce return address
     
-    ; Preparar argumentos para syscall_delegator
-    mov rcx, rdx                ; arg3
-    mov rdx, rsi                ; arg2
-    mov rsi, rdi                ; arg1
-    mov rdi, rax                ; syscall_num
-    
-    call syscall_delegator
-    
-    POP_ALL                     ; No espera return address
-    
-    iretq                     ; Volver al contexto del usuario
+    iretq

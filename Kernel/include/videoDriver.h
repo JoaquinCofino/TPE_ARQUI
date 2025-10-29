@@ -17,5 +17,6 @@ uint8_t getFontHeight(void);
 // Funciones para obtener dimensiones de pantalla
 uint16_t getScreenWidth(void);
 uint16_t getScreenHeight(void);
+void videoClear(void);
 
 #endif

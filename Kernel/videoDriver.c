@@ -100,3 +100,15 @@ uint16_t getScreenWidth(void) {
 uint16_t getScreenHeight(void) {
     return VBE_mode_info->height;
 }
+
+#define SCREEN_WIDTH getScreenWidth()
+#define SCREEN_HEIGHT getScreenHeight()
+
+void videoClear(void) {
+    // Llenar toda la pantalla de negro
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+        for (int x = 0; x < SCREEN_WIDTH; x++) {
+            putPixel(0x000000, x, y);  // Negro
+        }
+    }
+}

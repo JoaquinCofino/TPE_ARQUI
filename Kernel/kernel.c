@@ -4,6 +4,7 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include "videoDriver.h"
+#include "int_keyboard.h"
 #include <idtLoader.h>
 
 extern uint8_t text;
@@ -14,98 +15,94 @@ extern uint8_t endOfKernelBinary;
 extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
+extern void initIRQHandlers(void);
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
 
 typedef int (*EntryPoint)();
 
-
 void clearBSS(void * bssAddress, uint64_t bssSize)
 {
-	memset(bssAddress, 0, bssSize);
+    memset(bssAddress, 0, bssSize);
 }
 
 void * getStackBase()
 {
-	return (void*)(
-		(uint64_t)&endOfKernel
-		+ PageSize * 8				//The size of the stack itself, 32KiB
-		- sizeof(uint64_t)			//Begin at the top of the stack
-	);
+    return (void*)(
+        (uint64_t)&endOfKernel
+        + PageSize * 8
+        - sizeof(uint64_t)
+    );
 }
 
 void * initializeKernelBinary()
 {
-	char buffer[10];
+    char buffer[10];
 
-	ncPrint("[x64BareBones]");
-	ncNewline();
+    ncPrint("[x64BareBones]");
+    ncNewline();
 
-	ncPrint("CPU Vendor:");
-	ncPrint(cpuVendor(buffer));
-	ncNewline();
+    ncPrint("CPU Vendor:");
+    ncPrint(cpuVendor(buffer));
+    ncNewline();
 
-	ncPrint("[Loading modules]");
-	ncNewline();
-	void * moduleAddresses[] = {
-		sampleCodeModuleAddress,
-		sampleDataModuleAddress
-	};
+    ncPrint("[Loading modules]");
+    ncNewline();
+    void * moduleAddresses[] = {
+        sampleCodeModuleAddress,
+        sampleDataModuleAddress
+    };
 
-	loadModules(&endOfKernelBinary, moduleAddresses);
-	ncPrint("[Done]");
-	ncNewline();
-	ncNewline();
+    loadModules(&endOfKernelBinary, moduleAddresses);
+    ncPrint("[Done]");
+    ncNewline();
+    ncNewline();
 
-	ncPrint("[Initializing kernel's binary]");
-	ncNewline();
+    ncPrint("[Initializing kernel's binary]");
+    ncNewline();
 
-	clearBSS(&bss, &endOfKernel - &bss);
+    clearBSS(&bss, &endOfKernel - &bss);
 
-	ncPrint("  text: 0x");
-	ncPrintHex((uint64_t)&text);
-	ncNewline();
-	ncPrint("  rodata: 0x");
-	ncPrintHex((uint64_t)&rodata);
-	ncNewline();
-	ncPrint("  data: 0x");
-	ncPrintHex((uint64_t)&data);
-	ncNewline();
-	ncPrint("  bss: 0x");
-	ncPrintHex((uint64_t)&bss);
-	ncNewline();
+    ncPrint("  text: 0x");
+    ncPrintHex((uint64_t)&text);
+    ncNewline();
+    ncPrint("  rodata: 0x");
+    ncPrintHex((uint64_t)&rodata);
+    ncNewline();
+    ncPrint("  data: 0x");
+    ncPrintHex((uint64_t)&data);
+    ncNewline();
+    ncPrint("  bss: 0x");
+    ncPrintHex((uint64_t)&bss);
+    ncNewline();
 
-	ncPrint("[Done]");
-	ncNewline();
-	ncNewline();
-	return getStackBase();
+    ncPrint("[Done]");
+    ncNewline();
+    ncNewline();
+    
+    return getStackBase();
 }
-/*
-extern void putPixel(uint32_t hexColor, uint64_t x, uint64_t y);
-
-void clear_screen(uint32_t hexColor) {
-	uint32_t width  = 1000;
-	uint32_t height = 1000;
-
-	for (uint64_t y = 0; y < height; y++) {
-		for (uint64_t x = 0; x < width; x++) {
-			putPixel(hexColor, x, y);
-		}
-	}
-}
-*/
 
 int main(){
-	ncClear();
-	initIRQHandlers();
-	load_idt();
-	
-	while(1)
-	{
-		process_keyboard();
-	}
+    // 1. Inicializar interrupciones
+    initIRQHandlers();
+    load_idt();
+    
+    // 2. Limpiar mensajes de boot
+    ncClear();
+    
+    // 3. Inicializar video driver (esto es lo que probablemente necesites)
+    videoClear(); 
+    
+    // 4. Saltar a userland (tu console.c compilado)
+    EntryPoint entryPoint = (EntryPoint)sampleCodeModuleAddress;
+    entryPoint();  // ← Esto ejecuta el main() de tu console.c
+    
+    // Fallback
+    while(1) {
+        process_keyboard();
+    }
 
-	return 0;
-
+    return 0;
 }
