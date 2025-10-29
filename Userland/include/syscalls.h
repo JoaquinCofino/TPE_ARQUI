@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define SYS_READ    0
-#define SYS_WRITE   1
+#define SYS_WRITE 1
+#define SYS_READ  2
 
 // API pública para userland
 int64_t read(int fd, char *buf, uint64_t count);

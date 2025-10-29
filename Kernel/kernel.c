@@ -85,24 +85,24 @@ void * initializeKernelBinary()
 }
 
 int main(){
-    // 1. Inicializar interrupciones
     initIRQHandlers();
     load_idt();
+    _sti();
     
-    // 2. Limpiar mensajes de boot
     ncClear();
     
-    // 3. Inicializar video driver (esto es lo que probablemente necesites)
-    videoClear(); 
+    // TEST: Escribir ANTES de saltar a userland
+    ncPrint("[KERNEL] A punto de saltar a userland...");
+    ncNewline();
     
-    // 4. Saltar a userland (tu console.c compilado)
-    EntryPoint entryPoint = (EntryPoint)sampleCodeModuleAddress;
-    entryPoint();  // ← Esto ejecuta el main() de tu console.c
+    // Esperar un poco
     
-    // Fallback
-    while(1) {
-        process_keyboard();
-    }
-
+    // Saltar a userland
+    ((EntryPoint)sampleCodeModuleAddress)();
+    
+    // Nunca debería llegar aquí
+    ncPrint("[KERNEL] ERROR: Retorno de userland!");
+    
+    while(1) _hlt();
     return 0;
 }
