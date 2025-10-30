@@ -91,8 +91,6 @@ int main(){
     
     ncClear();
     
-    // TEST: Escribir ANTES de saltar a userland
-    ncPrint("[KERNEL] A punto de saltar a userland...");
     ncNewline();
     
     // Esperar un poco
@@ -100,8 +98,6 @@ int main(){
     // Saltar a userland
     ((EntryPoint)sampleCodeModuleAddress)();
     
-    // Nunca debería llegar aquí
-    ncPrint("[KERNEL] ERROR: Retorno de userland!");
     
     while(1) _hlt();
     return 0;

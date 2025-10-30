@@ -21,18 +21,35 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
     }
 }
 
-// SYS_WRITE: Escribir a stdout/stderr usando naive console
+// SYS_WRITE: Escribir a stdout/stderr
 int64_t sys_write(uint64_t fd, const char *buf, uint64_t count) {
     if (fd == 1 || fd == 2) {  // stdout o stderr
         for (uint64_t i = 0; i < count; i++) {
-            ncPrintChar(buf[i]);
+            char c = buf[i];
+            
+            if (c == '\n') {
+                ncNewline();
+            }
+            else if (c == '\b') {
+                ncBackspace();
+            }
+            else if (c == '\t') {
+                ncTab();
+            }
+            else if (c >= 32 && c <= 126) {
+                ncPrintChar(c);
+            }
+            // Caracteres especiales extended ASCII (ñ, etc)
+            else if (c >= 160 && c <= 255) {
+                ncPrintChar(c);
+            }
         }
         return count;
     }
-    return -1;  // EBADF
+    return -1;
 }
 
-// SYS_READ: Leer de stdin
+// SYS_READ: Leer de stdin (bloqueante)
 int64_t sys_read(uint64_t fd, char *buf, uint64_t count) {
     if (fd == 0) {  // stdin
         uint64_t bytes_read = 0;

@@ -6,7 +6,6 @@
 #define CONSOLE_START_Y 10
 #define MAX_BUFFER 128
 
-
 // Declaración forward
 int consoleMain(void);
 
@@ -15,16 +14,25 @@ void execute_command(const char *cmd) {
         puts("Comandos disponibles:\n");
         puts("  help   - Muestra esta ayuda\n");
         puts("  info   - Informacion del sistema\n");
+        puts("  clear  - Limpia la pantalla\n");
     } 
     else if (strcmp(cmd, "info") == 0) {
         puts("Shell ejecutandose en USERLAND (Ring 3)\n");
         puts("Sistema: x64BareBones\n");
         puts("Usando syscalls para I/O\n");
+		puts("FALTA COMPLETAR DINAMICAMENTE!");
+		puts("\n");
+    }
+    else if (strcmp(cmd, "clear") == 0) {
+        puts("HAY QUE IMPLEMENTARLO!");
+		puts("\n");
     }
     else if (cmd[0] != '\0') {
-        puts("Comando no reconocido: ");
+        puts("Comando no reconocido: '");
         puts(cmd);
-        puts("\nEscribe 'help' para ayuda.\n");
+        puts("'\n");
+        puts("Escribe 'help' para ayuda.\n");
+		
     }
 }
 
@@ -32,9 +40,11 @@ int consoleMain(void) {
     char buffer[128];
     int index = 0;
     
-    puts("\n========================================\n");
-    puts("  Shell en Userland - Ring 3\n");
-    puts("========================================\n\n");
+    // Banner inicial con saltos de línea para bajar
+    puts("========================================\n");
+    puts("  Shell\n");
+    puts("========================================\n");
+    puts("Escribe 'help' para ver comandos\n\n");
     puts("> ");
     
     while (1) {
@@ -43,21 +53,32 @@ int consoleMain(void) {
         if (c < 0) continue;
         
         if (c == '\n') {
+            putchar('\n');  // Nueva línea después del enter
             buffer[index] = '\0';
             execute_command(buffer);
             index = 0;
             puts("> ");
         }
-        else if (c == '\b') {
+        else if (c == '\b' || c == 127) {  // Backspace o DEL
             if (index > 0) {
                 index--;
-                // Opcional: imprimir backspace visual
-                putchar('\b');
+                // Secuencia completa de backspace visual
+                putchar('\b');  // Retrocede
+                putchar(' ');   // Escribe espacio
+                putchar('\b');  // Retrocede de nuevo
             }
         }
-        else if (index < 127) {
-            buffer[index++] = c;
-            putchar(c); // Echo del carácter
+        else if (c >= 32 && c <= 126) {  // Solo caracteres imprimibles
+            if (index < 127) {
+                buffer[index++] = c;
+                putchar(c);  // Echo del carácter
+            }
+        }
+        else if (c >= 160 && c <= 255) {  // Extended ASCII (ñ, á, etc)
+            if (index < 127) {
+                buffer[index++] = c;
+                putchar(c);
+            }
         }
     }
     

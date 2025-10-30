@@ -4,5 +4,4 @@
 void putchar(char c);
 void puts(const char *s);
 int getchar(void);
-
 #endif

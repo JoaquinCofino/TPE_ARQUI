@@ -344,14 +344,12 @@ void process_keyboard() {
             }
             
             if (ascii != 0) {
-            // Declarar la función del kernel
-            extern void kernel_stdin_push(char);
-            
-            // Echo visual (para que el usuario vea lo que escribe)
-            ncPrintChar(ascii);
-            
-            // Agregar al buffer de stdin para que read() lo lea
-            kernel_stdin_push(ascii);
+                // Declarar la función del kernel
+                extern void kernel_stdin_push(char);
+                
+                // SOLO agregar al buffer - NO hacer echo aquí
+                // El echo lo hará userland con putchar()
+                kernel_stdin_push(ascii);
             }
         }
     }
