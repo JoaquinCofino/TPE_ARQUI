@@ -6,6 +6,7 @@
 #include "videoDriver.h"
 #include "int_keyboard.h"
 #include <idtLoader.h>
+#include "time.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -90,15 +91,8 @@ int main(){
     _sti();
     
     ncClear();
-    
-    ncNewline();
-    
-    // Esperar un poco
-    
-    // Saltar a userland
+    init_timer();
     ((EntryPoint)sampleCodeModuleAddress)();
-    
-    
     while(1) _hlt();
     return 0;
 }

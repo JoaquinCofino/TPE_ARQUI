@@ -8,4 +8,7 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 
 char *cpuVendor(char *result);
 
+extern uint8_t read_port(uint16_t num);
+extern void write_port(uint16_t port, uint8_t value);
+
 #endif

@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "naiveConsole.h"
 #include "syscalls.h"
+#include "rtc.h"
 
 // Buffer circular para stdin
 #define STDIN_BUFFER_SIZE 256
@@ -12,10 +13,14 @@ static volatile uint16_t stdin_tail = 0;
 uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1, 
                           uint64_t arg2, uint64_t arg3) {
     switch (syscall_num) {
-        case 0:  // SYS_READ
+        case SYS_READ:  // SYS_READ
             return sys_read(arg1, (char *)arg2, arg3);
-        case 1:  // SYS_WRITE
+        case SYS_WRITE:  // SYS_WRITE
             return sys_write(arg1, (const char *)arg2, arg3);
+        case SYS_GET_TIME:  // SYS_GET_TIME
+            return sys_get_time((rtc_time_t*)arg1);
+        case SYS_GET_DATETIME:  // SYS_GET_DATETIME (← Nueva syscall)
+            return sys_get_datetime((rtc_datetime_t*)arg1);
         default:
             return -1;  // ENOSYS
     }
@@ -85,4 +90,17 @@ void kernel_stdin_push(char c) {
         stdin_buffer[stdin_head] = c;
         stdin_head = next;
     }
+}
+
+// SYS_GET_TIME: Obtener tiempo actual
+int64_t sys_get_time(rtc_time_t *time_ptr) {    
+    get_current_time(time_ptr);
+    return 0; 
+}
+
+// SYS_GET_DATETIME: Obtener fecha y hora completa (← Nueva función)
+int64_t sys_get_datetime(rtc_datetime_t *datetime_ptr) {
+
+    rtc_read_full_datetime(datetime_ptr);
+    return 0; 
 }

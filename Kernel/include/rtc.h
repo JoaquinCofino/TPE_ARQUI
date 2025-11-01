@@ -1,18 +1,7 @@
-#ifndef SYSCALLS_H
-#define SYSCALLS_H
+#ifndef _RTC_H_
+#define _RTC_H_
 
 #include <stdint.h>
-#include "time.h"
-
-#define SYS_READ 0
-#define SYS_WRITE 1
-#define SYS_GET_TIME 2
-#define SYS_GET_DATETIME 3
-
-
-// Syscalls disponibles
-int64_t write(int fd, const char *buf, uint64_t count);
-int64_t read(int fd, char *buf, uint64_t count);
 
 typedef struct {
     unsigned int hours;
@@ -33,7 +22,8 @@ typedef struct {
     rtc_date_t date;
 } rtc_datetime_t;
 
-int64_t get_datetime(rtc_datetime_t *datetime_ptr);
-int64_t get_time(rtc_time_t *time_ptr);
+// Funciones disponibles
+void rtc_read_hardware_time(rtc_time_t *time);
+void rtc_read_full_datetime(rtc_datetime_t *datetime);  // ← Agregar
 
 #endif

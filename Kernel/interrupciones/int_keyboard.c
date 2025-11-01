@@ -2,6 +2,7 @@
 #include <naiveConsole.h>
 
 extern uint8_t read_port(uint16_t num);
+extern void write_port(uint16_t port, uint8_t value);
 
 // Estados de las teclas modificadoras
 static uint8_t shift_pressed = 0;
