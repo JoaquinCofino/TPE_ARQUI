@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "naiveconsole.h": "c"
+        "naiveconsole.h": "c",
+        "stdio.h": "c",
+        "string.h": "c"
     }
 }

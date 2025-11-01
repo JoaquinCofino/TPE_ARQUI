@@ -2,6 +2,8 @@
 #include "naiveConsole.h"
 #include "syscalls.h"
 #include "rtc.h"
+#include "videoDriver.h"
+#include "lib.h"
 
 // Buffer circular para stdin
 #define STDIN_BUFFER_SIZE 256
@@ -9,22 +11,34 @@ static char stdin_buffer[STDIN_BUFFER_SIZE];
 static volatile uint16_t stdin_head = 0;
 static volatile uint16_t stdin_tail = 0;
 
+// Estado del teclado para tracking de teclas presionadas
+static uint8_t key_states[256] = {0};
+
 // Delegador principal de syscalls
 uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1, 
                           uint64_t arg2, uint64_t arg3) {
     switch (syscall_num) {
-        case SYS_READ:  // SYS_READ
+        case SYS_READ:
             return sys_read(arg1, (char *)arg2, arg3);
-        case SYS_WRITE:  // SYS_WRITE
+        case SYS_WRITE:
             return sys_write(arg1, (const char *)arg2, arg3);
-        case SYS_GET_TIME:  // SYS_GET_TIME
+        case SYS_GET_TIME:
             return sys_get_time((rtc_time_t*)arg1);
-        case SYS_GET_DATETIME:  // SYS_GET_DATETIME (← Nueva syscall)
+        case SYS_GET_DATETIME:
             return sys_get_datetime((rtc_datetime_t*)arg1);
+        case SYS_IS_KEY_PRESSED:
+            return sys_is_key_pressed(arg1);
+        case SYS_GET_REGISTERS:
+            return sys_get_registers((cpu_registers_t*)arg1);
+        case SYS_GET_VIDEO_DATA:
+            return sys_get_video_data((video_info_t*)arg1);
+        case SYS_VIDEO_CLEAR:
+            return sys_video_clear();
         default:
             return -1;  // ENOSYS
     }
 }
+
 
 // SYS_WRITE: Escribir a stdout/stderr
 int64_t sys_write(uint64_t fd, const char *buf, uint64_t count) {
@@ -94,13 +108,50 @@ void kernel_stdin_push(char c) {
 
 // SYS_GET_TIME: Obtener tiempo actual
 int64_t sys_get_time(rtc_time_t *time_ptr) {    
-    get_current_time(time_ptr);
+    rtc_read_hardware_time(time_ptr);
     return 0; 
 }
 
-// SYS_GET_DATETIME: Obtener fecha y hora completa (← Nueva función)
+// SYS_GET_DATETIME: Obtener fecha y hora completa
 int64_t sys_get_datetime(rtc_datetime_t *datetime_ptr) {
-
     rtc_read_full_datetime(datetime_ptr);
     return 0; 
+}
+
+// SYS_IS_KEY_PRESSED
+int64_t sys_is_key_pressed(uint64_t keycode) {
+    if (keycode >= 256) {
+        return 0; // Keycode inválido
+    }
+    return key_states[keycode];
+}
+
+// SYS_GET_REGISTERS
+extern void capture_registers(cpu_registers_t *regs);
+int64_t sys_get_registers(cpu_registers_t *regs) {
+    capture_registers(regs);
+    return 0;
+}
+
+// SYS_GET_VIDEO_DATA
+int64_t sys_get_video_data(video_info_t *video_info) {
+    video_info->width = getScreenWidth();
+    video_info->height = getScreenHeight();
+    video_info->bpp = getbpp(); // Obtener bits por pixel dinámicamente
+    video_info->framebuffer = 0; // Por seguridad, no exponer la dirección real
+    
+    return 0;
+}
+
+// NUEVA: SYS_VIDEO_CLEAR
+int64_t sys_video_clear(void) {
+    ncClear();  
+    return 0;
+}
+
+// Función para actualizar estado de teclas (debe ser llamada desde el keyboard handler)
+void update_key_state(uint8_t keycode, uint8_t pressed) {
+    if (keycode < 256) {
+        key_states[keycode] = pressed ? 1 : 0;
+    }
 }
