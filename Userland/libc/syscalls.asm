@@ -52,7 +52,12 @@ sys_put_pixel:
     ret
 
 syscall_video_draw_rect:
-    mov rax, 8  
+    ; Necesitas mover los parámetros a los registros correctos
+    ; rdi, rsi, rdx ya tienen los primeros 3 parámetros
+    ; rcx tiene el 4to parámetro, pero necesita ir a r10
+    ; r8 tiene el 5to parámetro
+    mov r10, rcx    ; Mover 4to parámetro de rcx a r10
+    mov rax, 8      ; Número de syscall
     int 0x80
     ret
 

@@ -184,26 +184,30 @@ int64_t sys_video_draw_rect(uint32_t x, uint32_t y,
                             uint32_t color) {
     uint16_t screenW = getScreenWidth();
     uint16_t screenH = getScreenHeight();
-    uint32_t bpp = getbpp() / 8;
-    uint32_t pitch = getFramebufferPitch();
-    uint8_t *fb = (uint8_t *)getFramebuffer();
 
-    if (x >= screenW || y >= screenH)
+    // Verificar si el rectángulo está completamente fuera de la pantalla
+    if (x >= screenW || y >= screenH) {
         return -1;
-    if (x + w > screenW) w = screenW - x;
-    if (y + h > screenH) h = screenH - y;
+    }
 
-    // buffer temporal de una fila
-    uint8_t rowBuffer[w * bpp];
-    for (uint32_t i = 0; i < w; i++) {
-        for (uint32_t b = 0; b < bpp; b++) {
-            rowBuffer[i * bpp + b] = (color >> (8 * b)) & 0xFF;
+    // Ajustar las dimensiones para que no se salgan de la pantalla
+    uint32_t max_width = screenW - x;
+    uint32_t max_height = screenH - y;
+    
+    // Limitar el ancho y alto al espacio disponible
+    if (w > max_width) {
+        w = max_width;
+    }
+    if (h > max_height) {
+        h = max_height;
+    }
+
+    // Dibujar el rectángulo pixel por pixel usando putPixel
+    for (uint32_t row = 0; row < h; row++) {
+        for (uint32_t col = 0; col < w; col++) {
+            putPixel(color, x + col, y + row);
         }
     }
 
-    for (uint32_t row = 0; row < h; row++) {
-        uint64_t offset = (y + row) * pitch + x * bpp;
-        memcpy(fb + offset, rowBuffer, w * bpp);
-    }
     return 0;
 }

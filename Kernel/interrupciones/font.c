@@ -5124,3 +5124,89 @@ const unsigned char FuenteTPE_16_bmp[][17] = {
 	0x03	// ##------
 	}
 };
+
+// Variables para el escalado
+static int font_scale = 1;  // Escala por defecto
+static const int MIN_SCALE = 1;
+static const int MAX_SCALE = 4;
+
+// Establecer escala de la fuente
+void font_set_scale(int scale) {
+    if (scale >= MIN_SCALE && scale <= MAX_SCALE) {
+        font_scale = scale;
+    }
+}
+
+// Obtener escala actual
+int font_get_scale(void) {
+    return font_scale;
+}
+
+// Aumentar tamaño de fuente
+void font_increase_size(void) {
+    if (font_scale < MAX_SCALE) {
+        font_scale++;
+    }
+}
+
+// Disminuir tamaño de fuente
+void font_decrease_size(void) {
+    if (font_scale > MIN_SCALE) {
+        font_scale--;
+    }
+}
+
+// Obtener información de la fuente escalada
+bmp_font_inf font_get_scaled_info(void) {
+    bmp_font_inf scaled_info;
+    scaled_info.width = FuenteTPE_16_inf.width * font_scale;
+    scaled_info.height = FuenteTPE_16_inf.height * font_scale;
+    scaled_info.nChars = FuenteTPE_16_inf.nChars;
+    return scaled_info;
+}
+
+// Obtener carácter escalado
+void font_get_scaled_char(unsigned char c, unsigned char* buffer, int* width, int* height) {
+    if (c >= FuenteTPE_16_inf.nChars) {
+        c = 0; // Carácter por defecto si está fuera de rango
+    }
+    
+    *width = FuenteTPE_16_inf.width * font_scale;
+    *height = FuenteTPE_16_inf.height * font_scale;
+    
+    // Si la escala es 1, simplemente copiar el carácter original
+    if (font_scale == 1) {
+        for (int y = 0; y < FuenteTPE_16_inf.height; y++) {
+            buffer[y] = FuenteTPE_16_bmp[c][y];
+        }
+        return;
+    }
+    
+    // Escalar el carácter
+    for (int y = 0; y < FuenteTPE_16_inf.height; y++) {
+        unsigned char original_row = FuenteTPE_16_bmp[c][y];
+        
+        // Para cada fila escalada
+        for (int scale_y = 0; scale_y < font_scale; scale_y++) {
+            int scaled_row_index = y * font_scale + scale_y;
+            unsigned char scaled_row = 0;
+            
+            // Escalar cada bit horizontalmente
+            for (int bit = 0; bit < FuenteTPE_16_inf.width; bit++) {
+                if (original_row & (1 << bit)) {
+                    // Establecer todos los bits escalados para este pixel
+                    for (int scale_x = 0; scale_x < font_scale; scale_x++) {
+                        int scaled_bit = bit * font_scale + scale_x;
+                        if (scaled_bit < 8) { // Asegurar que no exceda el byte
+                            scaled_row |= (1 << scaled_bit);
+                        }
+                    }
+                }
+            }
+            
+            if (scaled_row_index < *height) {
+                buffer[scaled_row_index] = scaled_row;
+            }
+        }
+    }
+}

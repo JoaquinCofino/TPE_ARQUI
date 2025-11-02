@@ -72,7 +72,7 @@ int consoleMain(void) {
     printf("> ");
 
     // Dibuja un rectangulo verde
-    video_draw_rect(1000, 1000, 2000, 1000, 0x00FF00);
+    video_draw_rect(50, 50, 100, 60, 0xFF0000);
 
 
     while (1) {
