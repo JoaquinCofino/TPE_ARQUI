@@ -1,4 +1,4 @@
-#include "syscalls.h"
+#include "../include/syscalls.h"
 
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
 extern int64_t syscall_read(int fd, char *buf, uint64_t count);
