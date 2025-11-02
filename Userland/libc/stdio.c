@@ -15,7 +15,6 @@ void puts(const char *s) {
 void printf(const char *s) {
     int len = strlen(s);
     write(1, s, len);
-    // No agrega \n automáticamente, a diferencia de puts()
 }
 
 int getchar(void) {
@@ -57,23 +56,6 @@ void print_date(void) {
     if ((anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0))
         dias_mes[2] = 29;
 
-    // Si la hora se vuelve negativa, retrocedemos un día
-    if (hora < 0) {
-        hora += 24;
-        dia -= 1;
-
-        if (dia < 1) {
-            mes -= 1;
-
-            if (mes < 1) {
-                mes = 12;
-                anio -= 1;
-            }
-
-            dia = dias_mes[mes];
-        }
-    }
-
     // === Imprimir fecha ===
     if (dia < 10) putchar('0');
     puts_number(dia);
@@ -81,8 +63,9 @@ void print_date(void) {
 
     if (mes < 10) putchar('0');
     puts_number(mes);
-    putchar('/');
 
+    putchar('/');
+    
     puts_number(anio);
     putchar(' ');
     putchar('-');
