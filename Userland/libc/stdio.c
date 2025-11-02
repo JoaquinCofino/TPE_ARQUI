@@ -2,21 +2,6 @@
 #include "syscalls.h"
 #include "string.h"
 
-void putchar(char c) {
-    write(1, &c, 1);
-}
-
-void puts(const char *s) {
-    int len = strlen(s);
-    write(1, s, len);
-    putchar('\n');
-}
-
-void printf(const char *s) {
-    int len = strlen(s);
-    write(1, s, len);
-}
-
 int getchar(void) {
     char c;
     if (read(0, &c, 1) == 1) {
@@ -25,92 +10,85 @@ int getchar(void) {
     return -1;
 }
 
-// Función auxiliar para imprimir números
-void puts_number(unsigned int num) {
-    if (num >= 10) {
-        puts_number(num / 10);
-    }
-    putchar('0' + (num % 10));
+// --- Utilidades de E/S ---
+void putchar(char c) {
+    write(1, &c, 1);
 }
 
-// Función para imprimir fecha y hora formateada
-void print_date(void) {
-    rtc_datetime_t datetime = {0};
+void puts(const char *s) {
+    write(1, s, strlen(s));
+    putchar('\n');
+}
 
-    // Obtener la fecha y hora del RTC
-    if (get_datetime(&datetime) != 0) {
+void printf(const char *s) {
+    write(1, s, strlen(s));
+}
+
+// --- Función auxiliar para imprimir números ---
+void puts_number(unsigned int num) {
+    if (num == 0) {
+        putchar('0');
+        return;
+    }
+
+    char buffer[10];
+    int i = 0;
+
+    while (num > 0 && i < 10) {
+        buffer[i++] = '0' + (num % 10);
+        num /= 10;
+    }
+
+    // Imprimir en orden correcto
+    for (int j = i - 1; j >= 0; j--)
+        putchar(buffer[j]);
+}
+
+// --- Imprimir fecha y hora formateada (ajustada UTC-3) ---
+void print_date(void) {
+    rtc_datetime_t dt = {0};
+
+    if (get_datetime(&dt) != 0) {
         puts("Error obteniendo la fecha");
         return;
     }
 
-    // === Ajustar zona horaria (-3 horas) ===
-    int hora = datetime.time.hours;
-    int minutos = datetime.time.minutes;
-    int segundos = datetime.time.seconds;
-    int dia = datetime.date.day;
-    int mes = datetime.date.month;
-    int anio = datetime.date.year;
+    int dia = dt.date.day;
+    int mes = dt.date.month;
+    int anio = dt.date.year;
+    int hora = dt.time.hours - 3;  // Ajuste UTC-3
+    int min = dt.time.minutes;
+    int seg = dt.time.seconds;
 
-    // Cantidad de días en cada mes
-    int dias_mes[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-    // Ajuste para año bisiesto (febrero con 29 días)
-    if ((anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0))
-        dias_mes[2] = 29;
-
-    // Restar 3 horas para zona horaria UTC-3
-    hora -= 3;
-    
-    // Si la hora se vuelve negativa, retroceder un día
+    // Ajustar día si la hora es negativa
     if (hora < 0) {
-        hora += 24;  // Convertir a hora válida (ej: -1 → 23)
-        dia--;       // Retroceder un día
-        
-        // Si el día se vuelve 0, retroceder un mes
+        hora += 24;
+        dia--;
         if (dia <= 0) {
             mes--;
-            
-            // Si el mes se vuelve 0, retroceder un año
             if (mes <= 0) {
                 mes = 12;
                 anio--;
-                // Recalcular año bisiesto para el año anterior
-                if ((anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0))
-                    dias_mes[2] = 29;
-                else
-                    dias_mes[2] = 28;
             }
-            
-            dia = dias_mes[mes];  // Último día del mes anterior
+
+            int dias_mes[] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+            if ((anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0))
+                dias_mes[2] = 29;
+            dia = dias_mes[mes];
         }
     }
 
-    // === Imprimir fecha ajustada ===
-    if (dia < 10) putchar('0');
-    puts_number(dia);
-    putchar('/');
-
-    if (mes < 10) putchar('0');
-    puts_number(mes);
-    putchar('/');
-
+    // === Formato: DD/MM/YYYY - HH:MM:SS ===
+    if (dia < 10) putchar('0'); puts_number(dia); putchar('/');
+    if (mes < 10) putchar('0'); puts_number(mes); putchar('/');
     puts_number(anio);
     printf(" - ");
-
-    // === Imprimir hora ajustada ===
-    if (hora < 10) putchar('0');
-    puts_number(hora);
-    putchar(':');
-
-    if (minutos < 10) putchar('0');
-    puts_number(minutos);
-    putchar(':');
-
-    if (segundos < 10) putchar('0');
-    puts_number(segundos);
-
+    if (hora < 10) putchar('0'); puts_number(hora); putchar(':');
+    if (min < 10) putchar('0'); puts_number(min); putchar(':');
+    if (seg < 10) putchar('0'); puts_number(seg);
     putchar('\n');
 }
+
 
 // Imprimir registros del CPU
 void print_registers(void) {
