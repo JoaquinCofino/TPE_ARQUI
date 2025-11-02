@@ -79,13 +79,24 @@ void print_date(void) {
     }
 
     // === Formato: DD/MM/YYYY - HH:MM:SS ===
-    if (dia < 10) putchar('0'); puts_number(dia); putchar('/');
-    if (mes < 10) putchar('0'); puts_number(mes); putchar('/');
+    if (dia < 10) putchar('0'); 
+    puts_number(dia); 
+    putchar('/');
+    if (mes < 10) putchar('0');
+    puts_number(mes); 
+    putchar('/');
+    
     puts_number(anio);
     printf(" - ");
-    if (hora < 10) putchar('0'); puts_number(hora); putchar(':');
-    if (min < 10) putchar('0'); puts_number(min); putchar(':');
-    if (seg < 10) putchar('0'); puts_number(seg);
+    if (hora < 10) putchar('0'); 
+    puts_number(hora); 
+    putchar(':');
+    if (min < 10) 
+    putchar('0');
+    puts_number(min); 
+    putchar(':');
+    if (seg < 10) putchar('0'); 
+    puts_number(seg);
     putchar('\n');
 }
 

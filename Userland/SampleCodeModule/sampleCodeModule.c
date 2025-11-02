@@ -25,6 +25,7 @@ void execute_command(const char *cmd) {
         puts("  clear    - Limpiar la pantalla");
         puts("  regs     - Mostrar registros del CPU");
         puts("  video    - Informacion de video");
+        puts("  audio    - Reproducir sonidos de prueba");
     }
     else if (strcmp(cmd, "info") == 0) {
         puts("Shell ejecutandose en USERLAND (Ring 3)");
@@ -45,6 +46,13 @@ void execute_command(const char *cmd) {
     }
     else if (strcmp(cmd, "video") == 0) {
         print_video_info();
+    }
+    else if(strcmp(cmd, "audio") ==0)
+    {
+        puts("Beep test!");
+        play_sound(440, 400);  // A4 - 440 Hz
+        play_sound(880, 200);  // 880 Hz
+        play_sound(660, 300);
     }
     else if (cmd[0] != '\0') {
         printf("Comando no reconocido: '");
@@ -101,7 +109,7 @@ int consoleMain(void) {
 }
 
 int main() {
-    puts("Beep test!\n");
+    // puts("Beep test!");
     play_sound(440, 400);  // A4 - 440 Hz
     play_sound(880, 200);  // 880 Hz
     play_sound(660, 300);
