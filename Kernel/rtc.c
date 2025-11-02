@@ -22,7 +22,7 @@ static uint8_t bcd_to_binary(uint8_t bcd) {
 
 // Esperar a que RTC esté disponible
 static void rtc_wait_ready(void) {
-    int timeout = 1000000;
+    int timeout = 100;
     while ((read_port(RTC_PORT_SELECT) & 0x80) && timeout > 0) {
         timeout--;
     }
