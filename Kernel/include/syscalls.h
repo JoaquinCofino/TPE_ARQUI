@@ -11,6 +11,9 @@
 #define SYS_GET_REGISTERS 4
 #define SYS_GET_VIDEO_DATA 5
 #define SYS_VIDEO_CLEAR 6
+#define SYS_VIDEO_PUTPIXEL 7
+#define SYS_VIDEO_DRAW_RECT 8
+#define SYS_PLAY_SOUND 9
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -30,7 +33,7 @@ typedef struct {
 
 // Delegador principal
 uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1, 
-                          uint64_t arg2, uint64_t arg3);
+                          uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5);
 
 // Implementaciones de syscalls existentes
 int64_t sys_read(uint64_t fd, char *buf, uint64_t count);
@@ -42,6 +45,9 @@ int64_t sys_get_datetime(rtc_datetime_t *datetime_ptr);
 int64_t sys_get_registers(cpu_registers_t *regs);
 int64_t sys_get_video_data(video_info_t *video_info);
 int64_t sys_video_clear(void);
+int64_t sys_video_putpixel(uint32_t x, uint32_t y, uint32_t color);
+int64_t sys_video_draw_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color);
+int64_t sys_play_sound(uint32_t freq, uint32_t dur_ms);
 
 // Funciones auxiliares
 void kernel_stdin_push(char c);

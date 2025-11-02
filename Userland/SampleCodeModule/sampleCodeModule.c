@@ -102,5 +102,9 @@ int consoleMain(void) {
 }
 
 int main() {
+    puts("Beep test!\n");
+    play_sound(440, 400);  // A4 - 440 Hz
+    play_sound(880, 200);  // 880 Hz
+    play_sound(660, 300);
     return consoleMain();
 }

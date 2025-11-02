@@ -9,6 +9,7 @@ unsigned int current_hours = 0;
 unsigned int current_minutes = 0;
 unsigned int current_seconds = 0;
 unsigned int ticks = 0;
+unsigned int system_ticks = 0;
 
 static int time_initialized = 0;
 
@@ -22,6 +23,8 @@ void init_timer(void) {
     current_minutes = rtc_time.minutes;
     current_seconds = rtc_time.seconds;
     ticks = 0;
+
+    system_ticks = 0;
     
     time_initialized = 1;
 }
@@ -29,6 +32,7 @@ void init_timer(void) {
 void timer_handler(void) {
     if (!time_initialized) return;
     
+    system_ticks++;
     ticks++;
     
     // Incrementar tiempo cada segundo
@@ -60,4 +64,8 @@ void get_current_time(rtc_time_t *time) {
     time->seconds = current_seconds;
     time->ticks = ticks;
     _sti();
+}
+
+unsigned int timer_get_ticks(void) {
+    return system_ticks;
 }

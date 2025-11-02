@@ -14,4 +14,10 @@ extern unsigned int current_minutes;
 extern unsigned int current_seconds;
 extern unsigned int ticks;
 
+
+// Obtener ticks del timer desde otras unidades
+unsigned int timer_get_ticks(void);
+
+
+
 #endif

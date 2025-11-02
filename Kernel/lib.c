@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "time.h"
 
 void * memset(void * destination, int32_t c, uint64_t length)
 {
@@ -47,4 +48,16 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 	}
 
 	return destination;
+}
+
+void sleep_ms(uint32_t ms) {
+    uint64_t start = timer_get_ticks();
+    // Con 18 Hz: 1 tick ≈ 55ms
+    uint64_t ticks_to_wait = (ms * 18 + 999) / 1000;
+    
+    if (ticks_to_wait == 0)
+        ticks_to_wait = 1;
+    
+    while ((timer_get_ticks() - start) < ticks_to_wait)
+        _hlt();
 }
