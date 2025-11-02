@@ -11,22 +11,14 @@ MEMORY=512
 QEMU_VERSION=$($QEMU --version 2>/dev/null | head -n1 | grep -oP '\d+\.\d+' | head -n1)
 QEMU_MAJOR=$(echo $QEMU_VERSION | cut -d. -f1)
 
-echo "=========================================="
-echo "Ejecutando x64BareBonesImage"
-echo "Versión QEMU detectada: $QEMU_VERSION"
-echo "=========================================="
 
 # Configurar flags de audio según la versión
 if [ "$QEMU_MAJOR" -ge 7 ] 2>/dev/null; then
-    echo "Usando sintaxis moderna de audio (QEMU >= 7)"
     AUDIO_FLAGS="-machine pcspk-audiodev=audio0 -audiodev id=audio0,driver=pa"
 else
-    echo "Usando sintaxis antigua de audio (QEMU < 7)"
     AUDIO_FLAGS="-soundhw pcspk"
 fi
 
-echo "=========================================="
-echo ""
 
 # Ejecutar QEMU
 $QEMU -hda $IMAGE -m $MEMORY $AUDIO_FLAGS
