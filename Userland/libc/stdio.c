@@ -108,11 +108,11 @@ void print_registers(void) {
     cpu_registers_t regs;
     
     if (get_registers(&regs) != 0) {
-        puts("Error obteniendo registros\n");
+        puts("Error obteniendo registros");
         return;
     }
 
-    puts("=== REGISTROS DEL CPU ===\n");
+    puts("=== REGISTROS DEL CPU ===");
 
     printf("RAX: 0x"); print_hex(regs.rax); 
     printf("RBX: 0x"); print_hex(regs.rbx);
@@ -142,7 +142,7 @@ void print_video_info(void) {
     video_info_t video;
     
     if (get_video_data(&video) == 0) {
-        puts("=== INFORMACION DE VIDEO ===\n");
+        puts("=== INFORMACION DE VIDEO ===");
         printf("Ancho: ");
         puts_number(video.width);
         puts(" pixels");
