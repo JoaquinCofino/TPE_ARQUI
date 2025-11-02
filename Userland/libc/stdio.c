@@ -44,44 +44,70 @@ void print_date(void) {
     }
 
     // === Ajustar zona horaria (-3 horas) ===
-    int hora = datetime.time.hours - 3;
+    int hora = datetime.time.hours;
+    int minutos = datetime.time.minutes;
+    int segundos = datetime.time.seconds;
     int dia = datetime.date.day;
     int mes = datetime.date.month;
     int anio = datetime.date.year;
 
-    // Cantidad de días en cada mes (no considera año bisiesto aún)
+    // Cantidad de días en cada mes
     int dias_mes[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
     // Ajuste para año bisiesto (febrero con 29 días)
     if ((anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0))
         dias_mes[2] = 29;
 
-    // === Imprimir fecha ===
+    // Restar 3 horas para zona horaria UTC-3
+    hora -= 3;
+    
+    // Si la hora se vuelve negativa, retroceder un día
+    if (hora < 0) {
+        hora += 24;  // Convertir a hora válida (ej: -1 → 23)
+        dia--;       // Retroceder un día
+        
+        // Si el día se vuelve 0, retroceder un mes
+        if (dia <= 0) {
+            mes--;
+            
+            // Si el mes se vuelve 0, retroceder un año
+            if (mes <= 0) {
+                mes = 12;
+                anio--;
+                // Recalcular año bisiesto para el año anterior
+                if ((anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0))
+                    dias_mes[2] = 29;
+                else
+                    dias_mes[2] = 28;
+            }
+            
+            dia = dias_mes[mes];  // Último día del mes anterior
+        }
+    }
+
+    // === Imprimir fecha ajustada ===
     if (dia < 10) putchar('0');
     puts_number(dia);
     putchar('/');
 
     if (mes < 10) putchar('0');
     puts_number(mes);
-
     putchar('/');
-    
+
     puts_number(anio);
-    putchar(' ');
-    putchar('-');
-    putchar(' ');
+    printf(" - ");
 
     // === Imprimir hora ajustada ===
     if (hora < 10) putchar('0');
     puts_number(hora);
     putchar(':');
 
-    if (datetime.time.minutes < 10) putchar('0');
-    puts_number(datetime.time.minutes);
+    if (minutos < 10) putchar('0');
+    puts_number(minutos);
     putchar(':');
 
-    if (datetime.time.seconds < 10) putchar('0');
-    puts_number(datetime.time.seconds);
+    if (segundos < 10) putchar('0');
+    puts_number(segundos);
 
     putchar('\n');
 }
