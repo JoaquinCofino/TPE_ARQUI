@@ -8,7 +8,6 @@ void putPixel(uint32_t hexColor, uint64_t x, uint64_t y);
 
 // Funciones de dibujo de caracteres usando bitmap font
 void drawChar(char c, uint64_t x, uint64_t y, uint32_t color);
-void drawString(const char *s, uint64_t x, uint64_t y, uint32_t color);
 
 // Funciones para obtener dimensiones del font
 uint8_t getFontWidth(void);
@@ -20,5 +19,8 @@ uint16_t getScreenHeight(void);
 void initializeScreen(void);
 void videoClear(void);
 uint8_t getbpp(void);
+
+// Funciones de scroll
+void scrollUpLines(uint32_t lines);
 
 #endif

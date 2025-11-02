@@ -1,6 +1,7 @@
-#include <naiveConsole.h>
-#include "videoDriver.h"
-#include "font.h"
+#include <stdint.h>
+
+#include "include/naiveConsole.h"
+#include "include/videoDriver.h"
 
 static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base);
 
@@ -39,7 +40,9 @@ void ncPrintChar(char character) {
     
     // Verificar si necesitamos hacer scroll
     if (cursorY >= maxRows) {
-        cursorY = 0;
+        /* pedir scroll al driver en vez de resetear todo */
+        scrollUpLines(1);
+        cursorY = maxRows - 1;
         cursorX = 0;
     }
     
@@ -81,7 +84,9 @@ void ncNewline() {
     cursorY++;
     
     if (cursorY >= maxRows) {
-        cursorY = 0;
+        /* pedir scroll al driver en vez de wrapear a 0 */
+        scrollUpLines(1);
+        cursorY = maxRows - 1;
     }
 }
 
