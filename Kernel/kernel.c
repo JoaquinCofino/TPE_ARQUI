@@ -7,6 +7,8 @@
 #include "int_keyboard.h"
 #include <idtLoader.h>
 #include "time.h"
+#include "syscalls.h"
+#include "interrupts.h"
 
 extern uint8_t text;
 extern uint8_t rodata;

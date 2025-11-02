@@ -19,5 +19,6 @@ uint16_t getScreenWidth(void);
 uint16_t getScreenHeight(void);
 void initializeScreen(void);
 void videoClear(void);
+uint8_t getbpp(void);
 
 #endif

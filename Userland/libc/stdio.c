@@ -38,155 +38,104 @@ void puts_number(unsigned int num) {
 void print_date(void) {
     rtc_datetime_t datetime = {0};
 
-    // Llamar a la syscall para obtener la fecha y hora
+    // Obtener la fecha y hora del RTC
     if (get_datetime(&datetime) != 0) {
         puts("Error obteniendo la fecha");
         return;
     }
 
-    // Día
-    if (datetime.date.day < 10) putchar('0');
-    puts_number(datetime.date.day);
+    // === Ajustar zona horaria (-3 horas) ===
+    int hora = datetime.time.hours - 3;
+    int dia = datetime.date.day;
+    int mes = datetime.date.month;
+    int anio = datetime.date.year;
+
+    // Cantidad de días en cada mes (no considera año bisiesto aún)
+    int dias_mes[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+    // Ajuste para año bisiesto (febrero con 29 días)
+    if ((anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0))
+        dias_mes[2] = 29;
+
+    // Si la hora se vuelve negativa, retrocedemos un día
+    if (hora < 0) {
+        hora += 24;
+        dia -= 1;
+
+        if (dia < 1) {
+            mes -= 1;
+
+            if (mes < 1) {
+                mes = 12;
+                anio -= 1;
+            }
+
+            dia = dias_mes[mes];
+        }
+    }
+
+    // === Imprimir fecha ===
+    if (dia < 10) putchar('0');
+    puts_number(dia);
     putchar('/');
 
-    // Mes
-    if (datetime.date.month < 10) putchar('0');
-    puts_number(datetime.date.month);
+    if (mes < 10) putchar('0');
+    puts_number(mes);
     putchar('/');
 
-    // Año
-    puts_number(datetime.date.year);
-
+    puts_number(anio);
     putchar(' ');
-    // Separador entre fecha y hora
     putchar('-');
     putchar(' ');
 
-    // Hora
-    if (datetime.time.hours < 10) putchar('0');
-    puts_number(datetime.time.hours);
+    // === Imprimir hora ajustada ===
+    if (hora < 10) putchar('0');
+    puts_number(hora);
     putchar(':');
 
-    // Minutos
     if (datetime.time.minutes < 10) putchar('0');
     puts_number(datetime.time.minutes);
     putchar(':');
 
-    // Segundos
     if (datetime.time.seconds < 10) putchar('0');
     puts_number(datetime.time.seconds);
 
     putchar('\n');
 }
 
-
-// ARREGLADA: Test de flechas y WASD que funciona correctamente
-void arrow_test(void) {
-    puts("=== TEST DE MOVIMIENTO ===\n");
-    puts("Presiona las flechas o WASD para moverte\n");
-    puts("Presiona ESC para salir\n");
-    puts("Presiona cualquier otra tecla para mostrar estado\n\n");
-    
-    int should_exit = 0;
-    
-    while (!should_exit) {
-        int c = getchar();
-        
-        if (c < 0) continue;
-        
-        // Si presionan ESC, salir
-        if (c == 27) {  // ESC
-            puts("\nESC presionado - Saliendo del test\n");
-            break;
-        }
-        
-        // Mostrar estado actual de las teclas de movimiento
-        puts("Estado actual: ");
-        
-        int any_movement = 0;
-        
-        // Verificar flechas y WASD
-        if (is_key_pressed(KEY_ARROW_UP) || is_key_pressed(KEY_W)) {
-            puts("ARRIBA ");
-            any_movement = 1;
-        }
-        
-        if (is_key_pressed(KEY_ARROW_DOWN) || is_key_pressed(KEY_S)) {
-            puts("ABAJO ");
-            any_movement = 1;
-        }
-        
-        if (is_key_pressed(KEY_ARROW_LEFT) || is_key_pressed(KEY_A)) {
-            puts("IZQUIERDA ");
-            any_movement = 1;
-        }
-        
-        if (is_key_pressed(KEY_ARROW_RIGHT) || is_key_pressed(KEY_D)) {
-            puts("DERECHA ");
-            any_movement = 1;
-        }
-        
-        // Verificar otras teclas útiles
-        if (is_key_pressed(KEY_SPACE)) {
-            puts("ESPACIO ");
-            any_movement = 1;
-        }
-        
-        if (is_key_pressed(KEY_SHIFT_L) || is_key_pressed(KEY_SHIFT_R)) {
-            puts("SHIFT ");
-            any_movement = 1;
-        }
-        
-        if (is_key_pressed(KEY_CTRL)) {
-            puts("CTRL ");
-            any_movement = 1;
-        }
-        
-        if (is_key_pressed(KEY_ALT)) {
-            puts("ALT ");
-            any_movement = 1;
-        }
-        
-        if (!any_movement) {
-            puts("ninguna tecla de movimiento");
-        }
-        
-        puts("\n");
-        puts("(Presiona ESC para salir)\n");
-    }
-}
-
 // Imprimir registros del CPU
 void print_registers(void) {
     cpu_registers_t regs;
     
-    if (get_registers(&regs) == 0) {
-        puts("=== REGISTROS DEL CPU ===\n");
-        
-        puts("RAX: 0x"); print_hex(regs.rax); puts("\n");
-        puts("RBX: 0x"); print_hex(regs.rbx); puts("\n");
-        puts("RCX: 0x"); print_hex(regs.rcx); puts("\n");
-        puts("RDX: 0x"); print_hex(regs.rdx); puts("\n");
-        puts("RSI: 0x"); print_hex(regs.rsi); puts("\n");
-        puts("RDI: 0x"); print_hex(regs.rdi); puts("\n");
-        puts("RBP: 0x"); print_hex(regs.rbp); puts("\n");
-        puts("RSP: 0x"); print_hex(regs.rsp); puts("\n");
-        
-        puts("R8:  0x"); print_hex(regs.r8); puts("\n");
-        puts("R9:  0x"); print_hex(regs.r9); puts("\n");
-        puts("R10: 0x"); print_hex(regs.r10); puts("\n");
-        puts("R11: 0x"); print_hex(regs.r11); puts("\n");
-        puts("R12: 0x"); print_hex(regs.r12); puts("\n");
-        puts("R13: 0x"); print_hex(regs.r13); puts("\n");
-        puts("R14: 0x"); print_hex(regs.r14); puts("\n");
-        puts("R15: 0x"); print_hex(regs.r15); puts("\n");
-        
-        puts("RIP: 0x"); print_hex(regs.rip); puts("\n");
-        puts("RFLAGS: 0x"); print_hex(regs.rflags); puts("\n");
-    } else {
+    if (get_registers(&regs) != 0) {
         puts("Error obteniendo registros\n");
+        return;
     }
+
+    puts("=== REGISTROS DEL CPU ===\n");
+
+    printf("RAX: 0x"); print_hex(regs.rax); 
+    printf("RBX: 0x"); print_hex(regs.rbx);
+    printf("RCX: 0x"); print_hex(regs.rcx);
+    printf("RDX: 0x"); print_hex(regs.rdx);
+    printf("RSI: 0x"); print_hex(regs.rsi);
+    printf("RDI: 0x"); print_hex(regs.rdi);
+    printf("RBP: 0x"); print_hex(regs.rbp);
+    printf("RSP: 0x"); print_hex(regs.rsp);
+
+    printf("R8:  0x"); print_hex(regs.r8);
+    printf("R9:  0x"); print_hex(regs.r9);
+    printf("R10: 0x"); print_hex(regs.r10);
+    printf("R11: 0x"); print_hex(regs.r11);
+    printf("R12: 0x"); print_hex(regs.r12);
+    printf("R13: 0x"); print_hex(regs.r13);
+    printf("R14: 0x"); print_hex(regs.r14);
+    printf("R15: 0x"); print_hex(regs.r15);
+
+    printf("RIP: 0x"); print_hex(regs.rip);
+    printf("RFLAGS: 0x"); print_hex(regs.rflags);
 }
+
 
 // Imprimir información de video
 void print_video_info(void) {
@@ -194,23 +143,19 @@ void print_video_info(void) {
     
     if (get_video_data(&video) == 0) {
         puts("=== INFORMACION DE VIDEO ===\n");
-        puts("Ancho: ");
+        printf("Ancho: ");
         puts_number(video.width);
-        puts(" pixels\n");
+        puts(" pixels");
         
-        puts("Alto: ");
+        printf("Alto: ");
         puts_number(video.height);
-        puts(" pixels\n");
-        
-        puts("Bits por pixel: ");
+        puts(" pixels");
+
+        printf("Bits por pixel:");
         puts_number(video.bpp);
-        puts("\n");
-        
-        puts("Framebuffer: 0x");
-        print_hex(video.framebuffer);
-        puts("\n");
+        puts("");
     } else {
-        puts("Error obteniendo info de video\n");
+        puts("Error obteniendo info de video");
     }
 }
 

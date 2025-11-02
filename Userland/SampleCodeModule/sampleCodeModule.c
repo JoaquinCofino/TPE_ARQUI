@@ -24,7 +24,6 @@ void execute_command(const char *cmd) {
         puts("  info     - Informacion del sistema");
         puts("  date     - Obtener Fecha y Hora");
         puts("  clear    - Limpiar la pantalla");
-        puts("  arrows   - Test de movimiento (ESC para salir)");
         puts("  regs     - Mostrar registros del CPU");
         puts("  video    - Informacion de video");
     }
@@ -41,9 +40,6 @@ void execute_command(const char *cmd) {
     }
     else if (strcmp(cmd, "date") == 0) {
         print_date();
-    }
-    else if (strcmp(cmd, "arrows") == 0) {
-        arrow_test();
     }
     else if (strcmp(cmd, "regs") == 0) {
         print_registers();

@@ -11,7 +11,6 @@ void print_number(unsigned int num);  // CAMBIADO de puts_number
 void print_date(void);
 
 // Nuevas funciones útiles
-void arrow_test(void);
 void print_registers(void);
 void print_video_info(void);
 void print_hex(uint64_t num);

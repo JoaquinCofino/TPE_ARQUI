@@ -113,7 +113,7 @@ void videoClear(void) {
     }
 }
 
-uint16_t getbpp(void)
+uint8_t getbpp(void)
 {
     return VBE_mode_info->bpp;
 }

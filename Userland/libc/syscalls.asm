@@ -3,7 +3,6 @@ GLOBAL syscall_read
 GLOBAL syscall_write
 GLOBAL syscall_get_time
 GLOBAL syscall_get_datetime
-GLOBAL syscall_is_key_pressed
 GLOBAL syscall_get_registers
 GLOBAL syscall_get_video_data
 GLOBAL syscall_video_clear
@@ -30,22 +29,17 @@ syscall_get_datetime:
     int 0x80
     ret
 
-syscall_is_key_pressed:
+syscall_get_registers:
     mov rax, 4
     int 0x80
     ret
 
-syscall_get_registers:
+syscall_get_video_data:
     mov rax, 5
     int 0x80
     ret
 
-syscall_get_video_data:
-    mov rax, 6
-    int 0x80
-    ret
-
 syscall_video_clear:
-    mov rax, 7
+    mov rax, 6
     int 0x80
     ret

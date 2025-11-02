@@ -4,7 +4,6 @@ extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
 extern int64_t syscall_read(int fd, char *buf, uint64_t count);
 extern int64_t syscall_get_time(void *time_ptr);
 extern int64_t syscall_get_datetime(void *datetime_ptr);
-extern int64_t syscall_is_key_pressed(uint64_t keycode);
 extern int64_t syscall_get_registers(void *regs);
 extern int64_t syscall_get_video_data(void *video_info);
 extern int64_t syscall_video_clear(void);
@@ -23,10 +22,6 @@ int64_t get_time(rtc_time_t *time_ptr) {
 
 int64_t get_datetime(rtc_datetime_t *datetime_ptr) {
     return syscall_get_datetime(datetime_ptr);
-}
-
-int64_t is_key_pressed(uint64_t keycode) {
-    return syscall_is_key_pressed(keycode);
 }
 
 int64_t get_registers(cpu_registers_t *regs) {
