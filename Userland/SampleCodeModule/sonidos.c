@@ -1,0 +1,172 @@
+// ============================================================================
+// FRECUENCIAS DE NOTAS MUSICALES (en Hz)
+// ============================================================================
+
+#include "sound_events.h"
+
+
+// ============================================================================
+// FUNCIONES DE MELODÍAS
+// ============================================================================
+
+// Melodía de arranque simple
+void play_startup_sound(void) {
+    puts("♪ Sonido de arranque...\n");
+    play_sound(C4, EIGHTH);
+    play_sound(E4, EIGHTH);
+    play_sound(G4, EIGHTH);
+    play_sound(C5, QUARTER);
+}
+
+
+
+// Star Wars - tema principal
+void play_star_wars(void) {
+    puts("♪ Star Wars Theme!\n");
+    play_sound(A4, QUARTER);
+    play_sound(A4, QUARTER);
+    play_sound(A4, QUARTER);
+    play_sound(F4, EIGHTH + SIXTEENTH);
+    play_sound(C5, SIXTEENTH);
+    
+    play_sound(A4, QUARTER);
+    play_sound(F4, EIGHTH + SIXTEENTH);
+    play_sound(C5, SIXTEENTH);
+    play_sound(A4, HALF);
+}
+
+// Tetris - Tema A
+void play_tetris(void) {
+    puts("♪ Tetris!\n");
+    play_sound(E5, QUARTER);
+    play_sound(B4, EIGHTH);
+    play_sound(C5, EIGHTH);
+    play_sound(D5, QUARTER);
+    play_sound(C5, EIGHTH);
+    play_sound(B4, EIGHTH);
+    
+    play_sound(A4, QUARTER);
+    play_sound(A4, EIGHTH);
+    play_sound(C5, EIGHTH);
+    play_sound(E5, QUARTER);
+    play_sound(D5, EIGHTH);
+    play_sound(C5, EIGHTH);
+    
+    play_sound(B4, QUARTER);
+    play_sound(C5, EIGHTH);
+    play_sound(D5, QUARTER);
+    play_sound(E5, QUARTER);
+    play_sound(C5, QUARTER);
+    play_sound(A4, QUARTER);
+}
+
+// Nokia Ringtone
+void play_nokia_ringtone(void) {
+    puts("♪ Nokia Ringtone!\n");
+    play_sound(E5, EIGHTH);
+    play_sound(D5, EIGHTH);
+    play_sound(FS4, QUARTER);
+    play_sound(GS4, QUARTER);
+    
+    play_sound(CS5, EIGHTH);
+    play_sound(B4, EIGHTH);
+    play_sound(D4, QUARTER);
+    play_sound(E4, QUARTER);
+    
+    play_sound(B4, EIGHTH);
+    play_sound(A4, EIGHTH);
+    play_sound(CS4, QUARTER);
+    play_sound(E4, QUARTER);
+    
+    play_sound(A4, HALF);
+}
+
+// Sonido de error
+void play_error_sound(void) {
+    play_sound(200, 100);
+    play_sound(150, 200);
+}
+
+// Sonido de éxito
+void play_success_sound(void) {
+    play_sound(C5, 100);
+    play_sound(E5, 100);
+    play_sound(G5, 100);
+    play_sound(C6, 200);
+}
+
+
+
+// Sirena de policía
+void play_siren(void) {
+    for (int i = 0; i < 3; i++) {
+        play_sound(1000, 300);
+        play_sound(800, 300);
+    }
+}
+
+// Escala ascendente
+void play_scale_up(void) {
+    puts("♪ Escala ascendente\n");
+    play_sound(C4, EIGHTH);
+    play_sound(D4, EIGHTH);
+    play_sound(E4, EIGHTH);
+    play_sound(F4, EIGHTH);
+    play_sound(G4, EIGHTH);
+    play_sound(A4, EIGHTH);
+    play_sound(B4, EIGHTH);
+    play_sound(C5, QUARTER);
+}
+
+// Efecto de laser
+void play_laser(void) {
+    for (int freq = 2000; freq > 200; freq -= 50) {
+        play_sound(freq, 20);
+    }
+}
+
+// Efecto de explosión
+void play_explosion(void) {
+    play_sound(100, 50);
+    play_sound(80, 100);
+    play_sound(60, 150);
+}
+
+
+// ============================================================================
+// COMANDOS PARA TU SHELL
+// ============================================================================
+
+// Agregar estos comandos a execute_command() en tu shell:
+/*
+    else if (strcmp(cmd, "beep") == 0) {
+        play_sound(440, 200);
+    }
+    else if (strcmp(cmd, "mario") == 0) {
+        play_mario_theme();
+    }
+    else if (strcmp(cmd, "starwars") == 0) {
+        play_star_wars();
+    }
+    else if (strcmp(cmd, "tetris") == 0) {
+        play_tetris();
+    }
+    else if (strcmp(cmd, "nokia") == 0) {
+        play_nokia_ringtone();
+    }
+    else if (strcmp(cmd, "scale") == 0) {
+        play_scale_up();
+    }
+    else if (strcmp(cmd, "laser") == 0) {
+        play_laser();
+    }
+    else if (strcmp(cmd, "siren") == 0) {
+        play_siren();
+    }
+    else if (strcmp(cmd, "error") == 0) {
+        play_error_sound();
+    }
+    else if (strcmp(cmd, "success") == 0) {
+        play_success_sound();
+    }
+*/

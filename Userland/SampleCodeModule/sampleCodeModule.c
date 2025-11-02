@@ -1,6 +1,7 @@
 /* sampleCodeModule.c */
 #include "stdio.h"
 #include "string.h"
+#include "sound_events.h"
 #define CONSOLE_START_X 10
 #define CONSOLE_START_Y 10
 #define MAX_BUFFER 256
@@ -110,8 +111,10 @@ int consoleMain(void) {
 
 int main() {
     // puts("Beep test!");
+    /*
     play_sound(440, 400);  // A4 - 440 Hz
     play_sound(880, 200);  // 880 Hz
-    play_sound(660, 300);
+    play_sound(660, 300);*/
+    play_tetris();
     return consoleMain();
 }
