@@ -33,7 +33,7 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
         case SYS_VIDEO_CLEAR:
             return sys_video_clear();
         case SYS_VIDEO_PUTPIXEL:
-            return sys_video_putpixel((uint32_t)arg1, (uint32_t)arg2, (uint32_t)arg3);
+            return sys_put_pixel((uint32_t)arg1, (uint32_t)arg2, (uint32_t)arg3);
         case SYS_VIDEO_DRAW_RECT:
             return sys_video_draw_rect((uint32_t)arg1, (uint32_t)arg2,
                                    (uint32_t)arg3, (uint32_t)arg4, (uint32_t)arg5);
@@ -46,7 +46,7 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
 
 
 // SYS_WRITE: Escribir a stdout/stderr
-int64_t sys_write(uint64_t fd, const char *buf, uint64_t count) {
+int64_t sys_write(int fd, const char *buf, uint64_t count) {
     if (fd == 1 || fd == 2) {  // stdout o stderr
         for (uint64_t i = 0; i < count; i++) {
             char c = buf[i];
@@ -74,7 +74,7 @@ int64_t sys_write(uint64_t fd, const char *buf, uint64_t count) {
 }
 
 // SYS_READ: Leer de stdin (bloqueante)
-int64_t sys_read(uint64_t fd, char *buf, uint64_t count) {
+int64_t sys_read(int fd, char *buf, uint64_t count) {
     if (fd == 0) {  // stdin
         uint64_t bytes_read = 0;
         
@@ -151,43 +151,7 @@ int64_t sys_video_clear(void) {
 // Syscalls de video
 // ---------------------------------------------------------------------------
 
-// Dibuja un solo píxel (usa el driver directamente)
-int64_t sys_video_putpixel(uint32_t x, uint32_t y, uint32_t color) {
-    if (x >= getScreenWidth() || y >= getScreenHeight())
-        return -1;
-    putPixel(color, x, y);
-    return 0;
-}
 
-// Dibuja un rectángulo sólido
-int64_t sys_video_draw_rect(uint32_t x, uint32_t y,
-                            uint32_t w, uint32_t h,
-                            uint32_t color) {
-    uint16_t screenW = getScreenWidth();
-    uint16_t screenH = getScreenHeight();
-
-    if (x >= screenW || y >= screenH)
-        return -1;
-
-    if (x + w > screenW)
-        w = screenW - x;
-    if (y + h > screenH)
-        h = screenH - y;
-
-    for (uint32_t yy = y; yy < y + h; yy++) {
-        for (uint32_t xx = x; xx < x + w; xx++) {
-            putPixel(color, xx, yy);
-        }
-    }
-    return 0;
-}
-
-
-// Stub de blit (no tenés framebuffer expuesto, así que por ahora no hace nada)
-int64_t sys_video_blit(void *buf, uint64_t buf_size) {
-    // Podés implementarlo luego si querés copiar desde user-space.
-    return -1;
-}
 
 // ---------------------------------------------------------------------------
 // Syscall de sonido (stub)
@@ -196,5 +160,50 @@ int64_t sys_play_sound(uint32_t freq, uint32_t dur_ms) {
     if (freq == 0 || dur_ms == 0)
         return -1;
     speaker_play_tone(freq, dur_ms);
+    return 0;
+}
+
+int64_t sys_put_pixel(uint64_t x, uint64_t y, uint32_t color) {
+    uint16_t w = getScreenWidth();
+    uint16_t h = getScreenHeight();
+    if (x >= w || y >= h) return -1;
+
+    uint8_t *fb = (uint8_t *)getFramebuffer();
+    uint32_t bpp = getbpp() / 8;
+    uint32_t pitch = getFramebufferPitch();
+
+    uint64_t offset = y * pitch + x * bpp;
+    for (uint32_t i = 0; i < bpp; i++) {
+        fb[offset + i] = (color >> (8 * i)) & 0xFF;
+    }
+    return 0;
+}
+
+int64_t sys_video_draw_rect(uint32_t x, uint32_t y,
+                            uint32_t w, uint32_t h,
+                            uint32_t color) {
+    uint16_t screenW = getScreenWidth();
+    uint16_t screenH = getScreenHeight();
+    uint32_t bpp = getbpp() / 8;
+    uint32_t pitch = getFramebufferPitch();
+    uint8_t *fb = (uint8_t *)getFramebuffer();
+
+    if (x >= screenW || y >= screenH)
+        return -1;
+    if (x + w > screenW) w = screenW - x;
+    if (y + h > screenH) h = screenH - y;
+
+    // buffer temporal de una fila
+    uint8_t rowBuffer[w * bpp];
+    for (uint32_t i = 0; i < w; i++) {
+        for (uint32_t b = 0; b < bpp; b++) {
+            rowBuffer[i * bpp + b] = (color >> (8 * b)) & 0xFF;
+        }
+    }
+
+    for (uint32_t row = 0; row < h; row++) {
+        uint64_t offset = (y + row) * pitch + x * bpp;
+        memcpy(fb + offset, rowBuffer, w * bpp);
+    }
     return 0;
 }

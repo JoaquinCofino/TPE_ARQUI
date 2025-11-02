@@ -70,7 +70,11 @@ int consoleMain(void) {
     // Banner inicial
     print_shell_header();
     printf("> ");
-    
+
+    // Dibuja un rectangulo verde
+    video_draw_rect(1000, 1000, 2000, 1000, 0x00FF00);
+
+
     while (1) {
         int c = getchar();
         
@@ -110,11 +114,7 @@ int consoleMain(void) {
 }
 
 int main() {
-    // puts("Beep test!");
-    /*
-    play_sound(440, 400);  // A4 - 440 Hz
-    play_sound(880, 200);  // 880 Hz
-    play_sound(660, 300);*/
+    
     play_tetris();
     return consoleMain();
 }

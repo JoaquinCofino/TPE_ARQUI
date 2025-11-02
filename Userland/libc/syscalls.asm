@@ -6,7 +6,7 @@ GLOBAL syscall_get_datetime
 GLOBAL syscall_get_registers
 GLOBAL syscall_get_video_data
 GLOBAL syscall_video_clear
-GLOBAL syscall_video_putpixel
+GLOBAL sys_put_pixel
 GLOBAL syscall_video_draw_rect
 GLOBAL syscall_play_sound
 
@@ -46,7 +46,7 @@ syscall_video_clear:
     mov rax, 6
     int 0x80
     ret
-syscall_video_putpixel:
+sys_put_pixel:
     mov rax, 7  
     int 0x80
     ret
