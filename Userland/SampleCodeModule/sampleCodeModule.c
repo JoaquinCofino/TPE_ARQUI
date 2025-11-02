@@ -14,7 +14,6 @@ void print_shell_header(void) {
     puts("  Shell con Nuevas Syscalls");
     puts("========================================");
     puts("Escribe 'help' para ver comandos");
-    puts("");
 }
 
 void execute_command(const char *cmd) {
