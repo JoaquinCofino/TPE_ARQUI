@@ -19,6 +19,8 @@ uint16_t getScreenHeight(void);
 void initializeScreen(void);
 void videoClear(void);
 uint8_t getbpp(void);
+void *getFramebuffer(void);
+uint32_t getFramebufferPitch(void);
 
 // Funciones de scroll
 void scrollUpLines(uint32_t lines);

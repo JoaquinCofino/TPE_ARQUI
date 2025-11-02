@@ -152,3 +152,14 @@ void scrollUpLines(uint32_t lines) {
     /* limpiar la zona inferior recién liberada */
     kmemset(framebuffer + bytesToMove, 0, scrollPixels * rowBytes);
 }
+
+
+void *getFramebuffer(void) {
+    // El campo framebuffer es la dirección física donde empieza el buffer de video
+    return (void *)(uintptr_t)VBE_mode_info->framebuffer;
+}
+
+uint32_t getFramebufferPitch(void) {
+    // Cantidad de bytes que ocupa cada fila de la pantalla
+    return VBE_mode_info->pitch;
+}
