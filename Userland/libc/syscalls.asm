@@ -10,7 +10,8 @@ GLOBAL sys_put_pixel
 GLOBAL syscall_video_draw_rect
 GLOBAL syscall_play_sound
 GLOBAL syscall_read_nb
-
+GLOBAL syscall_increase_font_scale
+GLOBAL syscall_decrease_font_scale
 SECTION .text
 
 syscall_read:
@@ -67,7 +68,17 @@ syscall_play_sound:
     int 0x80
     ret
 
-    syscall_read_nb:
+syscall_read_nb:
     mov rax, 10       ; ID para read_nb (no bloqueante)
+    int 0x80
+    ret
+
+syscall_increase_font_scale:
+    mov rax, 11
+    int 0x80
+    ret
+
+syscall_decrease_font_scale:
+    mov rax, 12
     int 0x80
     ret

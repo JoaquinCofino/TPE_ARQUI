@@ -15,19 +15,46 @@ static uint16_t cursorY = 0;
 static uint16_t maxCols = 0;
 static uint16_t maxRows = 0;
 
+// Cache del font scale para detectar cambios
+static uint8_t lastFontScale = 0;
+
 // Color del texto
 #define TEXT_COLOR 0xFFFFFF
 #define BACKGROUND_COLOR 0x000000
 
-// Inicializar las dimensiones de la consola
-static void initConsole(void) {
+// ============================================================
+// Inicializar/Reinicializar las dimensiones de la consola
+// ============================================================
+static void updateConsole(void) {
+    maxCols = getScreenWidth() / getScaledFontWidth();
+    maxRows = getScreenHeight() / getScaledFontHeight();
+    lastFontScale = getFontScale();
+    
+    // Ajustar cursor si está fuera de límites
+    if (cursorX >= maxCols) cursorX = 0;
+    if (cursorY >= maxRows) cursorY = 0;
+}
+
+static void checkConsole(void) {
     static int initialized = 0;
+    
+    // Primera inicialización
     if (!initialized) {
-        maxCols = getScreenWidth() / getFontWidth();
-        maxRows = getScreenHeight() / getFontHeight();
+        updateConsole();
         initialized = 1;
+        return;
+    }
+    
+    // Detectar si cambió el font scale
+    if (getFontScale() != lastFontScale) {
+        updateConsole();
+        // Limpiar pantalla automáticamente cuando cambia el scale
+        videoClear();
+        cursorX = 0;
+        cursorY = 0;
     }
 }
+// ============================================================
 
 void ncPrint(const char * string) {
     int i;
@@ -36,11 +63,10 @@ void ncPrint(const char * string) {
 }
 
 void ncPrintChar(char character) {
-    initConsole();
+    checkConsole();
     
     // Verificar si necesitamos hacer scroll
     if (cursorY >= maxRows) {
-        /* pedir scroll al driver en vez de resetear todo */
         scrollUpLines(1);
         cursorY = maxRows - 1;
         cursorX = 0;
@@ -51,11 +77,11 @@ void ncPrintChar(char character) {
         ncNewline();
     }
     
-    // Calcular posición en píxeles
-    uint64_t pixelX = cursorX * getFontWidth();
-    uint64_t pixelY = cursorY * getFontHeight();
+    // Calcular posición en píxeles usando funciones ESCALADAS
+    uint64_t pixelX = cursorX * getScaledFontWidth();
+    uint64_t pixelY = cursorY * getScaledFontHeight();
     
-    // Dibujar el carácter
+    // Dibujar el carácter (drawChar ya maneja el escalado internamente)
     drawChar(character, pixelX, pixelY, TEXT_COLOR);
     
     // Avanzar cursor
@@ -63,16 +89,16 @@ void ncPrintChar(char character) {
 }
 
 void ncNewline() {
-    initConsole();
+    checkConsole();
     
     // Limpiar el resto de la línea
     while (cursorX < maxCols) {
-        uint64_t pixelX = cursorX * getFontWidth();
-        uint64_t pixelY = cursorY * getFontHeight();
+        uint64_t pixelX = cursorX * getScaledFontWidth();
+        uint64_t pixelY = cursorY * getScaledFontHeight();
         
         // Dibujar espacio negro
-        for (int y = 0; y < getFontHeight(); y++) {
-            for (int x = 0; x < getFontWidth(); x++) {
+        for (int y = 0; y < getScaledFontHeight(); y++) {
+            for (int x = 0; x < getScaledFontWidth(); x++) {
                 putPixel(BACKGROUND_COLOR, pixelX + x, pixelY + y);
             }
         }
@@ -84,7 +110,6 @@ void ncNewline() {
     cursorY++;
     
     if (cursorY >= maxRows) {
-        /* pedir scroll al driver en vez de wrapear a 0 */
         scrollUpLines(1);
         cursorY = maxRows - 1;
     }
@@ -108,16 +133,16 @@ void ncPrintBase(uint64_t value, uint32_t base) {
 }
 
 void ncClear() {
-    initConsole();
+    checkConsole();
     
     // Limpiar toda la pantalla
     for (uint16_t row = 0; row < maxRows; row++) {
         for (uint16_t col = 0; col < maxCols; col++) {
-            uint64_t pixelX = col * getFontWidth();
-            uint64_t pixelY = row * getFontHeight();
+            uint64_t pixelX = col * getScaledFontWidth();
+            uint64_t pixelY = row * getScaledFontHeight();
             
-            for (int y = 0; y < getFontHeight(); y++) {
-                for (int x = 0; x < getFontWidth(); x++) {
+            for (int y = 0; y < getScaledFontHeight(); y++) {
+                for (int x = 0; x < getScaledFontWidth(); x++) {
                     putPixel(BACKGROUND_COLOR, pixelX + x, pixelY + y);
                 }
             }
@@ -129,17 +154,17 @@ void ncClear() {
 }
 
 void ncBackspace() {
-    initConsole();
+    checkConsole();
     
     if (cursorX > 0) {
         cursorX--;
         
-        uint64_t pixelX = cursorX * getFontWidth();
-        uint64_t pixelY = cursorY * getFontHeight();
+        uint64_t pixelX = cursorX * getScaledFontWidth();
+        uint64_t pixelY = cursorY * getScaledFontHeight();
         
         // Borrar dibujando negro
-        for (int y = 0; y < getFontHeight(); y++) {
-            for (int x = 0; x < getFontWidth(); x++) {
+        for (int y = 0; y < getScaledFontHeight(); y++) {
+            for (int x = 0; x < getScaledFontWidth(); x++) {
                 putPixel(BACKGROUND_COLOR, pixelX + x, pixelY + y);
             }
         }
@@ -147,11 +172,11 @@ void ncBackspace() {
         cursorY--;
         cursorX = maxCols - 1;
         
-        uint64_t pixelX = cursorX * getFontWidth();
-        uint64_t pixelY = cursorY * getFontHeight();
+        uint64_t pixelX = cursorX * getScaledFontWidth();
+        uint64_t pixelY = cursorY * getScaledFontHeight();
         
-        for (int y = 0; y < getFontHeight(); y++) {
-            for (int x = 0; x < getFontWidth(); x++) {
+        for (int y = 0; y < getScaledFontHeight(); y++) {
+            for (int x = 0; x < getScaledFontWidth(); x++) {
                 putPixel(BACKGROUND_COLOR, pixelX + x, pixelY + y);
             }
         }
@@ -159,7 +184,7 @@ void ncBackspace() {
 }
 
 void ncTab() {
-    initConsole();
+    checkConsole();
     
     do {
         ncPrintChar(' ');
@@ -199,4 +224,3 @@ static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base) {
 
     return digits;
 }
-

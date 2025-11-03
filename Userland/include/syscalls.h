@@ -14,6 +14,23 @@
 #define SYS_VIDEO_PUTPIXEL 7
 #define SYS_VIDEO_DRAW_RECT 8
 #define SYS_PLAY_SOUND 9
+#define SYS_INCREASE_FONT_SCALE 11
+#define SYS_DECREASE_FONT_SCALE 12
+
+
+extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
+extern int64_t syscall_read(int fd, char *buf, uint64_t count);
+extern int64_t syscall_read_nb(int fd, char *buf, uint64_t count);  // <-- agregar extern
+extern int64_t syscall_get_time(void *time_ptr);
+extern int64_t syscall_get_datetime(void *datetime_ptr);
+extern int64_t syscall_get_registers(void *regs);
+extern int64_t syscall_get_video_data(void *video_info);
+extern int64_t syscall_video_clear(void);
+extern int64_t sys_put_pixel(uint64_t x, uint64_t y, uint64_t color);
+extern int64_t syscall_video_draw_rect(uint64_t x, uint64_t y, uint64_t w, uint64_t h, uint64_t color);
+extern int64_t syscall_play_sound(uint64_t freq, uint64_t duration_ms);
+extern int64_t syscall_increase_font_scale(void);
+extern int64_t syscall_decrease_font_scale(void);
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -67,5 +84,7 @@ int64_t video_draw_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t
 int64_t play_sound(uint32_t freq, uint32_t dur_ms);
 int64_t read_nb(int fd, char *buf, uint64_t count);  // no bloqueante, devuelve 0 si no hay datos
 
+int64_t increase_font_scale(void);
+int64_t decrease_font_scale(void);
 
 #endif

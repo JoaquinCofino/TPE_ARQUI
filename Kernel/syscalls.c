@@ -41,7 +41,11 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
         case SYS_PLAY_SOUND:
             return sys_play_sound((uint32_t)arg1, (uint32_t)arg2);
         case SYS_READ_NB:  // <-- NUEVO caso
-            return sys_read_nb((int)arg1, (char*)arg2, (uint64_t)arg3);    
+            return sys_read_nb((int)arg1, (char*)arg2, (uint64_t)arg3);
+        case SYS_INCREASE_FONT_SCALE:
+            return sys_increase_font_scale();
+        case SYS_DECREASE_FONT_SCALE:
+            return sys_decrease_font_scale();    
         default:
             return -1;  // ENOSYS
     }
@@ -238,5 +242,15 @@ int64_t sys_video_draw_rect(uint32_t x, uint32_t y,
         }
     }
 
+    return 0;
+}
+
+int64_t sys_increase_font_scale(void) {
+    increaseFontScale();
+    return 0;
+}
+
+int64_t sys_decrease_font_scale(void) {
+    decreaseFontScale();
     return 0;
 }

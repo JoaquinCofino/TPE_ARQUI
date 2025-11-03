@@ -2,8 +2,8 @@
 #include "stdio.h"
 #include "string.h"
 #include "sound_events.h"
-#include "../include/tron.h"
-#include "../include/syscall.h"
+#include "tron.h"
+#include "syscalls.h"
 #define CONSOLE_START_X 10
 #define CONSOLE_START_Y 10
 #define MAX_BUFFER 256
@@ -29,6 +29,9 @@ void execute_command(const char *cmd) {
         puts("  regs     - Mostrar registros del CPU");
         puts("  video    - Informacion de video");
         puts("  audio    - Reproducir sonidos de prueba");
+        puts("  tron     - Iniciar juego Tron");
+        puts("  fontinc  - Aumentar escala de fuente");
+        puts("  fontdec  - Disminuir escala de fuente");
     }
     else if (strcmp(cmd, "info") == 0) {
         puts("Shell ejecutandose en USERLAND (Ring 3)");
@@ -62,6 +65,18 @@ void execute_command(const char *cmd) {
         tron_main();        // <-- corre el juego (debe RETORNAR)
         clear_screen();     // limpia framebuffer
         print_shell_header();
+    }
+    else if(strcmp(cmd, "fontdec") == 0) {
+    decrease_font_scale();
+    clear_screen();
+    print_shell_header();
+    puts("Fuente reducida!");
+    }
+    else if(strcmp(cmd, "fontinc") == 0) {
+    increase_font_scale();
+    clear_screen();
+    print_shell_header();
+    puts("Fuente aumentada!");
     }
     else if (cmd[0] != '\0') {
         printf("Comando no reconocido: '");

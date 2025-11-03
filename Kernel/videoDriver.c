@@ -1,9 +1,6 @@
 #include "./include/videoDriver.h"
 #include "./include/font.h"
 #include <stdint.h>
-#include <stddef.h>
-#include <inttypes.h>
-
 
 struct vbe_mode_info_structure {
     uint16_t attributes;
@@ -47,6 +44,36 @@ typedef struct vbe_mode_info_structure * VBEInfoPtr;
 
 VBEInfoPtr VBE_mode_info = (VBEInfoPtr) 0x0000000000005C00;
 
+// ============================================================
+// FONT SCALE - Variables y funciones
+// ============================================================
+static uint8_t fontScale = 1;
+#define MIN_FONT_SCALE 1
+#define MAX_FONT_SCALE 8
+
+void setFontScale(uint8_t scale) {
+    if (scale >= MIN_FONT_SCALE && scale <= MAX_FONT_SCALE) {
+        fontScale = scale;
+    }
+}
+
+uint8_t getFontScale(void) {
+    return fontScale;
+}
+
+void increaseFontScale(void) {
+    if (fontScale < MAX_FONT_SCALE) {
+        fontScale++;
+    }
+}
+
+void decreaseFontScale(void) {
+    if (fontScale > MIN_FONT_SCALE) {
+        fontScale--;
+    }
+}
+// ============================================================
+
 void putPixel(uint32_t hexColor, uint64_t x, uint64_t y) {
     uint16_t w = VBE_mode_info->width;
     uint16_t h = VBE_mode_info->height;
@@ -61,6 +88,7 @@ void putPixel(uint32_t hexColor, uint64_t x, uint64_t y) {
     }
 }
 
+// drawChar CON escalado
 void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
     unsigned char index = (unsigned char)c;
     if (index >= FuenteTPE_16_inf.nChars) {
@@ -71,25 +99,48 @@ void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
     uint8_t fontW = FuenteTPE_16_inf.width;
     uint8_t fontH = FuenteTPE_16_inf.height;
 
-    for (int row = 0; row < fontH; row++) {
+    // Dibujar con escalado
+    for (uint8_t row = 0; row < fontH; row++) {
         uint8_t bits = glyph[row];
-        for (int col = 0; col < fontW; col++) {
-            if (bits & (1 << col)) {
-                putPixel(color, x + col, y + row);
-            } else {
-                putPixel(0x000000, x + col, y + row);
+        for (uint8_t col = 0; col < fontW; col++) {
+            // Determinar el color (píxel activo o fondo)
+            uint32_t pixelColor = (bits & (1 << col)) ? color : 0x000000;
+            
+            // Dibujar el bloque escalado
+            for (uint8_t sy = 0; sy < fontScale; sy++) {
+                for (uint8_t sx = 0; sx < fontScale; sx++) {
+                    putPixel(pixelColor, 
+                            x + (col * fontScale) + sx, 
+                            y + (row * fontScale) + sy);
+                }
             }
         }
     }
 }
 
+// ============================================================
+// Funciones BASE (sin escala) - para info de video
+// ============================================================
 uint8_t getFontWidth(void) {
-    return FuenteTPE_16_inf.width;
+    return FuenteTPE_16_inf.width;  // SIN escala
 }
 
 uint8_t getFontHeight(void) {
-    return FuenteTPE_16_inf.height;
+    return FuenteTPE_16_inf.height;  // SIN escala
 }
+// ============================================================
+
+// ============================================================
+// Funciones ESCALADAS - para naiveConsole
+// ============================================================
+uint8_t getScaledFontWidth(void) {
+    return FuenteTPE_16_inf.width * fontScale;
+}
+
+uint8_t getScaledFontHeight(void) {
+    return FuenteTPE_16_inf.height * fontScale;
+}
+// ============================================================
 
 uint16_t getScreenWidth(void) {
     return VBE_mode_info->width;
@@ -131,7 +182,7 @@ static void kmemmove(void *dst, const void *src, uint32_t n) {
 /* Desplaza la pantalla 'lines' líneas hacia arriba y limpia el área inferior */
 void scrollUpLines(uint32_t lines) {
     if (lines == 0) return;
-    uint8_t fontH = getFontHeight();
+    uint8_t fontH = getScaledFontHeight();  // ← Usar versión ESCALADA
     uint32_t scrollPixels = lines * (uint32_t)fontH;
 
     uint8_t *framebuffer = (uint8_t *)(uintptr_t) VBE_mode_info->framebuffer;
@@ -139,7 +190,6 @@ void scrollUpLines(uint32_t lines) {
     uint32_t screenH = VBE_mode_info->height;
 
     if (scrollPixels >= screenH) {
-        /* limpiar toda la pantalla */
         kmemset(framebuffer, 0, rowBytes * screenH);
         return;
     }
@@ -148,18 +198,13 @@ void scrollUpLines(uint32_t lines) {
     uint32_t bytesToMove = (screenH - scrollPixels) * rowBytes;
 
     kmemmove(framebuffer, framebuffer + srcOffset, bytesToMove);
-
-    /* limpiar la zona inferior recién liberada */
     kmemset(framebuffer + bytesToMove, 0, scrollPixels * rowBytes);
 }
 
-
 void *getFramebuffer(void) {
-    // El campo framebuffer es la dirección física donde empieza el buffer de video
     return (void *)(uintptr_t)VBE_mode_info->framebuffer;
 }
 
 uint32_t getFramebufferPitch(void) {
-    // Cantidad de bytes que ocupa cada fila de la pantalla
     return VBE_mode_info->pitch;
 }

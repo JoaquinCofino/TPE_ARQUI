@@ -25,4 +25,17 @@ uint32_t getFramebufferPitch(void);
 // Funciones de scroll
 void scrollUpLines(uint32_t lines);
 
+// Funciones BASE (para juegos y sys_get_video_data)
+uint8_t getFontWidth(void);
+uint8_t getFontHeight(void);
+
+// Funciones ESCALADAS (solo para naiveConsole)
+uint8_t getScaledFontWidth(void);
+uint8_t getScaledFontHeight(void);
+
+// Font scale management
+uint8_t getFontScale(void);
+void setFontScale(uint8_t scale);
+void increaseFontScale(void);
+void decreaseFontScale(void);
 #endif
