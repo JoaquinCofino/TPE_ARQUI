@@ -45,31 +45,37 @@ typedef struct vbe_mode_info_structure * VBEInfoPtr;
 VBEInfoPtr VBE_mode_info = (VBEInfoPtr) 0x0000000000005C00;
 
 // ============================================================
-// FONT SCALE - Variables y funciones
+// FONT SCALE - Sistema fraccionario para cambios paulatinos
 // ============================================================
-static uint8_t fontScale = 1;
-#define MIN_FONT_SCALE 1
-#define MAX_FONT_SCALE 8
+// Guardamos numerador y denominador por separado
+static uint8_t fontScaleNum = 10;    // Numerador (empieza en 10)
+static uint8_t fontScaleDen = 10;    // Denominador (siempre 10)
+
+#define MIN_FONT_SCALE_NUM 5    // Mínimo: 5/10 = 0.5x
+#define MAX_FONT_SCALE_NUM 50   // Máximo: 50/10 = 5.0x
+#define FONT_SCALE_STEP 1       // Incremento: cada paso suma 0.1x
 
 void setFontScale(uint8_t scale) {
-    if (scale >= MIN_FONT_SCALE && scale <= MAX_FONT_SCALE) {
-        fontScale = scale;
+    // Para compatibilidad: asume que scale es el numerador con denominador 10
+    if (scale >= MIN_FONT_SCALE_NUM && scale <= MAX_FONT_SCALE_NUM) {
+        fontScaleNum = scale;
     }
 }
 
 uint8_t getFontScale(void) {
-    return fontScale;
+    // Devuelve el numerador (para compatibilidad)
+    return fontScaleNum;
 }
 
 void increaseFontScale(void) {
-    if (fontScale < MAX_FONT_SCALE) {
-        fontScale++;
+    if (fontScaleNum < MAX_FONT_SCALE_NUM) {
+        fontScaleNum += FONT_SCALE_STEP;
     }
 }
 
 void decreaseFontScale(void) {
-    if (fontScale > MIN_FONT_SCALE) {
-        fontScale--;
+    if (fontScaleNum > MIN_FONT_SCALE_NUM) {
+        fontScaleNum -= FONT_SCALE_STEP;
     }
 }
 // ============================================================
@@ -88,7 +94,7 @@ void putPixel(uint32_t hexColor, uint64_t x, uint64_t y) {
     }
 }
 
-// drawChar CON escalado
+// drawChar CON escalado fraccionario
 void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
     unsigned char index = (unsigned char)c;
     if (index >= FuenteTPE_16_inf.nChars) {
@@ -99,21 +105,27 @@ void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
     uint8_t fontW = FuenteTPE_16_inf.width;
     uint8_t fontH = FuenteTPE_16_inf.height;
 
-    // Dibujar con escalado
-    for (uint8_t row = 0; row < fontH; row++) {
-        uint8_t bits = glyph[row];
-        for (uint8_t col = 0; col < fontW; col++) {
-            // Determinar el color (píxel activo o fondo)
-            uint32_t pixelColor = (bits & (1 << col)) ? color : 0x000000;
+    // Calcular tamaño escalado usando aritmética entera
+    // scaledW = (fontW * fontScaleNum) / fontScaleDen
+    uint16_t scaledW = ((uint16_t)fontW * fontScaleNum) / fontScaleDen;
+    uint16_t scaledH = ((uint16_t)fontH * fontScaleNum) / fontScaleDen;
+
+    // Dibujar con escalado fraccionario
+    for (uint16_t sy = 0; sy < scaledH; sy++) {
+        // Calcular qué fila de la fuente original corresponde a sy
+        uint8_t srcRow = (sy * fontScaleDen) / fontScaleNum;
+        if (srcRow >= fontH) srcRow = fontH - 1;
+        
+        uint8_t bits = glyph[srcRow];
+        
+        for (uint16_t sx = 0; sx < scaledW; sx++) {
+            // Calcular qué columna de la fuente original corresponde a sx
+            uint8_t srcCol = (sx * fontScaleDen) / fontScaleNum;
+            if (srcCol >= fontW) srcCol = fontW - 1;
             
-            // Dibujar el bloque escalado
-            for (uint8_t sy = 0; sy < fontScale; sy++) {
-                for (uint8_t sx = 0; sx < fontScale; sx++) {
-                    putPixel(pixelColor, 
-                            x + (col * fontScale) + sx, 
-                            y + (row * fontScale) + sy);
-                }
-            }
+            // Determinar el color
+            uint32_t pixelColor = (bits & (1 << srcCol)) ? color : 0x000000;
+            putPixel(pixelColor, x + sx, y + sy);
         }
     }
 }
@@ -134,11 +146,11 @@ uint8_t getFontHeight(void) {
 // Funciones ESCALADAS - para naiveConsole
 // ============================================================
 uint8_t getScaledFontWidth(void) {
-    return FuenteTPE_16_inf.width * fontScale;
+    return ((uint16_t)FuenteTPE_16_inf.width * fontScaleNum) / fontScaleDen;
 }
 
 uint8_t getScaledFontHeight(void) {
-    return FuenteTPE_16_inf.height * fontScale;
+    return ((uint16_t)FuenteTPE_16_inf.height * fontScaleNum) / fontScaleDen;
 }
 // ============================================================
 
