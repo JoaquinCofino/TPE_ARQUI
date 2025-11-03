@@ -5,6 +5,7 @@
 #include "videoDriver.h"
 #include "lib.h"
 #include "interrupts.h"
+#include "font.h"
 
 // Buffer circular para stdin
 #define STDIN_BUFFER_SIZE 256
@@ -40,7 +41,7 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
         case SYS_PLAY_SOUND:
             return sys_play_sound((uint32_t)arg1, (uint32_t)arg2);
         case SYS_READ_NB:  // <-- NUEVO caso
-            return sys_read_nb((int)arg1, (char*)arg2, (uint64_t)arg3);
+            return sys_read_nb((int)arg1, (char*)arg2, (uint64_t)arg3);    
         default:
             return -1;  // ENOSYS
     }
@@ -146,10 +147,16 @@ int64_t sys_get_datetime(rtc_datetime_t *datetime_ptr) {
 }
 
 // SYS_GET_REGISTERS
-extern void capture_registers(cpu_registers_t *regs);
+
+cpu_registers_t last_captured_registers = {0};
+
 int64_t sys_get_registers(cpu_registers_t *regs) {
-    capture_registers(regs);
+    *regs = last_captured_registers;
     return 0;
+}
+
+void capture_registers_on_tick(void) {
+    timer_capture_registers(&last_captured_registers);
 }
 
 // SYS_GET_VIDEO_DATA

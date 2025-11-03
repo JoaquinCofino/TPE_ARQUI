@@ -1,6 +1,7 @@
 #include "time.h"
 #include "rtc.h"
 #include "interrupts.h"
+#include "syscalls.h"
 
 #define TIMER_FREQUENCY 18  // PIT estándar
 
@@ -35,7 +36,6 @@ void timer_handler(void) {
     system_ticks++;
     ticks++;
     
-    // Incrementar tiempo cada segundo
     if (ticks >= TIMER_FREQUENCY) {
         ticks = 0;
         current_seconds++;
@@ -54,6 +54,8 @@ void timer_handler(void) {
             }
         }
     }
+
+    capture_registers_on_tick();
 }
 
 void get_current_time(rtc_time_t *time) {
