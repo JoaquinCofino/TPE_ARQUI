@@ -94,10 +94,6 @@ int consoleMain(void) {
     print_shell_header();
     printf("> ");
 
-    // Dibuja un rectangulo rojo
-    video_draw_rect(50, 50, 100, 60, 0xFF0000);
-
-
     while (1) {
         int c = getchar();
         

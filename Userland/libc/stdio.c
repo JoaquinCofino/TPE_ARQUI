@@ -191,3 +191,37 @@ void print_hex(uint64_t num) {
 void clear_screen(void) {
     video_clear();
 }
+
+#define MAX_SIZE 256
+
+int scanf(char *buffer) {
+    int idx = 0;
+    
+    while (1) {
+        int c = getchar();
+        
+        // Enter - terminar lectura
+        if (c == '\n') {
+            buffer[idx] = '\0';
+            putchar('\n');
+            return idx;  // Retorna cantidad de caracteres leídos
+        }
+        
+        // Backspace
+        if (c == '\b' || c == 127) {
+            if (idx > 0) {
+                idx--;
+                putchar('\b');
+                putchar(' ');
+                putchar('\b');
+            }
+            continue;
+        }
+        
+        // Agregar carácter al buffer si hay espacio
+        if (idx < MAX_SIZE - 1) {
+            buffer[idx++] = (char)c;
+            putchar((char)c);  // Echo del carácter
+        }
+    }
+}
