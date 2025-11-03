@@ -2,6 +2,8 @@
 #include "stdio.h"
 #include "string.h"
 #include "sound_events.h"
+#include "../include/tron.h"
+#include "../include/syscall.h"
 #define CONSOLE_START_X 10
 #define CONSOLE_START_Y 10
 #define MAX_BUFFER 256
@@ -55,6 +57,12 @@ void execute_command(const char *cmd) {
         play_sound(880, 200);  // 880 Hz
         play_sound(660, 300);
     }
+    else if(strcmp(cmd, "tron") ==0){
+        puts("Iniciando Tron...");
+        tron_main();        // <-- corre el juego (debe RETORNAR)
+        clear_screen();     // limpia framebuffer
+        print_shell_header();
+    }
     else if (cmd[0] != '\0') {
         printf("Comando no reconocido: '");
         printf(cmd);
@@ -71,7 +79,7 @@ int consoleMain(void) {
     print_shell_header();
     printf("> ");
 
-    // Dibuja un rectangulo verde
+    // Dibuja un rectangulo rojo
     video_draw_rect(50, 50, 100, 60, 0xFF0000);
 
 

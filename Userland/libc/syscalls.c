@@ -3,6 +3,7 @@
 
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
 extern int64_t syscall_read(int fd, char *buf, uint64_t count);
+extern int64_t syscall_read_nb(int fd, char *buf, uint64_t count);  // <-- agregar extern
 extern int64_t syscall_get_time(void *time_ptr);
 extern int64_t syscall_get_datetime(void *datetime_ptr);
 extern int64_t syscall_get_registers(void *regs);
@@ -18,6 +19,10 @@ int64_t write(int fd, const char *buf, uint64_t count) {
 
 int64_t read(int fd, char *buf, uint64_t count) {
     return syscall_read(fd, buf, count);
+}
+
+int64_t read_nb(int fd, char *buf, uint64_t count) {
+    return syscall_read_nb(fd, buf, count);  // retorna 1 si leyó 1 byte, 0 si no hay
 }
 
 int64_t get_time(rtc_time_t *time_ptr) {

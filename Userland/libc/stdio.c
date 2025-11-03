@@ -10,6 +10,14 @@ int getchar(void) {
     return -1;
 }
 
+// NO bloqueante: -1 si no hay tecla
+int getchar_nb(void) {
+    char c;
+    int64_t r = read_nb(0, &c, 1);
+    if (r == 1) return (unsigned char)c;
+    return -1;
+}
+
 // --- Utilidades de E/S ---
 void putchar(char c) {
     write(1, &c, 1);

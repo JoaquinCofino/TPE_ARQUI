@@ -14,6 +14,7 @@
 #define SYS_VIDEO_PUTPIXEL 7
 #define SYS_VIDEO_DRAW_RECT 8
 #define SYS_PLAY_SOUND 9
+#define SYS_READ_NB 10 
 
 
 // Estructuras para las nuevas syscalls
@@ -49,6 +50,7 @@ int64_t sys_video_clear(void);
 int64_t sys_put_pixel(uint64_t x, uint64_t y, uint32_t color);
 int64_t sys_video_draw_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color);
 int64_t sys_play_sound(uint32_t freq, uint32_t dur_ms);
+int64_t sys_read_nb(int fd, char *buf, uint64_t count);
 
 
 

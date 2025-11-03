@@ -1,166 +1,128 @@
-// #include "../../Kernel/include/videoDriver.h"  // Para putPixel
-// #include "../include/stdio.h"
+#include "../include/syscall.h"
+#include "../include/stdio.h"
+#include <stdint.h>
 
-// typedef struct {
-//     int x, y;
-//     char dir;     // 'U', 'D', 'L', 'R'
-//     int alive;
-//     uint32_t color;
-// } Player;
+#define TICK_DELAY 800000  // ajusta velocidad
 
-// static Player p1, p2;
+typedef struct {
+    int x, y;
+    char dir;     // 'U','D','L','R'
+    int alive;
+    uint32_t color;
+} Player;
 
-// void draw_border() {
-//     uint16_t width = getScreenWidth();
-//     uint16_t height = getScreenHeight();
-    
-//     // Dibujar bordes
-//     for (int x = 0; x < width; x++) {
-//         putPixel(0xFFFFFF, x, 0);                    // Borde superior
-//         putPixel(0xFFFFFF, x, height - 1);           // Borde inferior
-//     }
-//     for (int y = 0; y < height; y++) {
-//         putPixel(0xFFFFFF, 0, y);                    // Borde izquierdo
-//         putPixel(0xFFFFFF, width - 1, y);            // Borde derecho
-//     }
-// }
+static Player p1, p2;
 
-// void draw_player(Player *p) {
-//     // Dibujar un cuadrado 3x3 para el jugador
-//     for (int dy = -1; dy <= 1; dy++) {
-//         for (int dx = -1; dx <= 1; dx++) {
-//             putPixel(p->color, p->x + dx, p->y + dy);
-//         }
-//     }
-// }
+static void wait_tick(void) {
+    for (volatile int i = 0; i < TICK_DELAY; i++);
+}
 
-// void clear_player(Player *p) {
-//     // Limpiar la posición anterior del jugador (negro)
-//     for (int dy = -1; dy <= 1; dy++) {
-//         for (int dx = -1; dx <= 1; dx++) {
-//             putPixel(0x000000, p->x + dx, p->y + dy);
-//         }
-//     }
-// }
+// Drenar teclas pendientes (evita salir inmediatamente)
+static inline void kbd_drain(void) {
+    while (getchar_nb() >= 0) { /* discard */ }
+}
 
-// void move_player(Player *p) {
-//     // Guardar posición anterior para limpiar
-//     int old_x = p->x;
-//     int old_y = p->y;
-    
-//     // Mover
-//     switch (p->dir) {
-//         case 'U': p->y--; break;
-//         case 'D': p->y++; break;
-//         case 'L': p->x--; break;
-//         case 'R': p->x++; break;
-//     }
-    
-//     // Limpiar posición anterior y dejar estela
-//     putPixel(p->color, old_x, old_y);  // Dejar estela del color del jugador
-// }
+// Borde con draw_rect para evitar dudas con putpixel
+static void draw_border(void) {
+    video_info_t v; get_video_data(&v);
+    uint16_t w = v.width, h = v.height;
+    uint32_t c = 0xFFFFFF;
+    video_draw_rect(0, 0, w, 1, c);           // top
+    video_draw_rect(0, h-1, w, 1, c);         // bottom
+    video_draw_rect(0, 0, 1, h, c);           // left
+    video_draw_rect(w-1, 0, 1, h, c);         // right
+}
 
-// int check_collision(Player *p, uint16_t width, uint16_t height) {
-//     // Choca con los bordes (con margen para el tamaño del jugador)
-//     if (p->x <= 2 || p->x >= width - 3 || p->y <= 2 || p->y >= height - 3)
-//         return 1;
-    
-//     // Verificar si la nueva posición ya tiene color (colisión con estela)
-//     // Esto es simplificado - en una versión real necesitarías leer el pixel
-//     return 0;
-// }
+// Cabeza 3x3 usando draw_rect
+static inline void draw_head(Player *p) {
+    video_draw_rect(p->x - 1, p->y - 1, 3, 3, p->color);
+}
 
-// // Función para leer el color de un pixel (necesitarías implementarla)
-// uint32_t getPixel(int x, int y) {
-//     // Esta función depende de tu implementación del framebuffer
-//     // Por ahora retornamos 0 (negro) como placeholder
-//     return 0x000000;
-// }
+// Cola 1x1 en la posición anterior
+static inline void draw_trail(int x, int y, uint32_t color) {
+    video_draw_rect(x, y, 1, 1, color);
+}
 
-// int simple_rand() {
-//     static unsigned int seed = 12345;
-//     seed = (seed * 1103515245 + 12345) & 0x7FFFFFFF;
-//     return (int)seed;
-// }
+static void move_player(Player *p) {
+    int old_x = p->x, old_y = p->y;
+    switch (p->dir) {
+        case 'U': p->y--; break;
+        case 'D': p->y++; break;
+        case 'L': p->x--; break;
+        case 'R': p->x++; break;
+    }
+    // Deja cola en el píxel central anterior
+    draw_trail(old_x, old_y, p->color);
+}
 
-// void cpu_move(Player *cpu) {
-//     // Movimiento CPU: aleatorio pero evita dirección opuesta
-//     int move = simple_rand() % 4;
-//     switch (move) {
-//         case 0: if (cpu->dir != 'D') cpu->dir = 'U'; break;
-//         case 1: if (cpu->dir != 'U') cpu->dir = 'D'; break;
-//         case 2: if (cpu->dir != 'R') cpu->dir = 'L'; break;
-//         case 3: if (cpu->dir != 'L') cpu->dir = 'R'; break;
-//     }
-// }
+static int check_border_collision(Player *p, uint16_t w, uint16_t h) {
+    // margen por cabeza 3x3
+    return (p->x <= 1 || p->x >= (int)w - 2 || p->y <= 1 || p->y >= (int)h - 2);
+}
 
-// void tron_main() {
-//     uint16_t width = getScreenWidth();
-//     uint16_t height = getScreenHeight();
-    
-//     clear_screen();
-    
-//     // Inicializar jugadores
-//     p1.x = width / 4;
-//     p1.y = height / 2;
-//     p1.dir = 'R';
-//     p1.color = 0xFF0000;  // Rojo
-//     p1.alive = 1;
-    
-//     p2.x = (width * 3) / 4;
-//     p2.y = height / 2;
-//     p2.dir = 'L';
-//     p2.color = 0x0000FF;  // Azul
-//     p2.alive = 1;
-    
-//     draw_border();
-//     draw_player(&p1);
-//     draw_player(&p2);
+static int check_player_collision(Player *a, Player *b) {
+    // AABB 3x3
+    if (a->x + 1 < b->x - 1 || a->x - 1 > b->x + 1) return 0;
+    if (a->y + 1 < b->y - 1 || a->y - 1 > b->y + 1) return 0;
+    return 1;
+}
 
-//     while (p1.alive && p2.alive) {
-//         int key = getchar();
-        
-//         // Procesar teclas
-//         if (key == 'w' && p1.dir != 'D') p1.dir = 'U';
-//         else if (key == 's' && p1.dir != 'U') p1.dir = 'D';
-//         else if (key == 'a' && p1.dir != 'R') p1.dir = 'L';
-//         else if (key == 'd' && p1.dir != 'L') p1.dir = 'R';
-//         else if (key == 'q') break;
+static int rnd(void) { static uint32_t s=1234567; s = s*1664525u + 1013904223u; return (int)(s>>1); }
+static void cpu_move(Player *cpu) {
+    int m = rnd() & 3;
+    if (m == 0 && cpu->dir != 'D') cpu->dir = 'U';
+    else if (m == 1 && cpu->dir != 'U') cpu->dir = 'D';
+    else if (m == 2 && cpu->dir != 'R') cpu->dir = 'L';
+    else if (m == 3 && cpu->dir != 'L') cpu->dir = 'R';
+}
 
-//         // Limpiar jugadores de sus posiciones actuales
-//         clear_player(&p1);
-//         clear_player(&p2);
+void tron_main(void) {
+    video_info_t v; get_video_data(&v);
+    uint16_t W = v.width, H = v.height;
 
-//         // Mover
-//         move_player(&p1);
-//         cpu_move(&p2);
-//         move_player(&p2);
+    clear_screen();
+    draw_border();
 
-//         // Chequear colisiones
-//         if (check_collision(&p1, width, height)) p1.alive = 0;
-//         if (check_collision(&p2, width, height)) p2.alive = 0;
+    // Init jugadores
+    p1 = (Player){ .x = W/4,     .y = H/2, .dir = 'R', .alive = 1, .color = 0xFF0000 };
+    p2 = (Player){ .x = (3*W)/4, .y = H/2, .dir = 'L', .alive = 1, .color = 0x0000FF };
 
-//         // Dibujar jugadores en nuevas posiciones
-//         if (p1.alive) draw_player(&p1);
-//         if (p2.alive) draw_player(&p2);
-        
-//         // Pequeña pausa
-//         for (volatile int i = 0; i < 1000000; i++);
-//     }
+    draw_head(&p1);
+    draw_head(&p2);
 
-//     // Mostrar resultado (usando printf de texto)
-//     printf("\n\n");  // Bajar unas líneas
-//     if (p1.alive && !p2.alive)
-//         printf("¡Jugador 1 gana! (Rojo)");
-//     else if (!p1.alive && p2.alive)
-//         printf("¡La CPU gana! (Azul)");
-//     else
-//         printf("Empate.");
-        
-//     printf("\nPresiona cualquier tecla para continuar...");
-//     getchar();
-// }
+    while (p1.alive && p2.alive) {
+        // Leer tecla no bloqueante y actualizar dirección
+        int k = getchar_nb();
+        if (k >= 0) {
+            if ((k=='w'||k=='W') && p1.dir!='D') p1.dir='U';
+            else if ((k=='s'||k=='S') && p1.dir!='U') p1.dir='D';
+            else if ((k=='a'||k=='A') && p1.dir!='R') p1.dir='L';
+            else if ((k=='d'||k=='D') && p1.dir!='L') p1.dir='R';
+            else if (k=='q'||k=='Q') { p1.alive=0; p2.alive=0; }
+        }
 
-// void tron_command() {
-//     tron_main();
-// }
+        // Avance continuo
+        move_player(&p1);
+        cpu_move(&p2);
+        move_player(&p2);
+
+        // Colisiones
+        if (check_border_collision(&p1, W, H)) p1.alive = 0;
+        if (check_border_collision(&p2, W, H)) p2.alive = 0;
+        if (p1.alive && p2.alive && check_player_collision(&p1, &p2)) { p1.alive=0; p2.alive=0; }
+
+        // Dibujar cabezas (si siguen vivos)
+        if (p1.alive) draw_head(&p1);
+        if (p2.alive) draw_head(&p2);
+
+        wait_tick();
+    }
+
+    putchar('\n');
+    if (p1.alive && !p2.alive) puts("Gana Jugador 1 (Rojo)");
+    else if (!p1.alive && p2.alive) puts("Gana CPU (Azul)");
+    else puts("Empate");
+
+    puts("Presiona cualquier tecla para volver...");
+    getchar();         // <-- espera una nueva tecla (bloqueante)
+}

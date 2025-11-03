@@ -39,6 +39,8 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
                                    (uint32_t)arg3, (uint32_t)arg4, (uint32_t)arg5);
         case SYS_PLAY_SOUND:
             return sys_play_sound((uint32_t)arg1, (uint32_t)arg2);
+        case SYS_READ_NB:  // <-- NUEVO caso
+            return sys_read_nb((int)arg1, (char*)arg2, (uint64_t)arg3);
         default:
             return -1;  // ENOSYS
     }
@@ -100,6 +102,26 @@ int64_t sys_read(int fd, char *buf, uint64_t count) {
         return bytes_read;
     }
     return -1;  // EBADF
+}
+
+// SYS_READ_NB: Leer de stdin sin bloquear (devuelve 0 si no hay datos)
+int64_t sys_read_nb(int fd, char *buf, uint64_t count) {
+    if (fd != 0 || buf == 0 || count == 0) return -1;
+
+    uint64_t bytes_read = 0;
+
+    // Leer lo disponible sin esperar
+    while (bytes_read < count) {
+        if (stdin_head == stdin_tail) {
+            // No hay más datos disponibles ahora
+            break;
+        }
+        buf[bytes_read] = stdin_buffer[stdin_tail];
+        stdin_tail = (stdin_tail + 1) % STDIN_BUFFER_SIZE;
+        bytes_read++;
+    }
+
+    return bytes_read;  // 0 si no había datos
 }
 
 // Función para que el keyboard handler agregue caracteres

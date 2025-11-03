@@ -9,6 +9,7 @@ GLOBAL syscall_video_clear
 GLOBAL sys_put_pixel
 GLOBAL syscall_video_draw_rect
 GLOBAL syscall_play_sound
+GLOBAL syscall_read_nb
 
 SECTION .text
 
@@ -63,5 +64,10 @@ syscall_video_draw_rect:
 
 syscall_play_sound:
     mov rax, 9 
+    int 0x80
+    ret
+
+    syscall_read_nb:
+    mov rax, 10       ; ID para read_nb (no bloqueante)
     int 0x80
     ret
