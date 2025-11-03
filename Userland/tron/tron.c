@@ -1,5 +1,7 @@
 #include "../include/syscall.h"
+#include "../include/screens.h"
 #include "../include/stdio.h"
+
 #include <stdint.h>
 
 #define TICK_DELAY 800000  // ajusta velocidad
@@ -82,6 +84,7 @@ void tron_main(void) {
 
     clear_screen();
     draw_border();
+    mode_screen();
 
     // Init jugadores
     p1 = (Player){ .x = W/4,     .y = H/2, .dir = 'R', .alive = 1, .color = 0xFF0000 };
