@@ -5,6 +5,7 @@
 
 // Funciones básicas de pixel
 void putPixel(uint32_t hexColor, uint64_t x, uint64_t y);
+uint32_t getPixel(uint32_t x, uint32_t y);
 
 // Funciones de dibujo de caracteres usando bitmap font
 void drawChar(char c, uint64_t x, uint64_t y, uint32_t color);

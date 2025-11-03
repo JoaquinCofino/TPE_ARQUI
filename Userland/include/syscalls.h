@@ -83,6 +83,7 @@ int64_t video_putpixel(uint32_t x, uint32_t y, uint32_t color);
 int64_t video_draw_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color);
 int64_t play_sound(uint32_t freq, uint32_t dur_ms);
 int64_t read_nb(int fd, char *buf, uint64_t count);  // no bloqueante, devuelve 0 si no hay datos
+uint32_t video_getpixel(uint32_t x, uint32_t y);
 
 int64_t increase_font_scale(void);
 int64_t decrease_font_scale(void);

@@ -12,6 +12,7 @@ GLOBAL syscall_play_sound
 GLOBAL syscall_read_nb
 GLOBAL syscall_increase_font_scale
 GLOBAL syscall_decrease_font_scale
+GLOBAL sys_video_getpixel
 SECTION .text
 
 syscall_read:
@@ -80,5 +81,10 @@ syscall_increase_font_scale:
 
 syscall_decrease_font_scale:
     mov rax, 12
+    int 0x80
+    ret
+
+sys_video_getpixel:
+    mov rax, 13 
     int 0x80
     ret

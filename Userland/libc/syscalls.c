@@ -52,3 +52,9 @@ int64_t increase_font_scale(void) {
 int64_t decrease_font_scale(void) {
     return syscall_decrease_font_scale();
 }
+
+extern int64_t sys_video_getpixel(uint64_t x, uint64_t y);
+
+uint32_t video_getpixel(uint32_t x, uint32_t y) {
+    return (uint32_t)sys_video_getpixel(x, y);
+}

@@ -45,7 +45,9 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
         case SYS_INCREASE_FONT_SCALE:
             return sys_increase_font_scale();
         case SYS_DECREASE_FONT_SCALE:
-            return sys_decrease_font_scale();    
+            return sys_decrease_font_scale();  
+        case SYS_VIDEO_GETPIXEL:
+            return sys_video_getpixel((uint32_t)arg1, (uint32_t)arg2);  
         default:
             return -1;  // ENOSYS
     }
@@ -253,4 +255,10 @@ int64_t sys_increase_font_scale(void) {
 int64_t sys_decrease_font_scale(void) {
     decreaseFontScale();
     return 0;
+}
+
+int64_t sys_video_getpixel(uint32_t x, uint32_t y) {
+    if (x >= getScreenWidth() || y >= getScreenHeight())
+        return 0x000000;  // Negro si está fuera de rango
+    return getPixel(x, y);  // Asumiendo que tenés esta función en videoDriver
 }

@@ -57,6 +57,21 @@ static void move_player(Player *p) {
     draw_trail(old_x, old_y, p->color);
 }
 
+// Verifica si hay colisión en la posición (x,y) de la cabeza 3x3
+// contra los colores dados (bordes o jugador)
+static int check_position_collision(int x, int y, uint32_t color1, uint32_t color2) {
+    // Chequear área 3x3 alrededor de (x,y)
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            uint32_t pixel_color = video_getpixel(x + dx, y + dy);
+            if (pixel_color == color1 || pixel_color == color2) {
+                return 1;  // Colisión detectada
+            }
+        }
+    }
+    return 0;  // No hay colisión
+}
+
 static int check_border_collision(Player *p, uint16_t w, uint16_t h) {
     // margen por cabeza 3x3
     return (p->x <= 1 || p->x >= (int)w - 2 || p->y <= 1 || p->y >= (int)h - 2);
@@ -180,6 +195,9 @@ void tron_main(void) {
         // Colisiones
         if (check_border_collision(&p1, W, H)) p1.alive = 0;
         if (check_border_collision(&p2, W, H)) p2.alive = 0;
+        if(check_position_collision(p1.x, p1.y, p1.color, p2.color)) p1.alive=0;
+        if(check_position_collision(p2.x, p2.y, p2.color, p1.color)) p2.alive=0;
+
         if (p1.alive && p2.alive && check_player_collision(&p1, &p2)) { p1.alive=0; p2.alive=0; }
 
         // Dibujar cabezas (si siguen vivos)

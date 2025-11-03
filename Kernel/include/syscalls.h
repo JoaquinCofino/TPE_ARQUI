@@ -17,6 +17,7 @@
 #define SYS_READ_NB 10  
 #define SYS_INCREASE_FONT_SCALE 11
 #define SYS_DECREASE_FONT_SCALE 12
+#define SYS_VIDEO_GETPIXEL 13
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -58,8 +59,11 @@ int64_t sys_decrease_font_scale(void);
 void capture_registers_on_tick(void);
 extern void timer_capture_registers(cpu_registers_t *regs);
 
+int64_t sys_video_getpixel(uint32_t x, uint32_t y);
 
 // Funciones auxiliares
 void kernel_stdin_push(char c);
+
+
 
 #endif

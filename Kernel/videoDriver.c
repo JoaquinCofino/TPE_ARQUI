@@ -94,6 +94,38 @@ void putPixel(uint32_t hexColor, uint64_t x, uint64_t y) {
     }
 }
 
+
+
+uint32_t getPixel(uint32_t x, uint32_t y) {
+    // Verificar límites
+    if (x >= VBE_mode_info->width || y >= VBE_mode_info->height) {
+        return 0x000000;  // Negro si está fuera de rango
+    }
+    
+    // Obtener el framebuffer y calcular posición
+    uint8_t *framebuffer = (uint8_t *)(uintptr_t)VBE_mode_info->framebuffer;
+    uint8_t pixelWidth = VBE_mode_info->bpp / 8;  // bytes por pixel
+    uint64_t offset = (x * pixelWidth) + (y * VBE_mode_info->pitch);
+    
+    // Leer según profundidad de color
+    if (pixelWidth == 3) {
+        // RGB/BGR 24 bits - leer 3 bytes
+        uint8_t b = framebuffer[offset];
+        uint8_t g = framebuffer[offset + 1];
+        uint8_t r = framebuffer[offset + 2];
+        // Retornar en formato 0xRRGGBB
+        return ((uint32_t)r << 16) | ((uint32_t)g << 8) | (uint32_t)b;
+    } 
+    else if (pixelWidth == 4) {
+        // RGBA/BGRA 32 bits - leer 4 bytes como uint32_t
+        uint32_t *pixel = (uint32_t *)(framebuffer + offset);
+        return *pixel & 0x00FFFFFF;  // Máscara para ignorar alpha
+    }
+    
+    // Fallback si no es 24 o 32 bits
+    return 0x000000;
+}
+
 // drawChar CON escalado fraccionario
 void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
     unsigned char index = (unsigned char)c;
