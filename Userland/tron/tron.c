@@ -69,13 +69,64 @@ static int check_player_collision(Player *a, Player *b) {
     return 1;
 }
 
-static int rnd(void) { static uint32_t s=1234567; s = s*1664525u + 1013904223u; return (int)(s>>1); }
+static uint32_t rnd_state = 0;
+
+static void rnd_seed(uint32_t seed) {
+    rnd_state = seed;
+}
+
+static int rnd(void) { 
+    rnd_state = rnd_state * 1664525u + 1013904223u; 
+    return (int)(rnd_state >> 16); 
+}
+
 static void cpu_move(Player *cpu) {
-    int m = rnd() & 3;
-    if (m == 0 && cpu->dir != 'D') cpu->dir = 'U';
-    else if (m == 1 && cpu->dir != 'U') cpu->dir = 'D';
-    else if (m == 2 && cpu->dir != 'R') cpu->dir = 'L';
-    else if (m == 3 && cpu->dir != 'L') cpu->dir = 'R';
+    video_info_t v; get_video_data(&v);
+    uint16_t W = v.width, H = v.height;
+    // Margen de seguridad para evitar bordes
+    int safe_margin = 50;
+    
+    // Prioridad 1: Evitar bordes cercanos (comportamiento defensivo)
+    if (cpu->x < safe_margin && cpu->dir == 'L') {
+        cpu->dir = (rnd() & 1) ? 'U' : 'D';  // Gira arriba o abajo
+    }
+    else if (cpu->x > W - safe_margin && cpu->dir == 'R') {
+        cpu->dir = (rnd() & 1) ? 'U' : 'D';
+    }
+    else if (cpu->y < safe_margin && cpu->dir == 'U') {
+        cpu->dir = (rnd() & 1) ? 'L' : 'R';  // Gira izquierda o derecha
+    }
+    else if (cpu->y > H - safe_margin && cpu->dir == 'D') {
+        cpu->dir = (rnd() & 1) ? 'L' : 'R';
+    }
+    // Prioridad 2: Cambiar dirección ocasionalmente (5% de probabilidad)
+    // Esto simula decisiones "tácticas" humanas
+    else if ((rnd() % 100) < 5) {
+        int m = rnd() & 3;
+        if (m == 0 && cpu->dir != 'D') cpu->dir = 'U';
+        else if (m == 1 && cpu->dir != 'U') cpu->dir = 'D';
+        else if (m == 2 && cpu->dir != 'R') cpu->dir = 'L';
+        else if (m == 3 && cpu->dir != 'L') cpu->dir = 'R';
+    }
+}
+
+static int select_mode(void) {
+    // Mostrar pantalla gráfica de modo
+    mode_screen();
+    
+
+    int option = 0;
+    while (option == 0) {
+        int c = getchar();
+        if (c == '1') option = 1;
+        else if (c == '2') option = 2;
+        else if (c == 'q' || c == 'Q') option = 3;
+    }
+
+    clear_screen();
+    draw_border();
+    kbd_drain(); // limpia buffer para evitar arrastre de teclas
+    return option;
 }
 
 void tron_main(void) {
@@ -84,7 +135,9 @@ void tron_main(void) {
 
     clear_screen();
     draw_border();
-    mode_screen();
+
+    int mode = select_mode();
+    
 
     // Init jugadores
     p1 = (Player){ .x = W/4,     .y = H/2, .dir = 'R', .alive = 1, .color = 0xFF0000 };
@@ -104,10 +157,25 @@ void tron_main(void) {
             else if (k=='q'||k=='Q') { p1.alive=0; p2.alive=0; }
         }
 
-        // Avance continuo
+        // Jugador 2 (solo si es multiplayer)
+            if (mode == 2) {
+                if ((k=='i'||k=='I') && p2.dir!='D') p2.dir='U';
+                else if ((k=='k'||k=='K') && p2.dir!='U') p2.dir='D';
+                else if ((k=='j'||k=='J') && p2.dir!='R') p2.dir='L';
+                else if ((k=='l'||k=='L') && p2.dir!='L') p2.dir='R';
+            }
+
+        if (mode == 3) { return;}
+        
+
         move_player(&p1);
-        cpu_move(&p2);
-        move_player(&p2);
+
+        if (mode == 1) {
+            cpu_move(&p2);      // Cambia dirección aleatoriamente
+            move_player(&p2);   // AHORA SÍ SE MUEVE
+        } else {
+            move_player(&p2);   // Modo PvP
+}
 
         // Colisiones
         if (check_border_collision(&p1, W, H)) p1.alive = 0;
