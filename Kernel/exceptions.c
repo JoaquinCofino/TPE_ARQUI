@@ -29,7 +29,7 @@ void exceptionDispatcher(uint64_t exception, uint64_t rip) {
         ncPrintDec(exception);
         ncPrint(")");
         ncNewline();
-        ncPrint("Descripción: Excepcion no manejada");
+        ncPrint("Descripcion: Excepcion no manejada");
         ncNewline();
         
         // Mostrar Instruction Pointer
