@@ -1,11 +1,10 @@
 #include <stdint.h>
-#include "naiveConsole.h"
-#include "syscalls.h"
-#include "rtc.h"
-#include "videoDriver.h"
-#include "lib.h"
-#include "interrupts.h"
-#include "font.h"
+#include "include/naiveConsole.h"
+#include "include/syscalls.h"
+#include "include/rtc.h"
+#include "include/videoDriver.h"
+#include "include/interrupts.h"
+#include "include/speaker.h"
 
 // Buffer circular para stdin
 #define STDIN_BUFFER_SIZE 256

@@ -1,6 +1,6 @@
-#include "stdio.h"
-#include "syscalls.h"
-#include "string.h"
+#include "../include/stdio.h"
+#include "../include/syscalls.h"
+#include "../include/string.h"
 
 int getchar(void) {
     char c;
