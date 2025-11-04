@@ -346,6 +346,7 @@ void tron_level(int mode){
 }
 
 void tron_main(void) {
+    play_startup_sound();
     int mode = select_mode();
     if (mode == 3) return;
 

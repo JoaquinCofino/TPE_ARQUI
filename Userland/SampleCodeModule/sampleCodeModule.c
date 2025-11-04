@@ -266,5 +266,6 @@ int consoleMain(void) {
 int main() {
     
     //play_tetris();
+    play_startup_sound();
     return consoleMain();
 }
