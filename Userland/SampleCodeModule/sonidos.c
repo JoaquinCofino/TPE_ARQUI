@@ -3,7 +3,6 @@
 
 
 void play_startup_sound(void) {
-    puts(" Sonido de arranque...\n");
     play_sound(C4, EIGHTH);
     play_sound(E4, EIGHTH);
     play_sound(G4, EIGHTH);
