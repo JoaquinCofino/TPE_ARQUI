@@ -87,33 +87,97 @@ static int rnd(void) {
     return (int)(rnd_state >> 16); 
 }
 
-static void cpu_move(Player *cpu) {
-    video_info_t v; get_video_data(&v);
+// --- Función auxiliar: chequea si hay espacio libre adelante ---
+    int is_safe(int x, int y) {
+         video_info_t v; 
+    get_video_data(&v);
     uint16_t W = v.width, H = v.height;
-    // Margen de seguridad para evitar bordes
-    int safe_margin = 50;
-    
-    // Prioridad 1: Evitar bordes cercanos (comportamiento defensivo)
-    if (cpu->x < safe_margin && cpu->dir == 'L') {
-        cpu->dir = (rnd() & 1) ? 'U' : 'D';  // Gira arriba o abajo
+
+        if (x <= 1 || x >= (int)W - 2 || y <= 1 || y >= (int)H - 2)
+            return 0;
+        uint32_t color = video_getpixel(x, y);
+        return (color == 0x000000);
     }
-    else if (cpu->x > W - safe_margin && cpu->dir == 'R') {
-        cpu->dir = (rnd() & 1) ? 'U' : 'D';
+
+static void cpu_move(Player *cpu) {
+    video_info_t v; 
+    get_video_data(&v);
+    uint16_t W = v.width, H = v.height;
+
+    const int lookahead = 20;    // mira varios píxeles adelante
+    const int turn_chance = 1;  // baja chance de girar "porque sí"
+    const int reaction_delay = 5; // más grande = más lento
+
+    static int frame_counter = 0;
+    frame_counter++;
+    if (frame_counter % reaction_delay != 0)
+        return;  // se mueve solo cada algunos frames
+
+
+
+    // --- Calcular puntos a verificar ---
+    int fx = cpu->x, fy = cpu->y;
+    int lx = cpu->x, ly = cpu->y;
+    int rx = cpu->x, ry = cpu->y;
+
+    switch (cpu->dir) {
+        case 'U':
+            fy -= lookahead; lx -= lookahead; rx += lookahead;
+            break;
+        case 'D':
+            fy += lookahead; lx += lookahead; rx -= lookahead;
+            break;
+        case 'L':
+            fx -= lookahead; ly += lookahead; ry -= lookahead;
+            break;
+        case 'R':
+            fx += lookahead; ly -= lookahead; ry += lookahead;
+            break;
     }
-    else if (cpu->y < safe_margin && cpu->dir == 'U') {
-        cpu->dir = (rnd() & 1) ? 'L' : 'R';  // Gira izquierda o derecha
-    }
-    else if (cpu->y > H - safe_margin && cpu->dir == 'D') {
-        cpu->dir = (rnd() & 1) ? 'L' : 'R';
-    }
-    // Prioridad 2: Cambiar dirección ocasionalmente (5% de probabilidad)
-    // Esto simula decisiones "tácticas" humanas
-    else if ((rnd() % 100) < 5) {
-        int m = rnd() & 3;
-        if (m == 0 && cpu->dir != 'D') cpu->dir = 'U';
-        else if (m == 1 && cpu->dir != 'U') cpu->dir = 'D';
-        else if (m == 2 && cpu->dir != 'R') cpu->dir = 'L';
-        else if (m == 3 && cpu->dir != 'L') cpu->dir = 'R';
+
+    int forward_safe = is_safe(fx, fy);
+    int left_safe = is_safe(lx, ly);
+    int right_safe = is_safe(rx, ry);
+
+    // --- Decisión de dirección ---
+    if (!forward_safe) {
+        // Si hay peligro al frente → elegir lado libre
+        if (left_safe && !right_safe) {
+            cpu->dir = (cpu->dir == 'U') ? 'L' :
+                       (cpu->dir == 'D') ? 'R' :
+                       (cpu->dir == 'L') ? 'D' : 'U';
+        } else if (right_safe && !left_safe) {
+            cpu->dir = (cpu->dir == 'U') ? 'R' :
+                       (cpu->dir == 'D') ? 'L' :
+                       (cpu->dir == 'L') ? 'U' : 'D';
+        } else if (left_safe && right_safe) {
+            if (rnd() & 1)
+                cpu->dir = (cpu->dir == 'U') ? 'L' :
+                           (cpu->dir == 'D') ? 'R' :
+                           (cpu->dir == 'L') ? 'D' : 'U';
+            else
+                cpu->dir = (cpu->dir == 'U') ? 'R' :
+                           (cpu->dir == 'D') ? 'L' :
+                           (cpu->dir == 'L') ? 'U' : 'D';
+        } else {
+            // sin salida: último recurso → giro aleatorio
+            int m = rnd() & 3;
+            if (m == 0 && cpu->dir != 'D') cpu->dir = 'U';
+            else if (m == 1 && cpu->dir != 'U') cpu->dir = 'D';
+            else if (m == 2 && cpu->dir != 'R') cpu->dir = 'L';
+            else if (m == 3 && cpu->dir != 'L') cpu->dir = 'R';
+        }
+    } else if ((rnd() % 100) < turn_chance) {
+        // chance baja de girar por decisión táctica
+        if (left_safe && (rnd() & 1)) {
+            cpu->dir = (cpu->dir == 'U') ? 'L' :
+                       (cpu->dir == 'D') ? 'R' :
+                       (cpu->dir == 'L') ? 'D' : 'U';
+        } else if (right_safe) {
+            cpu->dir = (cpu->dir == 'U') ? 'R' :
+                       (cpu->dir == 'D') ? 'L' :
+                       (cpu->dir == 'L') ? 'U' : 'D';
+        }
     }
 }
 
