@@ -7,7 +7,7 @@ void putchar(char c);
 void puts(const char *s);
 void printf(const char *s);
 int getchar(void);
-void print_number(unsigned int num);  // CAMBIADO de puts_number
+void puts_number(unsigned int num);  // CAMBIADO de puts_number
 void print_date(void);
 
 // Nuevas funciones útiles

@@ -8,7 +8,7 @@ CONSOLE_DIR=../Console
 INCLUDE_DIR=../include
 
 # Archivos fuente C
-SOURCES=$(wildcard [^_]*.c ../tron/*.c)
+SOURCES=$(wildcard [^_]*.c ../tron/*.c ../benchmarks/*.c)
 LIBC_SOURCES=$(wildcard $(LIBC_DIR)/[^_]*.c)
 CONSOLE_SOURCES=$(wildcard $(CONSOLE_DIR)/[^_]*.c)
 
