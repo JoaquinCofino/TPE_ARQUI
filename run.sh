@@ -4,7 +4,7 @@
 # Compatible con QEMU < 7 y >= 7
 
 QEMU=qemu-system-x86_64
-IMAGE=Image/PROBAR_x64BareBonesImage.qcow2
+IMAGE=Image/x64BareBonesImage.qcow2
 MEMORY=512
 
 # Detectar versión de QEMU
