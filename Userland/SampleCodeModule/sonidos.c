@@ -11,7 +11,7 @@
 
 // Melodía de arranque simple
 void play_startup_sound(void) {
-    puts("♪ Sonido de arranque...\n");
+    puts(" Sonido de arranque...\n");
     play_sound(C4, EIGHTH);
     play_sound(E4, EIGHTH);
     play_sound(G4, EIGHTH);
@@ -22,7 +22,7 @@ void play_startup_sound(void) {
 
 // Star Wars - tema principal
 void play_star_wars(void) {
-    puts("♪ Star Wars Theme!\n");
+    puts("Star Wars Theme!\n");
     play_sound(A4, QUARTER);
     play_sound(A4, QUARTER);
     play_sound(A4, QUARTER);
@@ -62,7 +62,7 @@ void play_tetris(void) {
 
 // Nokia Ringtone
 void play_nokia_ringtone(void) {
-    puts("♪ Nokia Ringtone!\n");
+    puts("Nokia Ringtone!\n");
     play_sound(E5, EIGHTH);
     play_sound(D5, EIGHTH);
     play_sound(FS4, QUARTER);
@@ -107,7 +107,7 @@ void play_siren(void) {
 
 // Escala ascendente
 void play_scale_up(void) {
-    puts("♪ Escala ascendente\n");
+    puts(" Escala ascendente\n");
     play_sound(C4, EIGHTH);
     play_sound(D4, EIGHTH);
     play_sound(E4, EIGHTH);

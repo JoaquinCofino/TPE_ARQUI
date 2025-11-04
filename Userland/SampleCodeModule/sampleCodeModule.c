@@ -53,13 +53,63 @@ void execute_command(const char *cmd) {
     else if (strcmp(cmd, "video") == 0) {
         print_video_info();
     }
-    else if(strcmp(cmd, "audio") ==0)
-    {
-        puts("Beep test!");
-        play_sound(440, 400);  // A4 - 440 Hz
-        play_sound(880, 200);  // 880 Hz
-        play_sound(660, 300);
+    else if(strcmp(cmd, "audio") == 0) {
+    puts("========================================");
+    puts("       Seleccion de Sonido");
+    puts("========================================");
+    puts("0) Error");
+    puts("1) Beep simple");
+    puts("2) Star Wars");
+    puts("3) Tetris");
+    puts("4) Nokia ringtone");
+    puts("5) Escala ascendente");
+    puts("6) Sirena policial");
+    puts("7) Laser");
+    puts("8) Explosion");
+    puts("9) Exito");
+    puts("----------------------------------------");
+    puts("Elige una opcion (0-9): ");
+
+    int c = getchar();
+    putchar('\n');  // salto de línea visual
+
+    switch (c) {
+        case '1':
+            puts("Beep simple!");
+            play_sound(440, 300);
+            break;
+        case '2':
+            play_star_wars();
+            break;
+        case '3':
+            play_tetris();
+            break;
+        case '4':
+            play_nokia_ringtone();
+            break;
+        case '5':
+            play_scale_up();
+            break;
+        case '6':
+            play_siren();
+            break;
+        case '7':
+            play_laser();
+            break;
+        case '8':
+            play_explosion();
+            break;
+        case '9':
+            play_success_sound();
+            break;
+        case '0':
+            play_error_sound();
+            break;
+        default:
+            puts("Opción no válida.");
+            break;
     }
+}
     else if(strcmp(cmd, "tron") ==0){
         puts("Iniciando Tron...");
         tron_main();        // <-- corre el juego (debe RETORNAR)
@@ -134,6 +184,6 @@ int consoleMain(void) {
 
 int main() {
     
-    play_tetris();
+    //play_tetris();
     return consoleMain();
 }
