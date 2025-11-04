@@ -8,7 +8,7 @@
 
 // Buffer circular para stdin
 #define STDIN_BUFFER_SIZE 256
-static char stdin_buffer[STDIN_BUFFER_SIZE];
+static unsigned char stdin_buffer[STDIN_BUFFER_SIZE];
 static volatile uint16_t stdin_head = 0;
 static volatile uint16_t stdin_tail = 0;
 
@@ -57,7 +57,7 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
 int64_t sys_write(int fd, const char *buf, uint64_t count) {
     if (fd == 1 || fd == 2) {  // stdout o stderr
         for (uint64_t i = 0; i < count; i++) {
-            char c = buf[i];
+            unsigned char c = (unsigned char)buf[i];
             
             if (c == '\n') {
                 ncNewline();
@@ -93,11 +93,12 @@ int64_t sys_read(int fd, char *buf, uint64_t count) {
             }
             
             // Leer del buffer circular
-            buf[bytes_read] = stdin_buffer[stdin_tail];
+            unsigned char c = stdin_buffer[stdin_tail];
+            buf[bytes_read] = (char)c;
             stdin_tail = (stdin_tail + 1) % STDIN_BUFFER_SIZE;
             
             // Si leímos newline, terminar
-            if (buf[bytes_read] == '\n') {
+            if (c == '\n') {
                 bytes_read++;
                 break;
             }
@@ -122,7 +123,8 @@ int64_t sys_read_nb(int fd, char *buf, uint64_t count) {
             // No hay más datos disponibles ahora
             break;
         }
-        buf[bytes_read] = stdin_buffer[stdin_tail];
+        unsigned char c = stdin_buffer[stdin_tail];
+        buf[bytes_read] = (char)c;
         stdin_tail = (stdin_tail + 1) % STDIN_BUFFER_SIZE;
         bytes_read++;
     }
@@ -131,8 +133,8 @@ int64_t sys_read_nb(int fd, char *buf, uint64_t count) {
 }
 
 // Función para que el keyboard handler agregue caracteres
-void kernel_stdin_push(char c) {
-    uint16_t next = (stdin_head + 1) % STDIN_BUFFER_SIZE;
+void kernel_stdin_push(unsigned char c) {
+    unsigned char next = (stdin_head + 1) % STDIN_BUFFER_SIZE;
     if (next != stdin_tail) {
         stdin_buffer[stdin_head] = c;
         stdin_head = next;

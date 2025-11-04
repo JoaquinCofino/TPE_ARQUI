@@ -65,6 +65,8 @@ void ncPrint(const char * string) {
 void ncPrintChar(char character) {
     checkConsole();
     
+    unsigned char uc = (unsigned char)character;
+    
     // Verificar si necesitamos hacer scroll
     if (cursorY >= maxRows) {
         scrollUpLines(1);
@@ -82,7 +84,7 @@ void ncPrintChar(char character) {
     uint64_t pixelY = cursorY * getScaledFontHeight();
     
     // Dibujar el carácter (drawChar ya maneja el escalado internamente)
-    drawChar(character, pixelX, pixelY, TEXT_COLOR);
+    drawChar(uc, pixelX, pixelY, TEXT_COLOR);
     
     // Avanzar cursor
     cursorX++;

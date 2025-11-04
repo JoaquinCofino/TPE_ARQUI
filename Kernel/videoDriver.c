@@ -129,9 +129,6 @@ uint32_t getPixel(uint32_t x, uint32_t y) {
 // drawChar CON escalado fraccionario
 void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
     unsigned char index = (unsigned char)c;
-    if (index >= FuenteTPE_16_inf.nChars) {
-        index = '?';
-    }
     const uint8_t *glyph = FuenteTPE_16_bmp[index];
 
     uint8_t fontW = FuenteTPE_16_inf.width;

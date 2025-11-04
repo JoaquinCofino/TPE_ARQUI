@@ -62,7 +62,7 @@ extern void timer_capture_registers(cpu_registers_t *regs);
 int64_t sys_video_getpixel(uint32_t x, uint32_t y);
 
 // Funciones auxiliares
-void kernel_stdin_push(char c);
+void kernel_stdin_push(unsigned char c);
 
 
 

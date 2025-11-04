@@ -37,7 +37,7 @@ void play_star_wars(void) {
 
 // Tetris - Tema A
 void play_tetris(void) {
-    puts("♪ Tetris!\n");
+    puts("Tetris!\n");
     play_sound(E5, QUARTER);
     play_sound(B4, EIGHTH);
     play_sound(C5, EIGHTH);

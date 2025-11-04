@@ -17,7 +17,7 @@ static uint8_t caps_lock = 0;
 #define CAPS_SCANCODE   0x3A
 
 // Tabla básica (sin modificadores) - Teclado Argentino
-static char makeCodeToAscii[128] = {
+static unsigned char makeCodeToAscii[128] = {
     0,      // 0x00 - unused
     '\e',   // 0x01 - ESC
     '1',    // 0x02
@@ -113,7 +113,7 @@ static char makeCodeToAscii[128] = {
 };
 
 // Tabla con Shift presionado - Teclado Argentino
-static char shiftCodeToAscii[128] = {
+static unsigned char shiftCodeToAscii[128] = {
     0,      // 0x00 - unused
     '\e',   // 0x01 - ESC
     '!',    // 0x02 - !
@@ -199,7 +199,7 @@ static char shiftCodeToAscii[128] = {
 };
 
 // Tabla con AltGr presionado - Teclado Argentino
-static char altgrCodeToAscii[128] = {
+static unsigned char altgrCodeToAscii[128] = {
     0,      // 0x00 - unused
     0,      // 0x01 - ESC
     '|',    // 0x02 - | (pipe)
@@ -317,9 +317,10 @@ void process_keyboard() {
         // Si el bit más alto está en 1, no imprime nada, es un break code.
         if (sc & 0x80) continue;
 
+        
         // Convertir scancode a ASCII usando la tabla apropiada
-        if (sc < 128) {
-            char ascii = 0;
+        if (sc < 256) {
+            unsigned char ascii = 0;
             
             // Determinar qué tabla usar según las teclas modificadoras
             if (altgr_pressed) {
@@ -346,7 +347,7 @@ void process_keyboard() {
             
             if (ascii != 0) {
                 // Declarar la función del kernel
-                extern void kernel_stdin_push(char);
+                extern void kernel_stdin_push(unsigned char c);
                 
                 // SOLO agregar al buffer - NO hacer echo aquí
                 // El echo lo hará userland con putchar()

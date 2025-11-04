@@ -3,18 +3,18 @@
 #include "../include/string.h"
 
 int getchar(void) {
-    char c;
-    if (read(0, &c, 1) == 1) {
-        return c;
+    unsigned char c;
+    if (read(0, (char*)&c, 1) == 1) {
+        return (int)c;
     }
     return -1;
 }
 
 // NO bloqueante: -1 si no hay tecla
 int getchar_nb(void) {
-    char c;
-    int64_t r = read_nb(0, &c, 1);
-    if (r == 1) return (unsigned char)c;
+    unsigned char c;
+    int64_t r = read_nb(0, (char*)&c, 1);
+    if (r == 1) return (int)c;  // Cast explícito a int
     return -1;
 }
 
@@ -198,16 +198,14 @@ int scanf(char *buffer) {
     int idx = 0;
     
     while (1) {
-        int c = getchar();
+        int c = getchar();  // c ya es int, está bien
         
-        // Enter - terminar lectura
         if (c == '\n') {
             buffer[idx] = '\0';
             putchar('\n');
-            return idx;  // Retorna cantidad de caracteres leídos
+            return idx;
         }
         
-        // Backspace
         if (c == '\b' || c == 127) {
             if (idx > 0) {
                 idx--;
@@ -219,9 +217,9 @@ int scanf(char *buffer) {
         }
         
         // Agregar carácter al buffer si hay espacio
-        if (idx < MAX_SIZE - 1) {
-            buffer[idx++] = (char)c;
-            putchar((char)c);  // Echo del carácter
+        if (idx < MAX_SIZE - 1 && c >= 0 && c <= 255) {  // ← Validar rango extendido
+            buffer[idx++] = (unsigned char)c;  // ← Cast a unsigned char
+            putchar((char)c);
         }
     }
 }
