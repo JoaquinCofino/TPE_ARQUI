@@ -57,19 +57,19 @@ static void move_player(Player *p) {
     draw_trail(old_x, old_y, p->color);
 }
 
-// Verifica si hay colisión en la posición (x,y) de la cabeza 3x3
-// contra los colores dados (bordes o jugador)
-static int check_position_collision(int x, int y, uint32_t color1, uint32_t color2) {
-    // Chequear área 3x3 alrededor de (x,y)
-    for (int dy = -1; dy <= 1; dy++) {
-        for (int dx = -1; dx <= 1; dx++) {
-            uint32_t pixel_color = video_getpixel(x + dx, y + dy);
-            if (pixel_color == color1 || pixel_color == color2) {
-                return 1;  // Colisión detectada
-            }
-        }
+static int check_collision(int x, int y, int direction, uint32_t color1, uint32_t color2) {
+    // Calcular la posición adelante según la dirección
+    int check_x = x, check_y = y;
+    
+    switch (direction) {
+        case 'U':    check_y = y - 1; break;  // Arriba
+        case 'D':    check_y = y + 1; break;  // Abajo
+        case 'L':    check_x = x - 1; break;  // Izquierda
+        case 'R':    check_x = x + 1; break;  // Derecha
     }
-    return 0;  // No hay colisión
+    
+    uint32_t pixel_color = video_getpixel(check_x, check_y);
+    return (pixel_color == color1 || pixel_color == color2);  // Chequea ambos colores
 }
 
 static int check_border_collision(Player *p, uint16_t w, uint16_t h) {
@@ -173,14 +173,14 @@ void tron_main(void) {
         }
 
         // Jugador 2 (solo si es multiplayer)
-            if (mode == 2) {
-                if ((k=='i'||k=='I') && p2.dir!='D') p2.dir='U';
-                else if ((k=='k'||k=='K') && p2.dir!='U') p2.dir='D';
-                else if ((k=='j'||k=='J') && p2.dir!='R') p2.dir='L';
-                else if ((k=='l'||k=='L') && p2.dir!='L') p2.dir='R';
-            }
+        if (mode == 2) {
+            if ((k=='i'||k=='I') && p2.dir!='D') p2.dir='U';
+            else if ((k=='k'||k=='K') && p2.dir!='U') p2.dir='D';
+            else if ((k=='j'||k=='J') && p2.dir!='R') p2.dir='L';
+            else if ((k=='l'||k=='L') && p2.dir!='L') p2.dir='R';
+        }
 
-        if (mode == 3) { return;}
+        if (mode == 3) { return; }
         
 
         move_player(&p1);
@@ -190,15 +190,18 @@ void tron_main(void) {
             move_player(&p2);   // AHORA SÍ SE MUEVE
         } else {
             move_player(&p2);   // Modo PvP
-}
+        }
 
-        // Colisiones
+        // Colisiones - USANDO LA NUEVA FUNCIÓN
         if (check_border_collision(&p1, W, H)) p1.alive = 0;
         if (check_border_collision(&p2, W, H)) p2.alive = 0;
-        if(check_position_collision(p1.x, p1.y, p1.color, p2.color)) p1.alive=0;
-        if(check_position_collision(p2.x, p2.y, p2.color, p1.color)) p2.alive=0;
+        
+        // Reemplazar las llamadas antiguas con la nueva función
+        if (check_collision(p1.x, p1.y, p1.dir, p2.color, p1.color)) p1.alive = 0;
+        if (check_collision(p2.x, p2.y, p2.dir, p1.color, p2.color)) p2.alive = 0;
 
-        if (p1.alive && p2.alive && check_player_collision(&p1, &p2)) { p1.alive=0; p2.alive=0; }
+        // Eliminar esta línea ya que está duplicada con las anteriores
+        // if (p1.alive && p2.alive && check_player_collision(&p1, &p2)) { p1.alive=0; p2.alive=0; }
 
         // Dibujar cabezas (si siguen vivos)
         if (p1.alive) draw_head(&p1);

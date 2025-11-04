@@ -16,5 +16,6 @@ void print_video_info(void);
 void print_hex(uint64_t num);
 void clear_screen(void);
 int scanf(char *buffer);
+int getchar_nb(void);
 
 #endif

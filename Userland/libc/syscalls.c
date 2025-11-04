@@ -1,5 +1,4 @@
-#include "syscalls.h"
-#include "string.h"
+#include "../include/syscalls.h"
 
 int64_t write(int fd, const char *buf, uint64_t count) {
     return syscall_write(fd, buf, count);
