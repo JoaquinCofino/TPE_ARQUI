@@ -261,20 +261,6 @@ static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t 
             hbar(left, bot, w, t, color);
             break;
 
-        case '1':
-            // Número 1
-            vbar(midx, top, h, t, color);
-            break;
-
-        case '2':
-            // Número 2
-            hbar(left, top, w, t, color);
-            hbar(left, mid, w, t, color);
-            hbar(left, bot, w, t, color);
-            vbar(right, top, h/2, t, color);
-            vbar(left, mid, h/2, t, color);
-            break;
-
         case '-':
             // Guión
             hbar(left, mid, w, t, color);
@@ -297,6 +283,85 @@ static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t 
         case ' ':
             // Espacio: no dibujar
             break;
+                case '1':
+            // Número 1
+            vbar(midx, top, h, t, color);
+            break;
+
+        case '2':
+            // Número 2
+            hbar(left, top, w, t, color);
+            hbar(left, mid, w, t, color);
+            hbar(left, bot, w, t, color);
+            vbar(right, top, h/2, t, color);
+            vbar(left, mid, h/2, t, color);
+            break;
+
+        case '3':
+            // Número 3
+            hbar(left, top, w, t, color);
+            hbar(left, mid, w, t, color);
+            hbar(left, bot, w, t, color);
+            vbar(right, top, h, t, color);
+            break;
+
+        case '4':
+            // Número 4
+            vbar(left, top, h/2, t, color);
+            vbar(right, top, h, t, color);
+            hbar(left, mid, w, t, color);
+            break;
+
+        case '5':
+            // Número 5
+            hbar(left, top, w, t, color);
+            hbar(left, mid, w, t, color);
+            hbar(left, bot, w, t, color);
+            vbar(left, top, h/2, t, color);
+            vbar(right, mid, h/2, t, color);
+            break;
+
+        case '6':
+            // Número 6
+            hbar(left, top, w, t, color);
+            hbar(left, mid, w, t, color);
+            hbar(left, bot, w, t, color);
+            vbar(left, top, h, t, color);
+            vbar(right, mid, h/2, t, color);
+            break;
+
+        case '7':
+            // Número 7
+            hbar(left, top, w, t, color);
+            vbar(right, top, h, t, color);
+            break;
+
+        case '8':
+            // Número 8
+            hbar(left, top, w, t, color);
+            hbar(left, mid, w, t, color);
+            hbar(left, bot, w, t, color);
+            vbar(left, top, h, t, color);
+            vbar(right, top, h, t, color);
+            break;
+
+        case '9':
+            // Número 9
+            hbar(left, top, w, t, color);
+            hbar(left, mid, w, t, color);
+            hbar(left, bot, w, t, color);
+            vbar(left, top, h/2, t, color);
+            vbar(right, top, h, t, color);
+            break;
+
+        case '0':
+            // Número 0
+            hbar(left, top, w, t, color);
+            hbar(left, bot, w, t, color);
+            vbar(left, top, h, t, color);
+            vbar(right, top, h, t, color);
+            break;
+
 
         default:
             // Fallback: dibuja borde y relleno ligero para visibilidad
@@ -381,7 +446,8 @@ void mode_screen(){
     draw_small_text(center_x, base_y + small_h * 7, small_w, small_h, small_t, small_spacing, "salir (Q)", 0xFFFFFF);
 }
 
-void victory_screen(Player *p1, Player *p2) {
+
+void victory_screen(Player *p1, Player *p2, int * current_level) {
     video_info_t v;
     get_video_data(&v);
     clear_screen();
@@ -392,7 +458,12 @@ void victory_screen(Player *p1, Player *p2) {
 
     winner->matches_won++;
 
-    // --- Dibujar cuadrado del ganador ---
+    // --- Alguien ganó --> subimos de nivel
+    if ((winner->score % 3) == 0) {
+        (*current_level)++;
+    }
+
+// --- Dibujar cuadrado del ganador ---
     int rect_w = 100, rect_h = 100;
     int rect_x = v.width / 2 - rect_w / 2;
     int rect_y = v.height / 3 - rect_h / 2; // Posicionado más arriba como mode_screen
@@ -400,7 +471,7 @@ void victory_screen(Player *p1, Player *p2) {
 
     // --- Texto usando el mismo estilo que mode_screen ---
     const char *line1 = "Match score";
-    
+
     // Crear string "A - B" con las partidas ganadas
     char line2[16];
     line2[0] = (char)('0' + (p1->matches_won % 10));
@@ -449,4 +520,40 @@ void victory_screen(Player *p1, Player *p2) {
         draw_small_char(x, text_y2, char_w, char_h, thick, *p, color);
         x += char_w + spacing;
     }
+
+    // --- Aquí añadimos SOLO la línea de "nivel X" sin tocar el resto ---
+
+        char level_text[8];
+        // Soportamos niveles de 1 a 99 (si necesitás más, ampliá el buffer)
+        int lvl = *current_level;
+        int pos = 0;
+
+        // Escribimos "nivel " (minúsculas, como pediste)
+        const char *prefix = "nivel ";
+        for (const char *pp = prefix; *pp; ++pp) level_text[pos++] = *pp;
+
+        // conversión decimal simple
+        if (lvl < 10) {
+            level_text[pos++] = '0' + lvl;
+        } else {
+            // dos dígitos
+            level_text[pos++] = '0' + (lvl / 10) % 10;
+            level_text[pos++] = '0' + (lvl % 10);
+        }
+        level_text[pos] = '\0';
+
+        // calcular centrado usando las mismas medidas
+        int len3 = 0;
+        for (const char *p = level_text; *p; ++p) len3++;
+        int total_w3 = len3 * char_w + (len3 > 0 ? (len3 - 1) * spacing : 0);
+        int center_x3 = v.width / 2 - total_w3 / 2;
+
+        int text_y3 = text_y2 + char_h + 20; // debajo del marcador (misma estética)
+
+        int lx = center_x3;
+        for (const char *p = level_text; *p; ++p) {
+            draw_small_char(lx, text_y3, char_w, char_h, thick, *p, color);
+            lx += char_w + spacing;
+        }
+
 }

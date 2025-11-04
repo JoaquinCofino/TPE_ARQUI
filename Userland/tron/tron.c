@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 static Player p1, p2;
+int current_level = 0;
 
 static void wait_tick(void) {
     for (volatile int i = 0; i < TICK_DELAY; i++);
@@ -104,16 +105,24 @@ static void cpu_move(Player *cpu) {
     get_video_data(&v);
     uint16_t W = v.width, H = v.height;
 
-    const int lookahead = 20;    // mira varios píxeles adelante
-    const int turn_chance = 1;  // baja chance de girar "porque sí"
-    const int reaction_delay = 5; // más grande = más lento
+    //const int lookahead = 20;    // mira varios píxeles adelante
+    //const int turn_chance = 1;  // baja chance de girar "porque sí"
+
+    // MIRA MÁS LEJOS EN NIVELES ALTOS
+    int lookahead = 20 + (current_level * 2);  // +2 píxeles por nivel
+    if (lookahead > 40) lookahead = 40;  // máximo 40 píxeles
+    
+    // MÁS PROBABILIDAD DE GIROS TÁCTICOS EN NIVELES ALTOS
+    int turn_chance = 1 + (current_level / 2);  // +0.5% por nivel
+    
+    // REACCIÓN MÁS RÁPIDA
+    int reaction_delay = 5 - (current_level / 2);
+    if (reaction_delay < 1) reaction_delay = 1;
 
     static int frame_counter = 0;
     frame_counter++;
     if (frame_counter % reaction_delay != 0)
         return;  // se mueve solo cada algunos frames
-
-
 
     // --- Calcular puntos a verificar ---
     int fx = cpu->x, fy = cpu->y;
@@ -246,7 +255,7 @@ char tron_match(int mode) {
                 else if ((k=='s'||k=='S') && p1.dir!='U') p1.dir='D';
                 else if ((k=='a'||k=='A') && p1.dir!='R') p1.dir='L';
                 else if ((k=='d'||k=='D') && p1.dir!='L') p1.dir='R';
-                else if (k=='q'||k=='Q') return;
+                else if (k=='q'||k=='Q') return 'q';
             }
 
             if (mode == 2) {
@@ -283,11 +292,13 @@ char tron_match(int mode) {
         }
 
         for (volatile int i = 0; i < 20000000; i++);
-    }
 
+
+    }
     clear_screen();
-    victory_screen( &p1, &p2);
-    
+    victory_screen( &p1, &p2, &current_level);
+        puts(p1.matches_won);
+        puts(p2.matches_won);    
     puts("Presiona cualquier tecla para continuar...");
     return getchar();
 }
@@ -295,8 +306,8 @@ char tron_match(int mode) {
 void tron_level(int mode){
     char c = tron_match(mode);
     while( c != 'q' && c != 'Q' ) {
-        c = tron_match(mode);
 
+        c = tron_match(mode);
     }
 }
 
@@ -304,11 +315,9 @@ void tron_main(void) {
     int mode = select_mode();
     if (mode == 3) return;
 
+    p1.matches_won = 0; p2.matches_won = 0;
+    current_level = 0;
     tron_level(mode);
-
-    // 🔜 Aquí en el futuro podrías pasar al siguiente nivel:
-    // if (winner_color == 0xFF0000) { start_next_level(); }
-    // else { restart_or_exit(); }
 }
 
 
