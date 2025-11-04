@@ -25,6 +25,7 @@
 #define SYS_GET_FONT_HEIGHT 18
 #define SYS_SET_TEXT_COLOR 19
 #define SYS_SET_BACKGROUND_COLOR 20
+#define SYS_GET_TICKS 21
 
 
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
@@ -47,6 +48,7 @@ extern int64_t syscall_get_font_width(void);
 extern int64_t syscall_get_font_height(void);
 extern int64_t syscall_set_text_color(uint32_t color);
 extern int64_t syscall_set_background_color(uint32_t color);
+extern int64_t syscall_get_ticks(void);
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -118,5 +120,8 @@ int64_t getFontHeight(void);
 // Control de colores de texto
 int64_t set_text_color(uint32_t color);
 int64_t set_background_color(uint32_t color);
+
+// Obtener ticks del timer
+int64_t get_ticks(void);
 
 #endif

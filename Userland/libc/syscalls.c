@@ -81,6 +81,10 @@ int64_t set_background_color(uint32_t color) {
     return syscall_set_background_color(color);
 }
 
+int64_t get_ticks(void) {
+    return syscall_get_ticks();
+}
+
 extern int64_t sys_video_getpixel(uint64_t x, uint64_t y);
 
 uint32_t video_getpixel(uint32_t x, uint32_t y) {

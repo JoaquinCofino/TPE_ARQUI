@@ -61,6 +61,8 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
             return sys_set_text_color((uint32_t)arg1);
         case SYS_SET_BACKGROUND_COLOR:
             return sys_set_background_color((uint32_t)arg1);
+        case SYS_GET_TICKS:
+            return sys_get_ticks();
         default:
             return -1;  // ENOSYS
     }
@@ -372,4 +374,9 @@ uint32_t getCurrentTextColor(void) {
 
 uint32_t getCurrentBackgroundColor(void) {
     return current_background_color;
+}
+
+int64_t sys_get_ticks(void) {
+    extern unsigned int timer_get_ticks(void);
+    return (int64_t)timer_get_ticks();
 }

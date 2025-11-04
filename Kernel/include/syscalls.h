@@ -25,6 +25,7 @@
 #define SYS_GET_FONT_HEIGHT 18     // Obtener alto de fuente actual
 #define SYS_SET_TEXT_COLOR 19      // Establecer color de texto
 #define SYS_SET_BACKGROUND_COLOR 20 // Establecer color de fondo
+#define SYS_GET_TICKS 21           // Obtener ticks del timer
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -76,6 +77,7 @@ int64_t sys_get_font_width(void);
 int64_t sys_get_font_height(void);
 int64_t sys_set_text_color(uint32_t color);
 int64_t sys_set_background_color(uint32_t color);
+int64_t sys_get_ticks(void);
 
 // Funciones para obtener colores actuales
 uint32_t getCurrentTextColor(void);

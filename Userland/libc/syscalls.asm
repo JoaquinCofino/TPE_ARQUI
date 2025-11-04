@@ -20,6 +20,7 @@ GLOBAL syscall_get_font_width
 GLOBAL syscall_get_font_height
 GLOBAL syscall_set_text_color
 GLOBAL syscall_set_background_color
+GLOBAL syscall_get_ticks
 SECTION .text
 
 syscall_read:
@@ -128,5 +129,10 @@ syscall_set_text_color:
 
 syscall_set_background_color:
     mov rax, 20       ; SYS_SET_BACKGROUND_COLOR
+    int 0x80
+    ret
+
+syscall_get_ticks:
+    mov rax, 21       ; SYS_GET_TICKS
     int 0x80
     ret
