@@ -129,4 +129,7 @@ int64_t get_ticks(void);
 // Control de posición del cursor
 void set_cursor_position(int x, int y);
 
+// Función para generar excepción de opcode inválido (test)
+extern void trigger_invalid_opcode(void);
+
 #endif

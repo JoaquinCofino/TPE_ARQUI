@@ -1,5 +1,6 @@
 Global push_all
 Global pop_all
+Global trigger_invalid_opcode
 section .text
 
 push_all:
@@ -39,3 +40,8 @@ pop_all:
     pop rbx
     pop rax
     ret
+
+; Función para generar excepción de opcode inválido
+trigger_invalid_opcode:
+    db 0x0F, 0xFF    ; Opcode inválido que causará excepción #6
+    ret              ; Esta línea nunca debería ejecutarse

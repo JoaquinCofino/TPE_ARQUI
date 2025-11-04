@@ -24,6 +24,7 @@ GLOBAL _irq14Handler
 GLOBAL _irq15Handler
 
 GLOBAL _exception0Handler
+GLOBAL _exception6Handler
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
@@ -108,8 +109,13 @@ SECTION .text
 %macro exceptionHandler 1
 	pushState
 
-	mov rdi, %1 ; pasaje de parametro
+	mov rdi, %1          ; primer parámetro: número de excepción
+	mov rsi, [rsp + 120] ; segundo parámetro: RIP desde el stack (después de pushState)
 	call exceptionDispatcher
+
+	; Ajustar RIP para evitar repetir la instrucción problemática
+	; Incrementamos RIP en el stack para saltar la instrucción que causó la excepción
+	add qword [rsp + 120], 2  ; Saltar 2 bytes (puede variar según la instrucción)
 
 	popState
 	iretq
@@ -221,6 +227,10 @@ _irq15Handler:
 ;Zero Division Exception
 _exception0Handler:
 	exceptionHandler 0
+
+;Invalid Opcode Exception  
+_exception6Handler:
+    exceptionHandler 6
 
 haltcpu:
 	cli

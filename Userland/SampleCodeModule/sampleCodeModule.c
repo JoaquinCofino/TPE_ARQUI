@@ -11,6 +11,8 @@
 // Declaración forward
 int consoleMain(void);
 void print_shell_header(void);
+void test_division_by_zero(void);
+void test_invalid_opcode_exception(void);
 
 void print_shell_header(void) {
     puts("========================================");
@@ -18,6 +20,64 @@ void print_shell_header(void) {
     puts("========================================");
     puts("Escribe 'help' para ver comandos");
     puts("Ctrl+R = Registros (incluso en TRON!)");
+}
+
+// Función para testear división por cero
+void test_division_by_zero(void) {
+    puts("=== TEST: Division por Cero ===");
+    puts("ADVERTENCIA: Esto causara una excepcion del sistema!");
+    puts("El sistema mostrara informacion detallada y luego continuara.");
+    puts("Presiona 'y' para continuar o cualquier otra tecla para cancelar: ");
+    
+    int c = getchar();
+    putchar('\n');
+    
+    if (c == 'y' || c == 'Y') {
+        puts("Ejecutando division por cero...");
+        puts("Preparando para la operacion...");
+        
+        // Operación directa que causará división por cero
+        volatile int a = 10;
+        volatile int b = 0;
+        volatile int result = a / b;  // Esto causará excepción #0
+        
+        // Si llegamos aquí, significa que la excepción fue manejada correctamente
+        puts("========================================");
+        puts("¡EXITO! El sistema manejo la excepcion correctamente");
+        puts("La division por cero fue detectada y el sistema continuo");
+        puts("funcionando normalmente.");
+        puts("========================================");
+    } else {
+        puts("Test cancelado.");
+    }
+}
+
+// Función para testear excepción de opcode inválido
+void test_invalid_opcode_exception(void) {
+    puts("=== TEST: Excepcion de Opcode Invalido ===");
+    puts("ADVERTENCIA: Esto causara una excepcion del sistema!");
+    puts("El sistema mostrara informacion detallada y luego continuara.");
+    puts("Presiona 'y' para continuar o cualquier otra tecla para cancelar: ");
+    
+    int c = getchar();
+    putchar('\n');
+    
+    if (c == 'y' || c == 'Y') {
+        puts("Ejecutando instruccion con opcode invalido...");
+        puts("Llamando a funcion en ASM que contiene opcode 0x0F 0xFF");
+        
+        // Llamar a la función que contiene el opcode inválido
+        trigger_invalid_opcode();  // Causará excepción #6
+        
+        // Si llegamos aquí, significa que la excepción fue manejada correctamente
+        puts("========================================");
+        puts("¡EXITO! El sistema manejo la excepcion correctamente");
+        puts("El opcode invalido fue detectado y el sistema continuo");
+        puts("funcionando normalmente.");
+        puts("========================================");
+    } else {
+        puts("Test cancelado.");
+    }
 }
 
 void execute_command(const char *cmd) {
@@ -34,6 +94,8 @@ void execute_command(const char *cmd) {
         puts("  fontinc  - Aumentar escala de fuente");
         puts("  fontdec  - Disminuir escala de fuente");
         puts("  bench    - Ejecutar benchmarks del sistema");
+        puts("  div0     - Test de excepcion division por 0");
+        puts("  invop    - Test de excepcion opcode invalido");
     }
     else if (strcmp(cmd, "info") == 0) {
         puts("Shell ejecutandose en USERLAND (Ring 3)");
@@ -54,6 +116,14 @@ void execute_command(const char *cmd) {
     }
     else if (strcmp(cmd, "video") == 0) {
         print_video_info();
+    }
+    else if(strcmp(cmd, "div0") == 0)
+    {
+        test_division_by_zero();
+    }
+    else if(strcmp(cmd, "invop") == 0)
+    {
+        test_invalid_opcode_exception();
     }
     else if(strcmp(cmd, "audio") == 0) {
     puts("========================================");

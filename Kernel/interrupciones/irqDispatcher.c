@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <naiveConsole.h>
+#include "interrupts.h"
 
 extern uint8_t read_port(uint16_t num);
 extern void keyboard_handler();

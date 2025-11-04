@@ -88,10 +88,26 @@ void * initializeKernelBinary()
 }
 
 int main(){
+    ncPrint("[Initializing Exception Handlers]");
+    ncNewline();
     initIRQHandlers();
-    load_idt();
-    _sti();
+    ncPrint("  IRQ Handlers initialized");
+    ncNewline();
     
+    ncPrint("[Loading IDT]");
+    ncNewline();
+    load_idt();
+    ncPrint("  IDT loaded with exception handlers");
+    ncNewline();
+    
+    ncPrint("[Enabling Interrupts]");
+    ncNewline();
+    _sti();
+    ncPrint("  Interrupts enabled");
+    ncNewline();
+    
+    ncPrint("[System Ready]");
+    ncNewline();
     ncClear();
     init_timer();
     ((EntryPoint)sampleCodeModuleAddress)();

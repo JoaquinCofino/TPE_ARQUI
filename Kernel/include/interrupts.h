@@ -18,6 +18,13 @@ void _irq04Handler(void);
 void _irq05Handler(void);
 
 void _exception0Handler(void);
+void _exception6Handler(void);
+
+// Dispatcher de excepciones
+void exceptionDispatcher(uint64_t exception, uint64_t rip);
+
+// Inicialización de handlers de IRQ
+void initIRQHandlers(void);
 
 void _cli(void);
 

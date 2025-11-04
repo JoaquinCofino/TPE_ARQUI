@@ -145,3 +145,9 @@ syscall_set_cursor_position:
     mov rax, 22       ; SYS_SET_CURSOR_POSITION  
     int 0x80
     ret
+
+; Trigger invalid opcode exception
+global trigger_invalid_opcode
+trigger_invalid_opcode:
+    db 0x0F, 0xFF    ; Invalid opcode that will cause exception #6
+    ret              ; This line should never execute
