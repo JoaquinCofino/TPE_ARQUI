@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include "../include/screens.h"
 
+static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t color) ;
+
 // Helpers de dibujo
 static inline void hbar(int x, int y, int w, int t, uint32_t color) {
     video_draw_rect(x, y, w, t, color);
@@ -39,6 +41,14 @@ static void thick_line(int x1, int y1, int x2, int y2, int t, uint32_t color) {
 // Dibuja una letra grande (solo T,R,O,N soportadas)
 static void draw_big_char(int x, int y, int cw, int ch, int thick, char c, uint32_t color) {
     int w = cw, h = ch, t = thick;
+
+    // Si es minúscula (a-z) o dígito o símbolo pequeño, delegar a draw_small_char
+    if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == ' ' || c == '-' || c == '(' || c == ')') {
+        // draw_small_char está definida más abajo en el archivo, se puede llamar.
+        draw_small_char(x, y, w, h, t, c, color);
+        return;
+    }
+
     switch (c) {
         case 'T':
             hbar(x, y, w, t, color);
@@ -278,6 +288,27 @@ static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t 
             vbar(x + 2*w/3, y, h, t, color);
             hbar(x + w/3, y, w/3, t, color);
             hbar(x + w/3, y + h - t, w/3, t, color);
+            break;
+        case 'g':
+            // g minúscula: bucle superior como 'o' y cola hacia abajo/derecha
+            // parte superior similar a 'o'
+            hbar(left + t, top + t, w - 2*t, t, color);          // top arc
+            hbar(left + t, mid, w - 2*t, t, color);              // mid (abre el interior)
+            hbar(left + t, bot, w - 2*t, t, color);              // bottom
+            vbar(left, top + t, h - 2*t, t, color);              // left side
+            // right side corta para crear el hueco del 'g' y cola hacia abajo
+            vbar(right, top + t, (h/2) + t, t, color);           // right upper/partial
+            // cola/descenso: una pequeña diagonal hacia abajo-derecha
+            {
+                int cx1 = x + w/2;                               // punto medio interior
+                int cy1 = y + mid + t/2;
+                int cx2 = x + w - t;                             // hacia la derecha-baja
+                int cy2 = y + h - t;
+                // cola gruesa aproximada
+                thick_line(cx1, cy1, cx2, cy2, t, color);
+                // pequeño remate horizontal bajo (para cerrar la cola)
+                hbar(cx2 - w/4, cy2 - t/2, w/4, t, color);
+            }
             break;
 
         case ' ':
@@ -558,8 +589,6 @@ void victory_screen(Player *p1, Player *p2, int * current_level) {
 
 }
 
-// Añadir esta función al final de screens.c, antes del último }
-
 void finalWin_screen(Player *p1, Player *p2) {
     video_info_t v;
     get_video_data(&v);
@@ -567,11 +596,9 @@ void finalWin_screen(Player *p1, Player *p2) {
 
     // --- Determinar ganador final ---
     Player *winner = (p1->matches_won > p2->matches_won) ? p1 : p2;
-    
-    // En caso de empate
     int is_tie = (p1->matches_won == p2->matches_won);
 
-    // --- Texto grande: "GANADOR" o "EMPATE" ---
+    // --- Texto grande ---
     int cw = v.width / 12;
     int ch = v.height / 6;
     if (cw < 30) cw = 30;
@@ -580,13 +607,14 @@ void finalWin_screen(Player *p1, Player *p2) {
     if (thick < 4) thick = 4;
     int spacing = cw / 5;
 
-    // Posición centrada más arriba
-    const char *title_text = is_tie ? "EMPATE" : "GANADOR";
-    int title_len = 0;
-    for (const char *p = title_text; *p; ++p) title_len++;
-    int total_title_w = title_len * cw + (title_len > 0 ? (title_len - 1) * spacing : 0);
-    int title_x = (int)v.width / 2 - total_title_w / 2;
-    int title_y = (int)v.height / 4 - ch / 2;
+    // Título: "ganador" o "empate" (en minúsculas)
+    const char *title_text = is_tie ? "empate" : "ganador";
+
+    int len_title = 0;
+    for (const char *p = title_text; *p; ++p) len_title++;
+    int total_title_w = len_title * cw + (len_title - 1) * spacing;
+    int title_x = v.width / 2 - total_title_w / 2;
+    int title_y = v.height / 4 - ch / 2;
 
     int x = title_x;
     for (const char *p = title_text; *p; ++p) {
@@ -594,64 +622,81 @@ void finalWin_screen(Player *p1, Player *p2) {
         x += cw + spacing;
     }
 
-    // --- Mostrar cuadrado del ganador (solo si no es empate) ---
+    // --- Cuadro de color del ganador ---
+    int rect_y = title_y + ch + 20;
     if (!is_tie) {
         int rect_w = 100, rect_h = 100;
         int rect_x = v.width / 2 - rect_w / 2;
-        int rect_y = title_y + ch + 20;
         video_draw_rect(rect_x, rect_y, rect_w, rect_h, winner->color);
     }
 
-    // --- Texto pequeño: marcador final ---
+    // --- Texto pequeño (usar minúsculas para compatibilidad) ---
     int small_w = cw / 4;
     int small_h = ch / 4;
     int small_t = thick / 2;
     int small_spacing = small_w / 6;
 
-    // Crear string del marcador final
-    char score_text[32];
-    int pos = 0;
-    
-    const char *player1_text = "player 1: ";
-    const char *player2_text = "player 2: ";
-    
-    // Escribir "player 1: X"
-    for (const char *pp = player1_text; *pp; ++pp) 
-        score_text[pos++] = *pp;
-    score_text[pos++] = '0' + (p1->matches_won % 10);
-    score_text[pos++] = ' ';
-    score_text[pos++] = '-';
-    score_text[pos++] = ' ';
-    
-    // Escribir "player 2: Y"
-    for (const char *pp = player2_text; *pp; ++pp) 
-        score_text[pos++] = *pp;
-    score_text[pos++] = '0' + (p2->matches_won % 10);
-    score_text[pos] = '\0';
+    // --- Etiquetas de los jugadores ---
+    const char *label1 = "player1 ";
+    const char *label2 = "player2 ";
 
-    // Calcular posición centrada
-    int score_len = 0;
-    for (const char *p = score_text; *p; ++p) score_len++;
-    int total_score_w = score_len * (small_w + small_spacing) - small_spacing;
-    int score_x = v.width / 2 - total_score_w / 2;
-    int score_y = (is_tie ? title_y + ch + 40 : title_y + ch + 140);
+    // Longitud de etiquetas
+    int label1_len = 0, label2_len = 0;
+    for (const char *pp = label1; *pp; ++pp) label1_len++;
+    for (const char *pp = label2; *pp; ++pp) label2_len++;
 
-    draw_small_text(score_x, score_y, small_w, small_h, small_t, small_spacing, score_text, 0xFFFFFF);
+    // Ancho de cada etiqueta
+    int label1_w = label1_len * (small_w + small_spacing) - small_spacing;
+    int label2_w = label2_len * (small_w + small_spacing) - small_spacing;
 
-    // --- Mensaje para continuar ---
+    // Convertir puntuaciones a caracteres visibles
+    char score1_ch = '0' + (p1->matches_won % 10);
+    char score2_ch = '0' + (p2->matches_won % 10);
+
+    // Espacio entre etiqueta y puntuación
+    int gap_px = 2 * small_w;
+
+    // Ancho total de cada línea (etiqueta + espacio + número)
+    int total_w1_px = label1_w + gap_px + small_w;
+    int total_w2_px = label2_w + gap_px + small_w;
+
+    int start_x1 = v.width / 2 - total_w1_px / 2;
+    int start_x2 = v.width / 2 - total_w2_px / 2;
+
+    // Posiciones verticales
+    int base_y = rect_y + (is_tie ? 40 : 140);
+    int score_y1 = base_y;
+    int score_y2 = score_y1 + small_h * 2;
+
+    // Dibujar "player 1:" y su puntuación
+    draw_small_text(start_x1, score_y1, small_w, small_h, small_t, small_spacing, label1, 0xFFFFFF);
+    {
+        int score_x = start_x1 + label1_w + gap_px;
+        char sc1[2] = { score1_ch, '\0' };
+        draw_small_text(score_x, score_y1, small_w, small_h, small_t, small_spacing, sc1, 0xFFFFFF);
+    }
+
+    // Dibujar "player 2:" y su puntuación
+    draw_small_text(start_x2, score_y2, small_w, small_h, small_t, small_spacing, label2, 0xFFFFFF);
+    {
+        int score_x = start_x2 + label2_w + gap_px;
+        char sc2[2] = { score2_ch, '\0' };
+        draw_small_text(score_x, score_y2, small_w, small_h, small_t, small_spacing, sc2, 0xFFFFFF);
+    }
+
+    // --- Mensaje continuar ---
     const char *continue_text = "presiona tecla para continuar";
-    int cont_len = 0;
-    for (const char *p = continue_text; *p; ++p) cont_len++;
-    int total_cont_w = cont_len * (small_w + small_spacing) - small_spacing;
-    int cont_x = v.width / 2 - total_cont_w / 2;
-    int cont_y = score_y + small_h * 3;
+    int len_c = 0;
+    for (const char *p = continue_text; *p; ++p) len_c++;
+    int total_cw = len_c * (small_w + small_spacing) - small_spacing;
+    int cont_x = v.width / 2 - total_cw / 2;
+    int cont_y = score_y2 + small_h * 4;
 
     draw_small_text(cont_x, cont_y, small_w, small_h, small_t, small_spacing, continue_text, 0xFFFFFF);
 
-    // Esperar tecla
+    // --- Esperar tecla ---
     getchar();
-    
-    // Limpiar buffer de teclado
-    while (getchar_nb() >= 0) { /* discard */ }
+    while (getchar_nb() >= 0) { /* limpiar buffer */ }
+
     tron_main();
 }

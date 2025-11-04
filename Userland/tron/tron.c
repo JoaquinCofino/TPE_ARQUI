@@ -346,6 +346,7 @@ void tron_level(int mode){
 }
 
 void tron_main(void) {
+    finalWin_screen(&p1, &p2);
     play_startup_sound();
     int mode = select_mode();
     if (mode == 3) return;
