@@ -7,6 +7,9 @@
 
 static Player p1, p2;
 int current_level = 0;
+int lookahead = 20;
+double turn_chance = 2;
+int reaction_delay = 5;
 
 static void wait_tick(void) {
     // MISMA LÓGICA QUE CPU PERO PARA VELOCIDAD GENERAL
@@ -113,19 +116,6 @@ static void cpu_move(Player *cpu) {
     video_info_t v; 
     get_video_data(&v);
     uint16_t W = v.width, H = v.height;
-
-    //const int lookahead = 20;    // mira varios píxeles adelante
-    //const int turn_chance = 1;  // baja chance de girar "porque sí"
-
-    // MIRA MÁS LEJOS EN NIVELES ALTOS
-    int lookahead = 20 + (current_level * 2);  // +2 píxeles por nivel
-    if (lookahead > 40) lookahead = 40;  // máximo 40 píxeles
-    
-    int turn_chance = 1 + (current_level / 2);  // +0.5% por nivel
-    
-    // REACCIÓN MÁS RÁPIDA
-    int reaction_delay = 5 - (current_level / 2);
-    if (reaction_delay < 1) reaction_delay = 1;
 
     static int frame_counter = 0;
     frame_counter++;
@@ -319,7 +309,21 @@ char tron_match(int mode) {
 void tron_level(int mode){
     char c = tron_match(mode);
     while( c != 'q' && c != 'Q' ) {
+
         c = tron_match(mode);
+
+        //const int lookahead = 20;    // mira varios píxeles adelante
+        //const int turn_chance = 1;  // baja chance de girar "porque sí"
+
+        // MIRA MÁS LEJOS EN NIVELES ALTOS
+        lookahead += current_level * 2;  // +2 píxeles por nivel
+        if (lookahead > 40) lookahead = 40;  // máximo 40 píxeles
+        
+        turn_chance = (turn_chance>0) ? turn_chance - 0.25 : 0.5;
+        
+        // REACCIÓN MÁS RÁPIDA
+        reaction_delay = 5 - current_level / 2;
+        if (reaction_delay < 1) reaction_delay = 1;
     }
 }
 
