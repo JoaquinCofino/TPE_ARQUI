@@ -57,6 +57,14 @@ int64_t debug_break(void) {
     return syscall_debug_break();
 }
 
+void font_save_state(void) {
+    syscall_font_save_state();
+}
+
+void font_restore_state(void) {
+    syscall_font_restore_state();
+}
+
 extern int64_t sys_video_getpixel(uint64_t x, uint64_t y);
 
 uint32_t video_getpixel(uint32_t x, uint32_t y) {

@@ -14,6 +14,8 @@ GLOBAL syscall_increase_font_scale
 GLOBAL syscall_decrease_font_scale
 GLOBAL sys_video_getpixel
 GLOBAL syscall_debug_break
+GLOBAL syscall_font_save_state
+GLOBAL syscall_font_restore_state
 SECTION .text
 
 syscall_read:
@@ -92,5 +94,15 @@ sys_video_getpixel:
 
 syscall_debug_break:
     mov rax, 14       ; SYS_DEBUG_BREAK
+    int 0x80
+    ret
+
+syscall_font_save_state:
+    mov rax, 15       ; SYS_FONT_SAVE_STATE
+    int 0x80
+    ret
+
+syscall_font_restore_state:
+    mov rax, 16       ; SYS_FONT_RESTORE_STATE
     int 0x80
     ret

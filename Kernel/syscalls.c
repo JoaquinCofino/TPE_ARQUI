@@ -49,6 +49,10 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
             return sys_video_getpixel((uint32_t)arg1, (uint32_t)arg2);  
         case SYS_DEBUG_BREAK:
             return sys_debug_break();
+        case SYS_FONT_SAVE_STATE:
+            return sys_font_save_state();
+        case SYS_FONT_RESTORE_STATE:
+            return sys_font_restore_state();
         default:
             return -1;  // ENOSYS
     }
@@ -313,5 +317,20 @@ int64_t sys_debug_break(void) {
     ncPrint("========================");
     ncNewline();
     
+    return 0;
+}
+
+// Variable para guardar el estado de la fuente
+static uint8_t saved_font_scale = 1;
+
+int64_t sys_font_save_state(void) {
+    extern uint8_t getFontScale(void);
+    saved_font_scale = getFontScale();
+    return 0;
+}
+
+int64_t sys_font_restore_state(void) {
+    extern void setFontScale(uint8_t scale);
+    setFontScale(saved_font_scale);
     return 0;
 }

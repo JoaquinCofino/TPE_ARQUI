@@ -333,52 +333,25 @@ static void draw_big_text_centered(const char *s, int char_w, int char_h, int th
 }
 
 void mode_screen(){
-    video_info_t v; 
-    get_video_data(&v);
     clear_screen();
-
-    // Texto grande centrado: "TRON"
-    // Ajustá tamaño/grueso según resolución
-    int cw = v.width / 12;                                                 // ancho de caracter
-    int ch = v.height / 6;                                                 // alto de caracter
-    if (cw < 30) cw = 30;
-    if (ch < 50) ch = 50;
-    int thick = cw / 6;                                                    // grosor de trazo
-    if (thick < 4) thick = 4;
-    int spacing = cw / 5;
-
-    // Posición más arriba - en lugar de centrado vertical, usar 1/3 de la pantalla
-    int len = 4;                                                           // "TRON" tiene 4 letras
-    int total_w = len * cw + (len - 1) * spacing;
-    int start_x = (int)v.width / 2 - total_w / 2;
-    int start_y = (int)v.height / 3 - ch / 2;                             // era v.height / 2, ahora v.height / 3
-
-    int x = start_x;
-    const char *tron = "TRON";
-    for (const char *p = tron; *p; ++p) {
-        draw_big_char(x, start_y, cw, ch, thick, *p, 0xFFFFFF);
-        x += cw + spacing;
-    }
-
-    // --- Texto de opciones - también más pequeño ---
-    int small_w = cw / 4;                                                  // era cw / 3, ahora cw / 4
-    int small_h = ch / 4;                                                  // era ch / 3, ahora ch / 4
-    int small_t = thick / 2;
-    int small_spacing = small_w / 6;                                       // espaciado más pequeño
-
-    int base_y = start_y + ch + ch/2;                                      // posición relativa al TRON
     
-    // Calcular ancho del texto más largo para centrar mejor
-    const char *longest_text = "player 1 vs player 2 (2)";
-    int longest_len = 0;
-    for (const char *p = longest_text; *p; ++p) longest_len++;
-    int text_width = longest_len * (small_w + small_spacing) - small_spacing;
-    int center_x = v.width / 2 - text_width / 2;
-
-    draw_small_text(center_x, base_y, small_w, small_h, small_t, small_spacing, "seleccionar modo", 0xFFFFFF);
-    draw_small_text(center_x, base_y + small_h * 3, small_w, small_h, small_t, small_spacing, "player 1 vs CPU (1)", 0xFFFFFF);
-    draw_small_text(center_x, base_y + small_h * 5, small_w, small_h, small_t, small_spacing, "player 1 vs player 2 (2)", 0xFFFFFF);
-    draw_small_text(center_x, base_y + small_h * 7, small_w, small_h, small_t, small_spacing, "salir (Q)", 0xFFFFFF);
+    // Aumentar el tamaño de la fuente para el título - MUY GRANDE
+    syscall_increase_font_scale();
+    syscall_increase_font_scale();
+    syscall_increase_font_scale();
+    syscall_increase_font_scale();
+    syscall_increase_font_scale();
+    
+    // Centrar TRON verticalmente y horizontalmente
+    
+    // Reducir fuente para las opciones (tamaño normal)
+    puts("\n\n\n\n\n\n\n\n");
+    puts("                        TRON");
+    puts("\n\n\n\n");
+    puts("                   Seleccionar modo:");
+    puts("                   1 - Player vs CPU");
+    puts("                   2 - Player vs Player");
+    puts("                   Q - Salir");
 }
 
 void victory_screen(Player *p1, Player *p2) {

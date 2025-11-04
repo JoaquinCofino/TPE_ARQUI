@@ -113,9 +113,11 @@ void execute_command(const char *cmd) {
 }
     else if(strcmp(cmd, "tron") ==0){
         puts("Iniciando Tron...");
+        puts("(Fuente sera ajustada automaticamente)");
         tron_main();        // <-- corre el juego (debe RETORNAR)
         clear_screen();     // limpia framebuffer
         print_shell_header();
+        puts("Fuente restaurada!");
     }
     else if(strcmp(cmd, "fontdec") == 0) {
     decrease_font_scale();

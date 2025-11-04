@@ -19,6 +19,8 @@
 #define SYS_DECREASE_FONT_SCALE 12
 #define SYS_VIDEO_GETPIXEL 13
 #define SYS_DEBUG_BREAK 14  // Nueva syscall para debug de emergencia
+#define SYS_FONT_SAVE_STATE 15     // Guardar estado actual de la fuente
+#define SYS_FONT_RESTORE_STATE 16  // Restaurar estado guardado de la fuente
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -57,6 +59,8 @@ int64_t sys_read_nb(int fd, char *buf, uint64_t count);
 int64_t sys_increase_font_scale(void);
 int64_t sys_decrease_font_scale(void);
 int64_t sys_debug_break(void);  // Nueva syscall para debug de emergencia
+int64_t sys_font_save_state(void);     // Guardar estado de fuente
+int64_t sys_font_restore_state(void);  // Restaurar estado de fuente
 
 void capture_registers_on_tick(void);
 extern void timer_capture_registers(cpu_registers_t *regs);

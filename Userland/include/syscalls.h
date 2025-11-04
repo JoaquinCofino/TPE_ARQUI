@@ -19,6 +19,8 @@
 #define SYS_DECREASE_FONT_SCALE 12
 #define SYS_VIDEO_GETPIXEL 13
 #define SYS_DEBUG_BREAK 14
+#define SYS_FONT_SAVE_STATE 15
+#define SYS_FONT_RESTORE_STATE 16
 
 
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
@@ -35,6 +37,8 @@ extern int64_t syscall_play_sound(uint64_t freq, uint64_t duration_ms);
 extern int64_t syscall_increase_font_scale(void);
 extern int64_t syscall_decrease_font_scale(void);
 extern int64_t syscall_debug_break(void);
+extern int64_t syscall_font_save_state(void);
+extern int64_t syscall_font_restore_state(void);
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -94,5 +98,9 @@ int64_t decrease_font_scale(void);
 
 // Debug de emergencia
 int64_t debug_break(void);
+
+// Manejo de estado de fuente
+void font_save_state(void);
+void font_restore_state(void);
 
 #endif
