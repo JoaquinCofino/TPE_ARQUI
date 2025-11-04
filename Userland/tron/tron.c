@@ -17,8 +17,8 @@ static void wait_tick(void) {
     // MISMA LÓGICA QUE CPU PERO PARA VELOCIDAD GENERAL
     // current_level/2 da: 0, 0, 1, 1, 2, 2, 3, 3...
     
-    int speed_boost = current_level / 2;  // 0, 0, 1, 1, 2, 2...
-    int speed_delay = TICK_DELAY / (1 + speed_boost);  // Divide por 1, 1, 2, 2, 3, 3...
+    int speed_boost = current_level / 3;  // 0, 0, 1, 1, 2, 2...
+    int speed_delay = TICK_DELAY / (1 + 0.5*speed_boost);  // Divide por 1, 1, 2, 2, 3, 3...
     
     // Mínimo de delay
     if (speed_delay < 1000) speed_delay = 1000;
@@ -346,7 +346,6 @@ void tron_level(int mode){
 }
 
 void tron_main(void) {
-    finalWin_screen(&p1, &p2);
     play_startup_sound();
     int mode = select_mode();
     if (mode == 3) return;
