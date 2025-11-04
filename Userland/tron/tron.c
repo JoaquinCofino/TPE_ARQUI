@@ -136,6 +136,119 @@ static int select_mode(void) {
     return option;
 }
 
+void init_player(Player *p1, Player *p2) {
+    video_info_t v; 
+    get_video_data(&v);
+    uint16_t W = v.width, H = v.height;
+    p1->x = W/4;     p1->y = H/2; p1->dir = 'R'; p1->alive = 1; p1->color = 0xFF0000;
+    p2->x = (3*W)/4; p2->y = H/2; p2->dir = 'L'; p2->alive = 1; p2->color = 0x0000FF;
+}
+
+char tron_match(int mode) {
+    video_info_t v; 
+    get_video_data(&v);
+    uint16_t W = v.width, H = v.height;
+
+    p1.score = 0;
+    p2.score = 0;
+
+    int box_size = 10;
+    int margin = 5;
+
+    while (p1.score < 3 && p2.score < 3) {
+        clear_screen();
+        draw_border();
+
+        // Marcador visible (cuadrados por victoria)
+        for (int i = 0; i < p1.score; i++)
+            video_draw_rect(10 + i*(box_size+margin), 10, box_size, box_size, 0xFF0000);
+        for (int i = 0; i < p2.score; i++)
+            video_draw_rect(W - (10 + (i+1)*(box_size+margin)), 10, box_size, box_size, 0x0000FF);
+
+        // Inicialización de jugadores
+        init_player(&p1, &p2);
+        
+
+
+        draw_head(&p1);
+        draw_head(&p2);
+        kbd_drain();
+
+        // Bucle de una ronda
+        while (p1.alive && p2.alive) {
+            int k = getchar_nb();
+            if (k >= 0) {
+                if ((k=='w'||k=='W') && p1.dir!='D') p1.dir='U';
+                else if ((k=='s'||k=='S') && p1.dir!='U') p1.dir='D';
+                else if ((k=='a'||k=='A') && p1.dir!='R') p1.dir='L';
+                else if ((k=='d'||k=='D') && p1.dir!='L') p1.dir='R';
+                else if (k=='q'||k=='Q') return;
+            }
+
+            if (mode == 2) {
+                if ((k=='i'||k=='I') && p2.dir!='D') p2.dir='U';
+                else if ((k=='k'||k=='K') && p2.dir!='U') p2.dir='D';
+                else if ((k=='j'||k=='J') && p2.dir!='R') p2.dir='L';
+                else if ((k=='l'||k=='L') && p2.dir!='L') p2.dir='R';
+            } else {
+                cpu_move(&p2);
+            }
+
+            move_player(&p1);
+            move_player(&p2);
+
+            if (check_border_collision(&p1, W, H)) p1.alive = 0;
+            if (check_border_collision(&p2, W, H)) p2.alive = 0;
+
+            if (check_collision(p1.x, p1.y, p1.dir, p2.color, p1.color)) p1.alive = 0;
+            if (check_collision(p2.x, p2.y, p2.dir, p1.color, p2.color)) p2.alive = 0;
+
+            if (p1.alive) draw_head(&p1);
+            if (p2.alive) draw_head(&p2);
+
+            wait_tick();
+        }
+
+        // Resultado de ronda
+        if (p1.alive && !p2.alive) {
+            p1.score++;
+            video_draw_rect(10 + (p1.score-1)*(box_size+margin), 10, box_size, box_size, 0xFF0000);
+        } else if (!p1.alive && p2.alive) {
+            p2.score++;
+            video_draw_rect(W - (10 + p2.score*(box_size+margin)), 10, box_size, box_size, 0x0000FF);
+        }
+
+        for (volatile int i = 0; i < 20000000; i++);
+    }
+
+    clear_screen();
+    victory_screen( &p1, &p2);
+    
+    puts("Presiona cualquier tecla para continuar...");
+    return getchar();
+}
+
+void tron_level(int mode){
+    char c = tron_match(mode);
+    while( c != 'q' && c != 'Q' ) {
+        c = tron_match(mode);
+
+    }
+}
+
+void tron_main(void) {
+    int mode = select_mode();
+    if (mode == 3) return;
+
+    tron_level(mode);
+
+    // 🔜 Aquí en el futuro podrías pasar al siguiente nivel:
+    // if (winner_color == 0xFF0000) { start_next_level(); }
+    // else { restart_or_exit(); }
+}
+
+
+/*
 void tron_main(void) {
     video_info_t v; get_video_data(&v);
     uint16_t W = v.width, H = v.height;
@@ -209,4 +322,4 @@ void tron_main(void) {
 
     puts("Presiona cualquier tecla para volver...");
     getchar();         // <-- espera una nueva tecla (bloqueante)
-}
+}*/

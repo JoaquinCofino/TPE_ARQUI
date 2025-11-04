@@ -369,3 +369,64 @@ void mode_screen(){
     draw_small_text(center_x, base_y + small_h * 5, small_w, small_h, small_t, small_spacing, "player 1 vs player 2 (2)", 0xFFFFFF);
     draw_small_text(center_x, base_y + small_h * 7, small_w, small_h, small_t, small_spacing, "salir (Q)", 0xFFFFFF);
 }
+
+void victory_screen(Player *p1, Player *p2) {
+    video_info_t v;
+    get_video_data(&v);
+    clear_screen();
+
+    // --- Determinar ganador ---
+    Player *winner = (p1->score == 3) ? p1 : p2;
+    Player *loser  = (p1->score == 3) ? p2 : p1;
+
+    winner->matches_won++;
+
+    // --- Dibujar cuadrado del ganador ---
+    int rect_w = 100, rect_h = 100;
+    int rect_x = v.width / 2 - rect_w / 2;
+    int rect_y = v.height / 2 - rect_h / 2 - 20;
+    video_draw_rect(rect_x, rect_y, rect_w, rect_h, winner->color);
+
+    // --- Texto: "Match scores" ---
+    const char *line1 = "Match scores";
+
+    // --- Convertir A y B en texto: "A - B" ---
+    char line2[8];
+    line2[0] = ' ';
+    line2[1] = (char)('0' + (p1->matches_won % 10)); // solo un dígito
+    line2[2] = ' ';
+    line2[3] = '-';
+    line2[4] = ' ';
+    line2[5] = (char)('0' + (p2->matches_won % 10)); // solo un dígito
+    line2[6] = ' ';
+    line2[7] = '\0';
+
+    // --- Parámetros de texto ---
+    int char_w = v.width / 50;
+    int char_h = v.height / 40;
+    int thick  = char_w / 3;
+    int spacing = char_w / 6;
+
+    if (char_w < 6) char_w = 6;
+    if (char_h < 10) char_h = 10;
+    if (thick < 2) thick = 2;
+
+    // --- Calcular longitud para centrar ---
+    int len1 = 0, len2 = 0;
+    for (const char *p = line1; *p; ++p) len1++;
+    for (const char *p = line2; *p; ++p) len2++;
+
+    int total_w1 = len1 * (char_w + spacing) - spacing;
+    int total_w2 = len2 * (char_w + spacing) - spacing;
+
+    int center_x1 = v.width / 2 - total_w1 / 2;
+    int center_x2 = v.width / 2 - total_w2 / 2;
+
+    // --- Posiciones en pantalla ---
+    int text_y = rect_y + rect_h + 20;
+    uint32_t color = 0xFFFFFF;
+
+    // --- Dibujo de texto ---
+    draw_small_text(center_x1, text_y, char_w, char_h, thick, spacing, line1, color);
+    draw_small_text(center_x2, text_y + char_h * 2, char_w, char_h, thick, spacing, line2, color);
+}
