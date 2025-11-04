@@ -84,7 +84,7 @@ void execute_command(const char *cmd) {
     if (strcmp(cmd, "help") == 0) {
         puts("Comandos disponibles:");
         puts("  help     - Muestra esta ayuda");
-        puts("  info     - Informacion del sistema");
+        //puts("  info     - Informacion del sistema");
         puts("  date     - Obtener Fecha y Hora");
         puts("  clear    - Limpiar la pantalla");
         puts("  regs     - Mostrar registros del CPU");
@@ -97,12 +97,12 @@ void execute_command(const char *cmd) {
         puts("  div0     - Test de excepcion division por 0");
         puts("  invop    - Test de excepcion opcode invalido");
     }
-    else if (strcmp(cmd, "info") == 0) {
+    /*else if (strcmp(cmd, "info") == 0) {
         puts("Shell ejecutandose en USERLAND (Ring 3)");
         puts("Sistema: x64BareBones");
         puts("Usando syscalls para I/O");
         puts("Scroll automatico cuando se llena la pantalla");
-    }
+    }*/
     else if (strcmp(cmd, "clear") == 0) {
         clear_screen();
         print_shell_header();
