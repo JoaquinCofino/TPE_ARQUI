@@ -52,6 +52,11 @@ int64_t decrease_font_scale(void) {
     return syscall_decrease_font_scale();
 }
 
+int64_t debug_break(void) {
+    // Llama a la función ASM que hace int 0x80 con rax=14
+    return syscall_debug_break();
+}
+
 extern int64_t sys_video_getpixel(uint64_t x, uint64_t y);
 
 uint32_t video_getpixel(uint32_t x, uint32_t y) {

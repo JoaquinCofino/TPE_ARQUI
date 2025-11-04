@@ -14,8 +14,11 @@
 #define SYS_VIDEO_PUTPIXEL 7
 #define SYS_VIDEO_DRAW_RECT 8
 #define SYS_PLAY_SOUND 9
+#define SYS_READ_NB 10
 #define SYS_INCREASE_FONT_SCALE 11
 #define SYS_DECREASE_FONT_SCALE 12
+#define SYS_VIDEO_GETPIXEL 13
+#define SYS_DEBUG_BREAK 14
 
 
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
@@ -31,6 +34,7 @@ extern int64_t syscall_video_draw_rect(uint64_t x, uint64_t y, uint64_t w, uint6
 extern int64_t syscall_play_sound(uint64_t freq, uint64_t duration_ms);
 extern int64_t syscall_increase_font_scale(void);
 extern int64_t syscall_decrease_font_scale(void);
+extern int64_t syscall_debug_break(void);
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -87,5 +91,8 @@ uint32_t video_getpixel(uint32_t x, uint32_t y);
 
 int64_t increase_font_scale(void);
 int64_t decrease_font_scale(void);
+
+// Debug de emergencia
+int64_t debug_break(void);
 
 #endif

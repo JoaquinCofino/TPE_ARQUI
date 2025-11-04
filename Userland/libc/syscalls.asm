@@ -13,6 +13,7 @@ GLOBAL syscall_read_nb
 GLOBAL syscall_increase_font_scale
 GLOBAL syscall_decrease_font_scale
 GLOBAL sys_video_getpixel
+GLOBAL syscall_debug_break
 SECTION .text
 
 syscall_read:
@@ -86,5 +87,10 @@ syscall_decrease_font_scale:
 
 sys_video_getpixel:
     mov rax, 13 
+    int 0x80
+    ret
+
+syscall_debug_break:
+    mov rax, 14       ; SYS_DEBUG_BREAK
     int 0x80
     ret

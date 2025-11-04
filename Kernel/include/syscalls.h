@@ -18,6 +18,7 @@
 #define SYS_INCREASE_FONT_SCALE 11
 #define SYS_DECREASE_FONT_SCALE 12
 #define SYS_VIDEO_GETPIXEL 13
+#define SYS_DEBUG_BREAK 14  // Nueva syscall para debug de emergencia
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -55,6 +56,7 @@ int64_t sys_play_sound(uint32_t freq, uint32_t dur_ms);
 int64_t sys_read_nb(int fd, char *buf, uint64_t count);
 int64_t sys_increase_font_scale(void);
 int64_t sys_decrease_font_scale(void);
+int64_t sys_debug_break(void);  // Nueva syscall para debug de emergencia
 
 void capture_registers_on_tick(void);
 extern void timer_capture_registers(cpu_registers_t *regs);

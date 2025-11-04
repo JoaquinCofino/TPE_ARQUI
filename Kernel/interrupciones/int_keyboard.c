@@ -8,6 +8,7 @@ extern void write_port(uint16_t port, uint8_t value);
 static uint8_t shift_pressed = 0;
 static uint8_t altgr_pressed = 0;
 static uint8_t caps_lock = 0;
+static uint8_t ctrl_pressed = 0;  // ← AGREGAR soporte para Ctrl
 
 // Scancodes de las teclas modificadoras
 #define LSHIFT_SCANCODE 0x2A
@@ -15,6 +16,7 @@ static uint8_t caps_lock = 0;
 #define LALT_SCANCODE   0x38
 #define RALT_SCANCODE   0xB8  // AltGr (extendido)
 #define CAPS_SCANCODE   0x3A
+#define LCTRL_SCANCODE  0x1D  // ← AGREGAR scancode de Ctrl
 
 // Tabla básica (sin modificadores) - Teclado Argentino
 static unsigned char makeCodeToAscii[128] = {
@@ -280,6 +282,15 @@ volatile uint8_t bufferTail = 0;
 void keyboard_handler() {
     uint8_t scancode = read_port(0x60);
 
+    // === DEBUG INMEDIATO: Ctrl+R ===
+    // Detectar Ctrl+R ANTES de procesar otras teclas
+    if (ctrl_pressed && scancode == 0x13) {  // 0x13 = scancode de 'R'
+        // Llamar directamente a sys_debug_break() SIN pasar por userland
+        extern int64_t sys_debug_break(void);
+        sys_debug_break();
+        return;  // NO procesar más, interrumpir todo
+    }
+
     // Manejar teclas modificadoras inmediatamente
     switch (scancode) {
         case LSHIFT_SCANCODE:
@@ -289,6 +300,12 @@ void keyboard_handler() {
         case LSHIFT_SCANCODE | 0x80:
         case RSHIFT_SCANCODE | 0x80:
             shift_pressed = 0;
+            return;
+        case LCTRL_SCANCODE:  // ← AGREGAR manejo de Ctrl
+            ctrl_pressed = 1;
+            return;
+        case LCTRL_SCANCODE | 0x80:  // ← AGREGAR manejo de Ctrl release
+            ctrl_pressed = 0;
             return;
         case LALT_SCANCODE:
             altgr_pressed = 1;  // Tratamos Alt izquierdo como AltGr por simplicidad
@@ -346,6 +363,15 @@ void process_keyboard() {
             }
             
             if (ascii != 0) {
+                // === MANEJAR CTRL + TECLA ===
+                if (ctrl_pressed && ascii >= 'a' && ascii <= 'z') {
+                    // Ctrl+letra: generar código ASCII 1-26 (Ctrl+A=1, Ctrl+B=2, etc.)
+                    ascii = ascii - 'a' + 1;
+                } else if (ctrl_pressed && ascii >= 'A' && ascii <= 'Z') {
+                    // Ctrl+MAYÚSCULA: también generar código 1-26
+                    ascii = ascii - 'A' + 1;
+                }
+                
                 // Declarar la función del kernel
                 extern void kernel_stdin_push(unsigned char c);
                 

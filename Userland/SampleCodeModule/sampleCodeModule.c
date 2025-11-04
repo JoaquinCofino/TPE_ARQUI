@@ -17,6 +17,7 @@ void print_shell_header(void) {
     puts("  Shell con Nuevas Syscalls");
     puts("========================================");
     puts("Escribe 'help' para ver comandos");
+    puts("Ctrl+R = Registros (incluso en TRON!)");
 }
 
 void execute_command(const char *cmd) {
@@ -148,6 +149,8 @@ int consoleMain(void) {
         int c = getchar();
         
         if (c < 0) continue;
+        
+        // Ctrl+R ahora se maneja directamente en el kernel - no necesario aquí
         
         if (c == '\n') {
             putchar('\n');  // Nueva línea después del enter
