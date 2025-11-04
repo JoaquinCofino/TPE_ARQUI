@@ -2,8 +2,8 @@
 // FRECUENCIAS DE NOTAS MUSICALES (en Hz)
 // ============================================================================
 
-#include "sound_events.h"
-
+#include "sonidos.h"
+#include "stdio.h"
 
 // ============================================================================
 // FUNCIONES DE MELODÍAS

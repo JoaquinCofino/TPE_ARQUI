@@ -2,6 +2,7 @@
 #include "../include/syscall.h"
 #include "../include/tron.h"
 #include <stdint.h>
+#include "../include/screens.h"
 
 // Helpers de dibujo
 static inline void hbar(int x, int y, int w, int t, uint32_t color) {

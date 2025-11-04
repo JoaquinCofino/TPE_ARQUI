@@ -3,13 +3,14 @@
 
 #include <stdint.h>
 
+
+#define TICK_DELAY 800000  // ajusta velocidad
+
 typedef struct {
-    int x;
-    int y;
-    char symbol;
+    int x, y;
+    char dir;     // 'U','D','L','R'
     int alive;
-    int dx;
-    int dy;
+    uint32_t color;
 } Player;
 
 

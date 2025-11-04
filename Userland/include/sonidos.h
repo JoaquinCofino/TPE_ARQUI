@@ -1,5 +1,5 @@
-#ifndef SOUND_EVENTS_H
-#define SOUND_EVENTS_H
+#ifndef SONIDOS_H
+#define SONIDOS_H
 
 // Tipos de sonidos para el juego Tron
 typedef enum {

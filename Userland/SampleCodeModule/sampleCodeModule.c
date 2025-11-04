@@ -1,7 +1,7 @@
 /* sampleCodeModule.c */
 #include "stdio.h"
 #include "string.h"
-#include "sound_events.h"
+#include "sonidos.h"
 #include "tron.h"
 #include "syscalls.h"
 #define CONSOLE_START_X 10
@@ -106,7 +106,7 @@ void execute_command(const char *cmd) {
             play_error_sound();
             break;
         default:
-            puts("Opción no válida.");
+            puts("Opcion no valida.");
             break;
     }
 }

@@ -1,17 +1,9 @@
 #include "../include/syscall.h"
 #include "../include/screens.h"
 #include "../include/stdio.h"
+#include "tron.h"
 
 #include <stdint.h>
-
-#define TICK_DELAY 800000  // ajusta velocidad
-
-typedef struct {
-    int x, y;
-    char dir;     // 'U','D','L','R'
-    int alive;
-    uint32_t color;
-} Player;
 
 static Player p1, p2;
 
