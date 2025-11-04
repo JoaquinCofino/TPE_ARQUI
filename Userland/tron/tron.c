@@ -305,6 +305,13 @@ char tron_match(int mode) {
     }
     clear_screen();
     victory_screen( &p1, &p2, &current_level);
+    
+    // -Verificar si alcanzamos el nivel máximo ---
+    if (current_level >= 9) {
+        finalWin_screen(&p1, &p2);
+        return 'q'; // Indicar que debemos volver al menú principal
+    }
+    
     puts("Presiona cualquier tecla para continuar...");
     return getchar();
 }
@@ -312,7 +319,6 @@ char tron_match(int mode) {
 void tron_level(int mode){
     char c = tron_match(mode);
     while( c != 'q' && c != 'Q' ) {
-
         c = tron_match(mode);
     }
 }

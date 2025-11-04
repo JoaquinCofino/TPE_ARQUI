@@ -557,3 +557,101 @@ void victory_screen(Player *p1, Player *p2, int * current_level) {
         }
 
 }
+
+// Añadir esta función al final de screens.c, antes del último }
+
+void finalWin_screen(Player *p1, Player *p2) {
+    video_info_t v;
+    get_video_data(&v);
+    clear_screen();
+
+    // --- Determinar ganador final ---
+    Player *winner = (p1->matches_won > p2->matches_won) ? p1 : p2;
+    
+    // En caso de empate
+    int is_tie = (p1->matches_won == p2->matches_won);
+
+    // --- Texto grande: "GANADOR" o "EMPATE" ---
+    int cw = v.width / 12;
+    int ch = v.height / 6;
+    if (cw < 30) cw = 30;
+    if (ch < 50) ch = 50;
+    int thick = cw / 6;
+    if (thick < 4) thick = 4;
+    int spacing = cw / 5;
+
+    // Posición centrada más arriba
+    const char *title_text = is_tie ? "EMPATE" : "GANADOR";
+    int title_len = 0;
+    for (const char *p = title_text; *p; ++p) title_len++;
+    int total_title_w = title_len * cw + (title_len > 0 ? (title_len - 1) * spacing : 0);
+    int title_x = (int)v.width / 2 - total_title_w / 2;
+    int title_y = (int)v.height / 4 - ch / 2;
+
+    int x = title_x;
+    for (const char *p = title_text; *p; ++p) {
+        draw_big_char(x, title_y, cw, ch, thick, *p, 0xFFFFFF);
+        x += cw + spacing;
+    }
+
+    // --- Mostrar cuadrado del ganador (solo si no es empate) ---
+    if (!is_tie) {
+        int rect_w = 100, rect_h = 100;
+        int rect_x = v.width / 2 - rect_w / 2;
+        int rect_y = title_y + ch + 20;
+        video_draw_rect(rect_x, rect_y, rect_w, rect_h, winner->color);
+    }
+
+    // --- Texto pequeño: marcador final ---
+    int small_w = cw / 4;
+    int small_h = ch / 4;
+    int small_t = thick / 2;
+    int small_spacing = small_w / 6;
+
+    // Crear string del marcador final
+    char score_text[32];
+    int pos = 0;
+    
+    const char *player1_text = "player 1: ";
+    const char *player2_text = "player 2: ";
+    
+    // Escribir "player 1: X"
+    for (const char *pp = player1_text; *pp; ++pp) 
+        score_text[pos++] = *pp;
+    score_text[pos++] = '0' + (p1->matches_won % 10);
+    score_text[pos++] = ' ';
+    score_text[pos++] = '-';
+    score_text[pos++] = ' ';
+    
+    // Escribir "player 2: Y"
+    for (const char *pp = player2_text; *pp; ++pp) 
+        score_text[pos++] = *pp;
+    score_text[pos++] = '0' + (p2->matches_won % 10);
+    score_text[pos] = '\0';
+
+    // Calcular posición centrada
+    int score_len = 0;
+    for (const char *p = score_text; *p; ++p) score_len++;
+    int total_score_w = score_len * (small_w + small_spacing) - small_spacing;
+    int score_x = v.width / 2 - total_score_w / 2;
+    int score_y = (is_tie ? title_y + ch + 40 : title_y + ch + 140);
+
+    draw_small_text(score_x, score_y, small_w, small_h, small_t, small_spacing, score_text, 0xFFFFFF);
+
+    // --- Mensaje para continuar ---
+    const char *continue_text = "presiona cualquier tecla para continuar";
+    int cont_len = 0;
+    for (const char *p = continue_text; *p; ++p) cont_len++;
+    int total_cont_w = cont_len * (small_w + small_spacing) - small_spacing;
+    int cont_x = v.width / 2 - total_cont_w / 2;
+    int cont_y = score_y + small_h * 3;
+
+    draw_small_text(cont_x, cont_y, small_w, small_h, small_t, small_spacing, continue_text, 0xFFFFFF);
+
+    // Esperar tecla
+    getchar();
+    
+    // Limpiar buffer de teclado
+    while (getchar_nb() >= 0) { /* discard */ }
+    tron_main();
+}
