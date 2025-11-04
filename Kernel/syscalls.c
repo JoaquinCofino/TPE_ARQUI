@@ -274,7 +274,7 @@ int64_t sys_debug_break(void) {
     
     // Limpiar línea actual y mostrar mensaje de debug
     ncNewline();
-    ncPrint("=== DEBUG BREAK (Ctrl+R) ===");
+    ncPrint("=== REGS (Ctrl+R) ===");
     ncNewline();
     
     // Mostrar registros capturados en el timer tick
