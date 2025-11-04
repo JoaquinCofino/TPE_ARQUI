@@ -1,19 +1,13 @@
 #ifndef SONIDOS_H
 #define SONIDOS_H
 
-// Tipos de sonidos para el juego Tron
+//sonidos para el juego Tron
 typedef enum {
     SND_NONE = 0,    // silencio / sin sonido
-    SND_START,       // inicio de partida
-    SND_MOVE,        // movimiento
     SND_CRASH,       // colisión
     SND_WIN,         // victoria
     SND_LOSE         // derrota
 } sound_event_t;
-
-// ============================================================================
-// FRECUENCIAS DE NOTAS MUSICALES (en Hz)
-// ============================================================================
 
 // Octava 4 (media)
 #define C4  262
@@ -60,18 +54,14 @@ typedef enum {
 #define A3  220
 #define B3  247
 
-// ============================================================================
-// DURACIONES (en milisegundos)
-// ============================================================================
+//duración
 #define WHOLE      1600  // Redonda
 #define HALF       800   // Blanca
 #define QUARTER    400   // Negra
 #define EIGHTH     200   // Corchea
 #define SIXTEENTH  100   // Semicorchea
 
-// ============================================================================
 // FUNCIONES DE MELODÍAS
-// ============================================================================
 
 // Melodía de arranque simple
 void play_startup_sound(void) ;
@@ -92,7 +82,6 @@ void play_error_sound(void) ;
 // Sonido de éxito
 void play_success_sound(void) ;
 
-
 // Sirena de policía
 void play_siren(void) ;
 
@@ -103,6 +92,12 @@ void play_laser(void);
 
 // Efecto de explosión
 void play_explosion(void);
+
+// FUNCIONES DE SONIDOS PARA EL JUEGO TRON
+
+
+// Reproducir sonido del juego según evento
+void play_game_sound(sound_event_t event);
 
 
 #endif

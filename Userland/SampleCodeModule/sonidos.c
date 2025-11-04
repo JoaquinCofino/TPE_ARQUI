@@ -1,15 +1,7 @@
-// ============================================================================
-// FRECUENCIAS DE NOTAS MUSICALES (en Hz)
-// ============================================================================
-
 #include "sonidos.h"
 #include "stdio.h"
 
-// ============================================================================
-// FUNCIONES DE MELODÍAS
-// ============================================================================
 
-// Melodía de arranque simple
 void play_startup_sound(void) {
     puts(" Sonido de arranque...\n");
     play_sound(C4, EIGHTH);
@@ -132,41 +124,24 @@ void play_explosion(void) {
     play_sound(60, 150);
 }
 
+// FUNCIONES DE SONIDOS PARA EL JUEGO TRON
 
-// ============================================================================
-// COMANDOS PARA TU SHELL
-// ============================================================================
 
-// Agregar estos comandos a execute_command() en tu shell:
-/*
-    else if (strcmp(cmd, "beep") == 0) {
-        play_sound(440, 200);
+//reproducir sonido del juego según evento
+void play_game_sound(sound_event_t event) {
+    switch (event) {
+        case SND_CRASH:
+            play_explosion();      
+            break;
+        case SND_WIN:
+            play_success_sound();  
+            break;
+        case SND_LOSE:
+            play_laser();    
+            break;
+        case SND_NONE:
+        default:
+            //silencio 
+            break;
     }
-    else if (strcmp(cmd, "mario") == 0) {
-        play_mario_theme();
-    }
-    else if (strcmp(cmd, "starwars") == 0) {
-        play_star_wars();
-    }
-    else if (strcmp(cmd, "tetris") == 0) {
-        play_tetris();
-    }
-    else if (strcmp(cmd, "nokia") == 0) {
-        play_nokia_ringtone();
-    }
-    else if (strcmp(cmd, "scale") == 0) {
-        play_scale_up();
-    }
-    else if (strcmp(cmd, "laser") == 0) {
-        play_laser();
-    }
-    else if (strcmp(cmd, "siren") == 0) {
-        play_siren();
-    }
-    else if (strcmp(cmd, "error") == 0) {
-        play_error_sound();
-    }
-    else if (strcmp(cmd, "success") == 0) {
-        play_success_sound();
-    }
-*/
+}

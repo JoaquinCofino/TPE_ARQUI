@@ -639,7 +639,7 @@ void finalWin_screen(Player *p1, Player *p2) {
     draw_small_text(score_x, score_y, small_w, small_h, small_t, small_spacing, score_text, 0xFFFFFF);
 
     // --- Mensaje para continuar ---
-    const char *continue_text = "presiona cualquier tecla para continuar";
+    const char *continue_text = "presiona tecla para continuar";
     int cont_len = 0;
     for (const char *p = continue_text; *p; ++p) cont_len++;
     int total_cont_w = cont_len * (small_w + small_spacing) - small_spacing;

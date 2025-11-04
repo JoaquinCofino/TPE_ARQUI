@@ -1,6 +1,8 @@
 #include "../include/syscall.h"
 #include "../include/screens.h"
 #include "../include/stdio.h"
+#include "sonidos.h"
+
 #include "tron.h"
 
 #include <stdint.h>
@@ -226,6 +228,7 @@ char tron_match(int mode) {
     int box_size = 10;
     int margin = 5;
 
+
     while (p1.score < 3 && p2.score < 3) {
         clear_screen();
         draw_border();
@@ -268,11 +271,18 @@ char tron_match(int mode) {
             move_player(&p1);
             move_player(&p2);
 
+            int p1_collided = 0, p2_collided = 0;
+
             if (check_border_collision(&p1, W, H)) p1.alive = 0;
             if (check_border_collision(&p2, W, H)) p2.alive = 0;
 
             if (check_collision(p1.x, p1.y, p1.dir, p2.color, p1.color)) p1.alive = 0;
             if (check_collision(p2.x, p2.y, p2.dir, p1.color, p2.color)) p2.alive = 0;
+
+            // Reproducir sonido de colisión si ocurrió
+            if (p1_collided || p2_collided) {
+                play_game_sound(SND_CRASH);
+            }
 
             if (p1.alive) draw_head(&p1);
             if (p2.alive) draw_head(&p2);
@@ -283,10 +293,18 @@ char tron_match(int mode) {
         // Resultado de ronda
         if (p1.alive && !p2.alive) {
             p1.score++;
+            play_game_sound(SND_WIN);  // Sonido de victoria
             video_draw_rect(10 + (p1.score-1)*(box_size+margin), 10, box_size, box_size, 0xFF0000);
         } else if (!p1.alive && p2.alive) {
             p2.score++;
+            if (mode == 1) {
+                play_game_sound(SND_LOSE);  // Sonido de derrota solo contra CPU
+            } else {
+                play_game_sound(SND_WIN);   // En multiplayer, ambos ganan con sonido de victoria
+            }
             video_draw_rect(W - (10 + p2.score*(box_size+margin)), 10, box_size, box_size, 0x0000FF);
+        }else{
+            play_game_sound(SND_CRASH);
         }
 
         for (volatile int i = 0; i < 20000000; i++);
