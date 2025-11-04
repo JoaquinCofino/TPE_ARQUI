@@ -202,6 +202,15 @@ uint16_t ncGetCursorY(void) {
     return cursorY;
 }
 
+void ncSetCursorPosition(int x, int y) {
+    if (x >= 0 && x < getScreenWidth() / getFontWidth()) {
+        cursorX = x;
+    }
+    if (y >= 0 && y < getScreenHeight() / getFontHeight()) {
+        cursorY = y;
+    }
+}
+
 static uint32_t uintToBase(uint64_t value, char * buffer, uint32_t base) {
     char *p = buffer;
     char *p1, *p2;

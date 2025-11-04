@@ -17,5 +17,6 @@ void ncTab();
 // Nuevas funciones auxiliares para modo gráfico
 uint16_t ncGetCursorX(void);
 uint16_t ncGetCursorY(void);
+void ncSetCursorPosition(int x, int y);
 
 #endif

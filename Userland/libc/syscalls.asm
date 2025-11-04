@@ -21,6 +21,8 @@ GLOBAL syscall_get_font_height
 GLOBAL syscall_set_text_color
 GLOBAL syscall_set_background_color
 GLOBAL syscall_get_ticks
+GLOBAL syscall_set_cursor_position
+
 SECTION .text
 
 syscall_read:
@@ -134,5 +136,12 @@ syscall_set_background_color:
 
 syscall_get_ticks:
     mov rax, 21       ; SYS_GET_TICKS
+    int 0x80
+    ret
+
+; Set cursor position (int x, int y)
+; Parameters: rdi = x, rsi = y
+syscall_set_cursor_position:
+    mov rax, 22       ; SYS_SET_CURSOR_POSITION  
     int 0x80
     ret

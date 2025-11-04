@@ -33,7 +33,7 @@ void execute_command(const char *cmd) {
         puts("  tron     - Iniciar juego Tron");
         puts("  fontinc  - Aumentar escala de fuente");
         puts("  fontdec  - Disminuir escala de fuente");
-        puts("  ticks    - Mostrar ticks del sistema");
+        puts("  bench    - Ejecutar benchmarks del sistema");
     }
     else if (strcmp(cmd, "info") == 0) {
         puts("Shell ejecutandose en USERLAND (Ring 3)");
@@ -131,6 +131,11 @@ void execute_command(const char *cmd) {
     clear_screen();
     print_shell_header();
     puts("Fuente aumentada!");
+    }
+    else if (strcmp(cmd, "bench") == 0) {
+        benchmark_run_all();
+        video_clear();
+        print_shell_header();
     }
     else if (cmd[0] != '\0') {
         printf("Comando no reconocido: '");

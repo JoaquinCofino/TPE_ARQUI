@@ -26,6 +26,7 @@
 #define SYS_SET_TEXT_COLOR 19
 #define SYS_SET_BACKGROUND_COLOR 20
 #define SYS_GET_TICKS 21
+#define SYS_SET_CURSOR_POSITION 22
 
 
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
@@ -49,6 +50,7 @@ extern int64_t syscall_get_font_height(void);
 extern int64_t syscall_set_text_color(uint32_t color);
 extern int64_t syscall_set_background_color(uint32_t color);
 extern int64_t syscall_get_ticks(void);
+extern int64_t syscall_set_cursor_position(int64_t x, int64_t y);
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -123,5 +125,8 @@ int64_t set_background_color(uint32_t color);
 
 // Obtener ticks del timer
 int64_t get_ticks(void);
+
+// Control de posición del cursor
+void set_cursor_position(int x, int y);
 
 #endif

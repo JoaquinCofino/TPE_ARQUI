@@ -63,6 +63,8 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
             return sys_set_background_color((uint32_t)arg1);
         case SYS_GET_TICKS:
             return sys_get_ticks();
+        case SYS_SET_CURSOR_POSITION:
+            return sys_set_cursor_position((int)arg1, (int)arg2);
         default:
             return -1;  // ENOSYS
     }
@@ -379,4 +381,9 @@ uint32_t getCurrentBackgroundColor(void) {
 int64_t sys_get_ticks(void) {
     extern unsigned int timer_get_ticks(void);
     return (int64_t)timer_get_ticks();
+}
+
+int64_t sys_set_cursor_position(int x, int y) {
+    ncSetCursorPosition(x, y);
+    return 0;
 }

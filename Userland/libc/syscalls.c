@@ -90,3 +90,7 @@ extern int64_t sys_video_getpixel(uint64_t x, uint64_t y);
 uint32_t video_getpixel(uint32_t x, uint32_t y) {
     return (uint32_t)sys_video_getpixel(x, y);
 }
+
+void set_cursor_position(int x, int y) {
+    syscall_set_cursor_position(x, y);
+}
