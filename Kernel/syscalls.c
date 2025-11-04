@@ -53,6 +53,14 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
             return sys_font_save_state();
         case SYS_FONT_RESTORE_STATE:
             return sys_font_restore_state();
+        case SYS_GET_FONT_WIDTH:
+            return sys_get_font_width();
+        case SYS_GET_FONT_HEIGHT:
+            return sys_get_font_height();
+        case SYS_SET_TEXT_COLOR:
+            return sys_set_text_color((uint32_t)arg1);
+        case SYS_SET_BACKGROUND_COLOR:
+            return sys_set_background_color((uint32_t)arg1);
         default:
             return -1;  // ENOSYS
     }
@@ -333,4 +341,35 @@ int64_t sys_font_restore_state(void) {
     extern void setFontScale(uint8_t scale);
     setFontScale(saved_font_scale);
     return 0;
+}
+
+int64_t sys_get_font_width(void) {
+    return (int64_t)getFontWidth();
+}
+
+int64_t sys_get_font_height(void) {
+    return (int64_t)getFontHeight();
+}
+
+// Variables globales para colores de texto
+static uint32_t current_text_color = 0xFFFFFF;      // Blanco por defecto
+static uint32_t current_background_color = 0x000000; // Negro por defecto
+
+int64_t sys_set_text_color(uint32_t color) {
+    current_text_color = color;
+    return 0;
+}
+
+int64_t sys_set_background_color(uint32_t color) {
+    current_background_color = color;
+    return 0;
+}
+
+// Funciones para obtener los colores actuales (para usar en drawChar)
+uint32_t getCurrentTextColor(void) {
+    return current_text_color;
+}
+
+uint32_t getCurrentBackgroundColor(void) {
+    return current_background_color;
 }

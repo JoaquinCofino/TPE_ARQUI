@@ -134,6 +134,10 @@ void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
     uint8_t fontW = FuenteTPE_16_inf.width;
     uint8_t fontH = FuenteTPE_16_inf.height;
 
+    // Obtener color de fondo actual
+    extern uint32_t getCurrentBackgroundColor(void);
+    uint32_t backgroundColor = getCurrentBackgroundColor();
+
     // Calcular tamaño escalado usando aritmética entera
     // scaledW = (fontW * fontScaleNum) / fontScaleDen
     uint16_t scaledW = ((uint16_t)fontW * fontScaleNum) / fontScaleDen;
@@ -152,8 +156,8 @@ void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
             uint8_t srcCol = (sx * fontScaleDen) / fontScaleNum;
             if (srcCol >= fontW) srcCol = fontW - 1;
             
-            // Determinar el color
-            uint32_t pixelColor = (bits & (1 << srcCol)) ? color : 0x000000;
+            // Determinar el color - usar backgroundColor dinámico para el fondo
+            uint32_t pixelColor = (bits & (1 << srcCol)) ? color : backgroundColor;
             putPixel(pixelColor, x + sx, y + sy);
         }
     }

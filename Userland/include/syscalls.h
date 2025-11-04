@@ -21,6 +21,10 @@
 #define SYS_DEBUG_BREAK 14
 #define SYS_FONT_SAVE_STATE 15
 #define SYS_FONT_RESTORE_STATE 16
+#define SYS_GET_FONT_WIDTH 17
+#define SYS_GET_FONT_HEIGHT 18
+#define SYS_SET_TEXT_COLOR 19
+#define SYS_SET_BACKGROUND_COLOR 20
 
 
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
@@ -39,6 +43,10 @@ extern int64_t syscall_decrease_font_scale(void);
 extern int64_t syscall_debug_break(void);
 extern int64_t syscall_font_save_state(void);
 extern int64_t syscall_font_restore_state(void);
+extern int64_t syscall_get_font_width(void);
+extern int64_t syscall_get_font_height(void);
+extern int64_t syscall_set_text_color(uint32_t color);
+extern int64_t syscall_set_background_color(uint32_t color);
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -102,5 +110,13 @@ int64_t debug_break(void);
 // Manejo de estado de fuente
 void font_save_state(void);
 void font_restore_state(void);
+
+// Obtener tamaño de fuente actual
+int64_t getFontWidth(void);
+int64_t getFontHeight(void);
+
+// Control de colores de texto
+int64_t set_text_color(uint32_t color);
+int64_t set_background_color(uint32_t color);
 
 #endif

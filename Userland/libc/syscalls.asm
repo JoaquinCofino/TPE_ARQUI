@@ -16,6 +16,10 @@ GLOBAL sys_video_getpixel
 GLOBAL syscall_debug_break
 GLOBAL syscall_font_save_state
 GLOBAL syscall_font_restore_state
+GLOBAL syscall_get_font_width
+GLOBAL syscall_get_font_height
+GLOBAL syscall_set_text_color
+GLOBAL syscall_set_background_color
 SECTION .text
 
 syscall_read:
@@ -104,5 +108,25 @@ syscall_font_save_state:
 
 syscall_font_restore_state:
     mov rax, 16       ; SYS_FONT_RESTORE_STATE
+    int 0x80
+    ret
+
+syscall_get_font_width:
+    mov rax, 17       ; SYS_GET_FONT_WIDTH
+    int 0x80
+    ret
+
+syscall_get_font_height:
+    mov rax, 18       ; SYS_GET_FONT_HEIGHT
+    int 0x80
+    ret
+
+syscall_set_text_color:
+    mov rax, 19       ; SYS_SET_TEXT_COLOR
+    int 0x80
+    ret
+
+syscall_set_background_color:
+    mov rax, 20       ; SYS_SET_BACKGROUND_COLOR
     int 0x80
     ret

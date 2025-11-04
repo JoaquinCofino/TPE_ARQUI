@@ -131,6 +131,20 @@ void execute_command(const char *cmd) {
     print_shell_header();
     puts("Fuente aumentada!");
     }
+    else if(strcmp(cmd, "red") == 0) {
+    set_text_color(0xFF0000);
+    puts("Texto ahora es rojo!");
+}
+else if(strcmp(cmd, "green") == 0) {
+    set_text_color(0x00FF00);
+    set_background_color(0xFFFFFF); // Fondo blanco para visibilidad
+    puts("Texto ahora es verde!");
+}
+else if(strcmp(cmd, "reset") == 0) {
+    set_text_color(0xFFFFFF);
+    set_background_color(0x000000);
+    puts("Texto vuelve a blanco");
+}
     else if (cmd[0] != '\0') {
         printf("Comando no reconocido: '");
         printf(cmd);

@@ -65,6 +65,22 @@ void font_restore_state(void) {
     syscall_font_restore_state();
 }
 
+int64_t getFontWidth(void) {
+    return syscall_get_font_width();
+}
+
+int64_t getFontHeight(void) {
+    return syscall_get_font_height();
+}
+
+int64_t set_text_color(uint32_t color) {
+    return syscall_set_text_color(color);
+}
+
+int64_t set_background_color(uint32_t color) {
+    return syscall_set_background_color(color);
+}
+
 extern int64_t sys_video_getpixel(uint64_t x, uint64_t y);
 
 uint32_t video_getpixel(uint32_t x, uint32_t y) {

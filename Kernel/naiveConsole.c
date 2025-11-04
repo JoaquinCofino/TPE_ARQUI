@@ -84,7 +84,8 @@ void ncPrintChar(char character) {
     uint64_t pixelY = cursorY * getScaledFontHeight();
     
     // Dibujar el carácter (drawChar ya maneja el escalado internamente)
-    drawChar(uc, pixelX, pixelY, TEXT_COLOR);
+    extern uint32_t getCurrentTextColor(void);
+    drawChar(uc, pixelX, pixelY, getCurrentTextColor());
     
     // Avanzar cursor
     cursorX++;

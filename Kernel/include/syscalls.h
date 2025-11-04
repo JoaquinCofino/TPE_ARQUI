@@ -21,6 +21,10 @@
 #define SYS_DEBUG_BREAK 14  // Nueva syscall para debug de emergencia
 #define SYS_FONT_SAVE_STATE 15     // Guardar estado actual de la fuente
 #define SYS_FONT_RESTORE_STATE 16  // Restaurar estado guardado de la fuente
+#define SYS_GET_FONT_WIDTH 17      // Obtener ancho de fuente actual
+#define SYS_GET_FONT_HEIGHT 18     // Obtener alto de fuente actual
+#define SYS_SET_TEXT_COLOR 19      // Establecer color de texto
+#define SYS_SET_BACKGROUND_COLOR 20 // Establecer color de fondo
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -66,6 +70,16 @@ void capture_registers_on_tick(void);
 extern void timer_capture_registers(cpu_registers_t *regs);
 
 int64_t sys_video_getpixel(uint32_t x, uint32_t y);
+int64_t sys_font_save_state(void);
+int64_t sys_font_restore_state(void);
+int64_t sys_get_font_width(void);
+int64_t sys_get_font_height(void);
+int64_t sys_set_text_color(uint32_t color);
+int64_t sys_set_background_color(uint32_t color);
+
+// Funciones para obtener colores actuales
+uint32_t getCurrentTextColor(void);
+uint32_t getCurrentBackgroundColor(void);
 
 // Funciones auxiliares
 void kernel_stdin_push(unsigned char c);
