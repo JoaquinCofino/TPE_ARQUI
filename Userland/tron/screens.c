@@ -75,7 +75,6 @@ static void draw_big_char(int x, int y, int cw, int ch, int thick, char c, uint3
     }
 }
 
-// Reemplazar esta función por la anterior: coloca rectángulos en posiciones calculadas
 static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t color) {
     // Posiciones auxiliares consistentes
     int left  = x;
@@ -90,11 +89,11 @@ static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t 
 
     switch (c) {
         case 'a':
-            // minúscula tipo 'a' abierta, no cerrada como 'o'
-            hbar(x + t, y + h/2, w - 2*t, t, color);                      // barra media
-            hbar(x + t, y + h - t, w - 2*t, t, color);                    // base
-            vbar(x, y + h/2, h/2, t, color);                              // lado izquierdo
-            vbar(x + w - t, y + h/2 - t, h/2, t, color);                  // lado derecho
+            // a minúscula (versión mejorada)
+            hbar(left + t, mid, w - 2*t, t, color);
+            hbar(left + t, bot, w - 2*t, t, color);
+            vbar(left, mid, h/2, t, color);
+            vbar(right, mid, h/2, t, color);
             break;
 
         case 'b':
@@ -108,10 +107,10 @@ static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t 
             break;
 
         case 'c':
-            // minúscula 'c' más clara, sin cierre completo
-            hbar(x + t, y + h/2, w - 2*t, t, color);                      // línea media
-            hbar(x + t, y + h - t, w - 2*t, t, color);                    // línea inferior
-            vbar(x, y + h/2, h/2, t, color);                              // lado izquierdo
+            // c minúscula
+            hbar(left + t, mid, w - 2*t, t, color);
+            hbar(left + t, bot, w - 2*t, t, color);
+            vbar(left, mid, h/2, t, color);
             break;
 
         case 'd':
@@ -123,15 +122,22 @@ static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t 
             break;
 
         case 'e':
+            // e minúscula
             hbar(left + t, top + t, w - 2*t, t, color);
             vbar(left, top + t, h - 2*t, t, color);
             hbar(left + t, mid, w - 2*t, t, color);
             hbar(left + t, bot, w - 2*t, t, color);
             break;
 
+        case 'h':
+            // h minúscula
+            vbar(left, top, h, t, color);
+            vbar(right, mid, h/2, t, color);
+            hbar(left, mid, w, t, color);
+            break;
+
         case 'i':
             // i minúscula: barra vertical centrada y punto arriba
-            // todo calculado inline para evitar errores de redondeo
             vbar(x + w/2 - t/2, y + h/4, h * 3/4 - t, t, color);          // cuerpo
             // punto claramente separado arriba
             hbar(x + w/2 - t/2, y + h/8, t, t, color);
@@ -143,34 +149,31 @@ static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t 
             break;
 
         case 'm': 
-            // patas verticales
-            vbar(left, y + h/2 - t/2, h/2, t, color);                     // primera pata
-            vbar(left + w/3, top + t, h/2, t, color);                     // segunda pata (más alta para dar forma)
-            vbar(left + 2*w/3, top + t, h/2, t, color);                   // tercera pata
-            vbar(left + w - t, y + h/2 - t/2, h/2, t, color);             // última pata
-
-            // unir cimas para formar la M
-            hbar(left, top + t, w/3 + t, t, color);                       // cima primera
-            hbar(left + w/3, top + t, w/3 + t, t, color);                 // cima segunda
+            // m minúscula
+            vbar(left, top, h, t, color);
+            vbar(left + w/3, top, h, t, color);
+            vbar(left + 2*w/3, top, h, t, color);
+            vbar(right, top, h, t, color);
+            hbar(left, top, w, t, color);
             break;
 
         case 'n':
-            // n: parecido a 'm' pero más simple
-            vbar(left, mid, h/2, t, color);
-            vbar(right, mid, h/2, t, color);
-            hbar(left, mid, w, t, color);
+            // n minúscula
+            vbar(left, top, h, t, color);
+            vbar(right, top, h, t, color);
+            hbar(left, top, w, t, color);
             break;
 
         case 'o': 
-            // 'o' más simétrica (círculo cerrado)
-            hbar(x + t, y + h/2, w - 2*t, t, color);                      // medio
-            hbar(x + t, y + h - t, w - 2*t, t, color);                    // base
-            vbar(x, y + h/2, h/2, t, color);                              // izquierda
-            vbar(x + w - t, y + h/2, h/2, t, color);                      // derecha
+            // o minúscula (círculo completo)
+            hbar(left + t, top + t, w - 2*t, t, color);
+            hbar(left + t, bot, w - 2*t, t, color);
+            vbar(left, top + t, h - 2*t, t, color);
+            vbar(right, top + t, h - 2*t, t, color);
             break;
 
         case 'p':
-            // p: similar a b pero sin la parte inferior completa
+            // p minúscula
             vbar(left, top, h, t, color);
             hbar(left, top, w - t, t, color);
             hbar(left, mid, w - t, t, color);
@@ -178,117 +181,125 @@ static void draw_small_char(int x, int y, int w, int h, int t, char c, uint32_t 
             break;
 
         case 'r':
-            // r: pequeño asta y pierna
-            vbar(left, mid, h/2, t, color);
-            hbar(left, mid, w/2 + t, t, color);
+            // r minúscula
+            vbar(left, top, h, t, color);
+            hbar(left, mid, w/2, t, color);
             break;
 
         case 's':
-            // s: escalonado para legibilidad
-            hbar(left, top, w, t, color);
+            // s minúscula
+            hbar(left, top + t, w, t, color);
             hbar(left, mid, w, t, color);
             hbar(left, bot, w, t, color);
-            vbar(left, top, h/2, t, color);
-            vbar(right, mid, h/2, t, color);
+            vbar(left, top + t, h/2 - t, t, color);
+            vbar(right, mid, h/2 - t, t, color);
             break;
 
         case 't':
-            // t: columna central con barra inferior o superior según prefieras
-            vbar(midx, top, h, t, color);
-            hbar(left, top + t, w, t, color);
+            // t minúscula (versión mejorada)
+            vbar(midx, top + h/4, h*3/4, t, color);
+            hbar(left, top + h/4 + t, w, t, color);
             break;
 
         case 'u':
-            // u: columnas y barra inferior
-            vbar(left, mid, h/2, t, color);
-            vbar(right, mid, h/2, t, color);
+            // u minúscula
+            vbar(left, top, h - t, t, color);
+            vbar(right, top, h - t, t, color);
             hbar(left, bot, w, t, color);
             break;
 
+        case 'v':
+            // v minúscula
+            vbar(left, top, h*2/3, t, color);
+            vbar(right, top, h*2/3, t, color);
+            hbar(x + w/4, bot, w/2, t, color);
+            break;
+
         case 'y':
-            // y: versión legible con cola
+            // y minúscula
             vbar(left, top + h/3, h/2, t, color);
             vbar(right, top + h/3, h/2, t, color);
             vbar(midx, top + h/2, h/2, t, color);
             break;
 
-        case '1':
-            vbar(midx, top, h, t, color);
+        case 'M':
+            // M mayúscula
+            vbar(left, top, h, t, color);
+            vbar(right, top, h, t, color);
+            thick_line(left, top, left + w/2, top + h/2, t, color);
+            thick_line(left + w/2, top + h/2, right, top, t, color);
             break;
 
-        case '2':
+        case 'C':
+            // C mayúscula
             hbar(left, top, w, t, color);
-            hbar(left, mid, w, t, color);
+            vbar(left, top, h, t, color);
             hbar(left, bot, w, t, color);
-            vbar(right, top, h/2, t, color);
-            vbar(left, mid, h/2, t, color);
             break;
 
-        case 'v':
-            vbar(left, top + h/3, h*2/3, t, color);
-            vbar(right, top + h/3, h*2/3, t, color);
-            hbar(x + w/4, bot, w/2, t, color);
-            break;
-
-        case 'P':  // P mayúscula
+        case 'P':
+            // P mayúscula
             vbar(left, top, h, t, color);
             hbar(left, top, w - t, t, color);
             hbar(left, mid, w - t, t, color);
             vbar(right, top, h/2, t, color);
             break;
 
-        case 'C':
+        case 'Q':
+            // Q mayúscula
             hbar(left, top, w, t, color);
-            vbar(left, mid, h - 2*t, t, color);
             hbar(left, bot, w, t, color);
+            vbar(left, top, h, t, color);
+            vbar(right, top, h, t, color);
+            thick_line(right - t, bot - t, right + t, bot + t, t, color);
             break;
 
         case 'U':
+            // U mayúscula
             vbar(left, top, h - t, t, color);
             vbar(right, top, h - t, t, color);
             hbar(left, bot, w, t, color);
             break;
 
-        case 'Q':
-            // Caja de la Q
-            hbar(left, top, w, t, color);                                  // borde superior
-            hbar(left, bot, w, t, color);                                  // borde inferior
-            vbar(left, top, h, t, color);                                  // borde izquierdo
-            vbar(right, top, h, t, color);                                 // borde derecho
-            // Cola diagonal
-            thick_line(right - t, bot - t, right + t, bot + t, t, color);
+        case '1':
+            // Número 1
+            vbar(midx, top, h, t, color);
             break;
 
-        case 'q':
-            // Círculo inferior de la q
+        case '2':
+            // Número 2
+            hbar(left, top, w, t, color);
             hbar(left, mid, w, t, color);
             hbar(left, bot, w, t, color);
-            vbar(left, mid, h / 2, t, color);
-            vbar(right, mid, h / 2, t, color);
-            // Cola descendente
-            vbar(right - t / 2, bot, h / 3, t, color);
+            vbar(right, top, h/2, t, color);
+            vbar(left, mid, h/2, t, color);
             break;
 
-        case '(' : 
-            // Paréntesis izquierdo curvado
+        case '-':
+            // Guión
+            hbar(left, mid, w, t, color);
+            break;
+
+        case '(':
+            // Paréntesis izquierdo
             vbar(x + t, y + t, h - 2*t, t, color);
             hbar(x + t, y, w/2, t, color);
             hbar(x + t, y + h - t, w/2, t, color);
             break;
 
         case ')':
-            // Paréntesis derecho: simétrico al anterior
+            // Paréntesis derecho
             vbar(x + 2*w/3, y, h, t, color);
-            hbar(x + w/3, y, w/3, t, color);                               // borde superior
-            hbar(x + w/3, y + h - t, w/3, t, color);                       // borde inferior
+            hbar(x + w/3, y, w/3, t, color);
+            hbar(x + w/3, y + h - t, w/3, t, color);
             break;
 
         case ' ':
-            // espacio: no dibujar
+            // Espacio: no dibujar
             break;
 
         default:
-            // fallback claro: dibuja borde y relleno ligero para visibilidad
+            // Fallback: dibuja borde y relleno ligero para visibilidad
             hbar(left, top, w, t, color);
             hbar(left, bot, w, t, color);
             vbar(left, top, h, t, color);
@@ -384,49 +395,58 @@ void victory_screen(Player *p1, Player *p2) {
     // --- Dibujar cuadrado del ganador ---
     int rect_w = 100, rect_h = 100;
     int rect_x = v.width / 2 - rect_w / 2;
-    int rect_y = v.height / 2 - rect_h / 2 - 20;
+    int rect_y = v.height / 3 - rect_h / 2; // Posicionado más arriba como mode_screen
     video_draw_rect(rect_x, rect_y, rect_w, rect_h, winner->color);
 
-    // --- Texto: "Match scores" ---
-    const char *line1 = "Match scores";
+    // --- Texto usando el mismo estilo que mode_screen ---
+    const char *line1 = "Match score";
+    
+    // Crear string "A - B" con las partidas ganadas
+    char line2[16];
+    line2[0] = (char)('0' + (p1->matches_won % 10));
+    line2[1] = ' ';
+    line2[2] = '-';
+    line2[3] = ' ';
+    line2[4] = (char)('0' + (p2->matches_won % 10));
+    line2[5] = '\0';
 
-    // --- Convertir A y B en texto: "A - B" ---
-    char line2[8];
-    line2[0] = ' ';
-    line2[1] = (char)('0' + (p1->matches_won % 10)); // solo un dígito
-    line2[2] = ' ';
-    line2[3] = '-';
-    line2[4] = ' ';
-    line2[5] = (char)('0' + (p2->matches_won % 10)); // solo un dígito
-    line2[6] = ' ';
-    line2[7] = '\0';
+    // --- Parámetros de texto similares a mode_screen ---
+    int char_w = v.width / 30;
+    int char_h = v.height / 20;
+    int thick = char_w / 6;
+    int spacing = char_w / 5;
 
-    // --- Parámetros de texto ---
-    int char_w = v.width / 50;
-    int char_h = v.height / 40;
-    int thick  = char_w / 3;
-    int spacing = char_w / 6;
+    if (char_w < 12) char_w = 12;
+    if (char_h < 20) char_h = 20;
+    if (thick < 3) thick = 3;
 
-    if (char_w < 6) char_w = 6;
-    if (char_h < 10) char_h = 10;
-    if (thick < 2) thick = 2;
-
-    // --- Calcular longitud para centrar ---
+    // --- Calcular posiciones centradas ---
     int len1 = 0, len2 = 0;
     for (const char *p = line1; *p; ++p) len1++;
     for (const char *p = line2; *p; ++p) len2++;
 
-    int total_w1 = len1 * (char_w + spacing) - spacing;
-    int total_w2 = len2 * (char_w + spacing) - spacing;
+    int total_w1 = len1 * char_w + (len1 > 0 ? (len1 - 1) * spacing : 0);
+    int total_w2 = len2 * char_w + (len2 > 0 ? (len2 - 1) * spacing : 0);
 
     int center_x1 = v.width / 2 - total_w1 / 2;
     int center_x2 = v.width / 2 - total_w2 / 2;
 
-    // --- Posiciones en pantalla ---
-    int text_y = rect_y + rect_h + 20;
+    // --- Posición del texto debajo del cuadrado ---
+    int text_y1 = rect_y + rect_h + 40; // Espacio después del cuadrado
+    int text_y2 = text_y1 + char_h + 20; // Espacio entre líneas
+
     uint32_t color = 0xFFFFFF;
 
-    // --- Dibujo de texto ---
-    draw_small_text(center_x1, text_y, char_w, char_h, thick, spacing, line1, color);
-    draw_small_text(center_x2, text_y + char_h * 2, char_w, char_h, thick, spacing, line2, color);
+    // --- Dibujar texto línea por línea ---
+    int x = center_x1;
+    for (const char *p = line1; *p; ++p) {
+        draw_small_char(x, text_y1, char_w, char_h, thick, *p, color);
+        x += char_w + spacing;
+    }
+
+    x = center_x2;
+    for (const char *p = line2; *p; ++p) {
+        draw_small_char(x, text_y2, char_w, char_h, thick, *p, color);
+        x += char_w + spacing;
+    }
 }
