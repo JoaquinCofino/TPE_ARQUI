@@ -18,15 +18,15 @@
 #define SYS_INCREASE_FONT_SCALE 11
 #define SYS_DECREASE_FONT_SCALE 12
 #define SYS_VIDEO_GETPIXEL 13
-#define SYS_DEBUG_BREAK 14  // Nueva syscall para debug de emergencia
-#define SYS_FONT_SAVE_STATE 15     // Guardar estado actual de la fuente
-#define SYS_FONT_RESTORE_STATE 16  // Restaurar estado guardado de la fuente
-#define SYS_GET_FONT_WIDTH 17      // Obtener ancho de fuente actual
-#define SYS_GET_FONT_HEIGHT 18     // Obtener alto de fuente actual
-#define SYS_SET_TEXT_COLOR 19      // Establecer color de texto
-#define SYS_SET_BACKGROUND_COLOR 20 // Establecer color de fondo
-#define SYS_GET_TICKS 21           // Obtener ticks del timer
-#define SYS_SET_CURSOR_POSITION 22 // Establecer posición del cursor
+#define SYS_DEBUG_BREAK 14  
+#define SYS_FONT_SAVE_STATE 15
+#define SYS_FONT_RESTORE_STATE 16
+#define SYS_GET_FONT_WIDTH 17
+#define SYS_GET_FONT_HEIGHT 18
+#define SYS_SET_TEXT_COLOR 19
+#define SYS_SET_BACKGROUND_COLOR 20
+#define SYS_GET_TICKS 21
+#define SYS_SET_CURSOR_POSITION 22
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -48,13 +48,11 @@ typedef struct {
 uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1, 
                           uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5);
 
-// Implementaciones de syscalls existentes
 int64_t sys_read(int fd, char *buf, uint64_t count);
 int64_t sys_write(int fd, const char *buf, uint64_t count);
 int64_t sys_get_time(rtc_time_t *time_ptr);
 int64_t sys_get_datetime(rtc_datetime_t *datetime_ptr);
 
-// Nuevas syscalls
 int64_t sys_get_registers(cpu_registers_t *regs);
 int64_t sys_get_video_data(video_info_t *video_info);
 int64_t sys_video_clear(void);
@@ -64,9 +62,9 @@ int64_t sys_play_sound(uint32_t freq, uint32_t dur_ms);
 int64_t sys_read_nb(int fd, char *buf, uint64_t count);
 int64_t sys_increase_font_scale(void);
 int64_t sys_decrease_font_scale(void);
-int64_t sys_debug_break(void);  // Nueva syscall para debug de emergencia
-int64_t sys_font_save_state(void);     // Guardar estado de fuente
-int64_t sys_font_restore_state(void);  // Restaurar estado de fuente
+int64_t sys_debug_break(void);
+int64_t sys_font_save_state(void);
+int64_t sys_font_restore_state(void);
 
 void capture_registers_on_tick(void);
 extern void timer_capture_registers(cpu_registers_t *regs);
@@ -81,11 +79,9 @@ int64_t sys_set_background_color(uint32_t color);
 int64_t sys_get_ticks(void);
 int64_t sys_set_cursor_position(int x, int y);
 
-// Funciones para obtener colores actuales
 uint32_t getCurrentTextColor(void);
 uint32_t getCurrentBackgroundColor(void);
 
-// Funciones auxiliares
 void kernel_stdin_push(unsigned char c);
 
 

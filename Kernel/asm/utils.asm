@@ -4,7 +4,7 @@ Global trigger_invalid_opcode
 section .text
 
 push_all:
-    ; Guardar registros (equivalente a pusha)
+    ; Guardar registros
     push rax
     push rbx
     push rcx
@@ -41,7 +41,6 @@ pop_all:
     pop rax
     ret
 
-; Función para generar excepción de opcode inválido
 trigger_invalid_opcode:
-    db 0x0F, 0xFF    ; Opcode inválido que causará excepción #6
-    ret              ; Esta línea nunca debería ejecutarse
+    db 0x0F, 0xFF   
+    ret              

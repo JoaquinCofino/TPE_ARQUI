@@ -13,7 +13,7 @@ typedef struct {
 // Información del font
 extern bmp_font_inf FuenteTPE_16_inf;
 
-// Array del bitmap font (8 pixels de ancho, 17 de alto, 256 caracteres)
+// Array del bitmap font 
 extern const unsigned char FuenteTPE_16_bmp[][17];
 
 #endif

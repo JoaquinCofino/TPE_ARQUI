@@ -26,7 +26,7 @@ uint32_t getFramebufferPitch(void);
 // Funciones de scroll
 void scrollUpLines(uint32_t lines);
 
-// Funciones BASE (para juegos y sys_get_video_data)
+// Funciones BASE 
 uint8_t getFontWidth(void);
 uint8_t getFontHeight(void);
 

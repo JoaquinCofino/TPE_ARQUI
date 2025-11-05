@@ -67,7 +67,6 @@ void rtc_read_hardware_time(rtc_time_t *time) {
 
 void rtc_read_full_datetime(rtc_datetime_t *datetime) {
     
-    // Leer todos los registros de una vez para ser más rápido
     uint8_t seconds = rtc_read_register(RTC_SECONDS);
     uint8_t minutes = rtc_read_register(RTC_MINUTES);
     uint8_t hours = rtc_read_register(RTC_HOURS);

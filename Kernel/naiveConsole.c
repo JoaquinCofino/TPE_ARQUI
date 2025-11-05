@@ -22,9 +22,6 @@ static uint8_t lastFontScale = 0;
 #define TEXT_COLOR 0xFFFFFF
 #define BACKGROUND_COLOR 0x000000
 
-// ============================================================
-// Inicializar/Reinicializar las dimensiones de la consola
-// ============================================================
 static void updateConsole(void) {
     maxCols = getScreenWidth() / getScaledFontWidth();
     maxRows = getScreenHeight() / getScaledFontHeight();
@@ -54,7 +51,6 @@ static void checkConsole(void) {
         cursorY = 0;
     }
 }
-// ============================================================
 
 void ncPrint(const char * string) {
     int i;
@@ -83,7 +79,6 @@ void ncPrintChar(char character) {
     uint64_t pixelX = cursorX * getScaledFontWidth();
     uint64_t pixelY = cursorY * getScaledFontHeight();
     
-    // Dibujar el carácter (drawChar ya maneja el escalado internamente)
     extern uint32_t getCurrentTextColor(void);
     drawChar(uc, pixelX, pixelY, getCurrentTextColor());
     

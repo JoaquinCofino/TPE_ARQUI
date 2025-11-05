@@ -23,11 +23,10 @@ void setup_IDT_entry (int index, uint64_t offset) {
   idt[index].offset_m = (offset >> 16) & 0xFFFF;
   idt[index].offset_h = (offset >> 32) & 0xFFFFFFFF;
   
-  // Syscalls necesitan DPL=3 para ser llamadas desde Ring 3 (userland)
   if (index == 0x80) {
-    idt[index].access = 0xEE;  // Present=1, DPL=3, Type=1110 (interrupt gate)
+    idt[index].access = 0xEE; 
   } else {
-    idt[index].access = ACS_INT;  // DPL=0 para interrupciones del kernel
+    idt[index].access = ACS_INT;  
   }
   
   idt[index].cero = 0;

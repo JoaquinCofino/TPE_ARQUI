@@ -44,9 +44,6 @@ typedef struct vbe_mode_info_structure * VBEInfoPtr;
 
 VBEInfoPtr VBE_mode_info = (VBEInfoPtr) 0x0000000000005C00;
 
-// ============================================================
-// FONT SCALE - Sistema fraccionario para cambios paulatinos
-// ============================================================
 // Guardamos numerador y denominador por separado
 static uint8_t fontScaleNum = 10;    // Numerador (empieza en 10)
 static uint8_t fontScaleDen = 10;    // Denominador (siempre 10)
@@ -78,7 +75,6 @@ void decreaseFontScale(void) {
         fontScaleNum -= FONT_SCALE_STEP;
     }
 }
-// ============================================================
 
 void putPixel(uint32_t hexColor, uint64_t x, uint64_t y) {
     uint16_t w = VBE_mode_info->width;
@@ -156,16 +152,13 @@ void drawChar(char c, uint64_t x, uint64_t y, uint32_t color) {
             uint8_t srcCol = (sx * fontScaleDen) / fontScaleNum;
             if (srcCol >= fontW) srcCol = fontW - 1;
             
-            // Determinar el color - usar backgroundColor dinámico para el fondo
+            // Determinar el color usar backgroundColor dinámico para el fondo
             uint32_t pixelColor = (bits & (1 << srcCol)) ? color : backgroundColor;
             putPixel(pixelColor, x + sx, y + sy);
         }
     }
 }
 
-// ============================================================
-// Funciones BASE (sin escala) - para info de video
-// ============================================================
 uint8_t getFontWidth(void) {
     return FuenteTPE_16_inf.width;  // SIN escala
 }
@@ -173,11 +166,6 @@ uint8_t getFontWidth(void) {
 uint8_t getFontHeight(void) {
     return FuenteTPE_16_inf.height;  // SIN escala
 }
-// ============================================================
-
-// ============================================================
-// Funciones ESCALADAS - para naiveConsole
-// ============================================================
 uint8_t getScaledFontWidth(void) {
     return ((uint16_t)FuenteTPE_16_inf.width * fontScaleNum) / fontScaleDen;
 }
@@ -185,7 +173,6 @@ uint8_t getScaledFontWidth(void) {
 uint8_t getScaledFontHeight(void) {
     return ((uint16_t)FuenteTPE_16_inf.height * fontScaleNum) / fontScaleDen;
 }
-// ============================================================
 
 uint16_t getScreenWidth(void) {
     return VBE_mode_info->width;
@@ -227,7 +214,7 @@ static void kmemmove(void *dst, const void *src, uint32_t n) {
 /* Desplaza la pantalla 'lines' líneas hacia arriba y limpia el área inferior */
 void scrollUpLines(uint32_t lines) {
     if (lines == 0) return;
-    uint8_t fontH = getScaledFontHeight();  // ← Usar versión ESCALADA
+    uint8_t fontH = getScaledFontHeight(); 
     uint32_t scrollPixels = lines * (uint32_t)fontH;
 
     uint8_t *framebuffer = (uint8_t *)(uintptr_t) VBE_mode_info->framebuffer;

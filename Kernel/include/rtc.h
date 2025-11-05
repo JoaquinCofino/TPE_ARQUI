@@ -24,6 +24,6 @@ typedef struct {
 
 // Funciones disponibles
 void rtc_read_hardware_time(rtc_time_t *time);
-void rtc_read_full_datetime(rtc_datetime_t *datetime);  // ← Agregar
+void rtc_read_full_datetime(rtc_datetime_t *datetime); 
 
 #endif

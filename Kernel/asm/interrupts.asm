@@ -31,9 +31,7 @@ EXTERN exceptionDispatcher
 
 SECTION .text
 
-;-----------------------------------------
 ; Macros para guardar/restaurar registros
-;-----------------------------------------
 
 %macro pushState 0
 	push rax
@@ -72,9 +70,7 @@ SECTION .text
 %endmacro
 
 
-;-----------------------------------------
 ; Macro principal de handler de interrupción
-;-----------------------------------------
 %macro irqHandlerMaster 1
 	pushState
 
@@ -97,8 +93,8 @@ SECTION .text
 
 	; signal pic EOI (End of Interrupt) - SLAVE primero
 	mov al, 20h
-	out 0A0h, al ; EOI al PIC esclavo
-	out 20h, al  ; EOI al PIC maestro
+	out 0A0h, al 
+	out 20h, al 
 
 	popState
 	iretq
@@ -113,7 +109,6 @@ SECTION .text
 	mov rsi, [rsp + 120] ; segundo parámetro: RIP desde el stack (después de pushState)
 	call exceptionDispatcher
 
-	; Ajustar RIP para evitar repetir la instrucción problemática
 	; Incrementamos RIP en el stack para saltar la instrucción que causó la excepción
 	add qword [rsp + 120], 2  ; Saltar 2 bytes (puede variar según la instrucción)
 
@@ -153,10 +148,6 @@ picSlaveMask:
     retn
 
 
-;-----------------------------------------
-; Handlers concretos
-;-----------------------------------------
-
 ;8254 Timer (Timer Tick)
 _irq00Handler:
 	irqHandlerMaster 0
@@ -165,7 +156,6 @@ _irq00Handler:
 _irq01Handler:
 	irqHandlerMaster 1
 
-;Cascade pic never called
 _irq02Handler:
 	irqHandlerMaster 2
 

@@ -39,7 +39,7 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
                                    (uint32_t)arg3, (uint32_t)arg4, (uint32_t)arg5);
         case SYS_PLAY_SOUND:
             return sys_play_sound((uint32_t)arg1, (uint32_t)arg2);
-        case SYS_READ_NB:  // <-- NUEVO caso
+        case SYS_READ_NB: 
             return sys_read_nb((int)arg1, (char*)arg2, (uint64_t)arg3);
         case SYS_INCREASE_FONT_SCALE:
             return sys_increase_font_scale();
@@ -66,7 +66,7 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
         case SYS_SET_CURSOR_POSITION:
             return sys_set_cursor_position((int)arg1, (int)arg2);
         default:
-            return -1;  // ENOSYS
+            return -1; 
     }
 }
 
@@ -171,7 +171,6 @@ int64_t sys_get_datetime(rtc_datetime_t *datetime_ptr) {
     return 0; 
 }
 
-// SYS_GET_REGISTERS
 
 cpu_registers_t last_captured_registers = {0};
 
@@ -194,22 +193,12 @@ int64_t sys_get_video_data(video_info_t *video_info) {
     return 0;
 }
 
-// NUEVA: SYS_VIDEO_CLEAR
 int64_t sys_video_clear(void) {
     ncClear();  
     return 0;
 }
 
 
-// ---------------------------------------------------------------------------
-// Syscalls de video
-// ---------------------------------------------------------------------------
-
-
-
-// ---------------------------------------------------------------------------
-// Syscall de sonido (stub)
-// ---------------------------------------------------------------------------
 int64_t sys_play_sound(uint32_t freq, uint32_t dur_ms) {
     if (freq == 0 || dur_ms == 0)
         return -1;
@@ -279,10 +268,10 @@ int64_t sys_decrease_font_scale(void) {
 int64_t sys_video_getpixel(uint32_t x, uint32_t y) {
     if (x >= getScreenWidth() || y >= getScreenHeight())
         return 0x000000;  // Negro si está fuera de rango
-    return getPixel(x, y);  // Asumiendo que tenés esta función en videoDriver
+    return getPixel(x, y);  
 }
 
-// Debug de emergencia - imprime registros y pausa temporalmente
+// Debug de emergencia imprime registros y pausa temporalmente
 int64_t sys_debug_break(void) {
     extern void ncPrint(const char*);
     extern void ncNewline(void);
@@ -369,7 +358,7 @@ int64_t sys_set_background_color(uint32_t color) {
     return 0;
 }
 
-// Funciones para obtener los colores actuales (para usar en drawChar)
+// Funciones para obtener los colores actuales 
 uint32_t getCurrentTextColor(void) {
     return current_text_color;
 }

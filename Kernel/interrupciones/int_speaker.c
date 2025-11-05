@@ -1,7 +1,7 @@
 #include "speaker.h"
 #include "lib.h"        
 #include "io.ports.h"
-#include "time.h"      // si tenés funciones para esperar ticks
+#include "time.h"      
 #include <stdint.h>
 
 #define PIT_CHANNEL_2 0x42

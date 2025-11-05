@@ -12,7 +12,6 @@ static void zero_division(uint64_t rip);
 static void invalid_opcode(uint64_t rip);
 
 void exceptionDispatcher(uint64_t exception, uint64_t rip) {
-    // Mostrar información de la excepción
     ncPrint("========================================");
     ncNewline();
     ncPrint("[EXCEPCION CRITICA DEL SISTEMA]");

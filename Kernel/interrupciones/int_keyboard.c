@@ -8,15 +8,15 @@ extern void write_port(uint16_t port, uint8_t value);
 static uint8_t shift_pressed = 0;
 static uint8_t altgr_pressed = 0;
 static uint8_t caps_lock = 0;
-static uint8_t ctrl_pressed = 0;  // ← AGREGAR soporte para Ctrl
+static uint8_t ctrl_pressed = 0;
 
 // Scancodes de las teclas modificadoras
 #define LSHIFT_SCANCODE 0x2A
 #define RSHIFT_SCANCODE 0x36
 #define LALT_SCANCODE   0x38
-#define RALT_SCANCODE   0xB8  // AltGr (extendido)
+#define RALT_SCANCODE   0xB8  // AltGr 
 #define CAPS_SCANCODE   0x3A
-#define LCTRL_SCANCODE  0x1D  // ← AGREGAR scancode de Ctrl
+#define LCTRL_SCANCODE  0x1D 
 
 // Tabla básica (sin modificadores) - Teclado Argentino
 static unsigned char makeCodeToAscii[128] = {
@@ -285,10 +285,10 @@ void keyboard_handler() {
     // === DEBUG INMEDIATO: Ctrl+R ===
     // Detectar Ctrl+R ANTES de procesar otras teclas
     if (ctrl_pressed && scancode == 0x13) {  // 0x13 = scancode de 'R'
-        // Llamar directamente a sys_debug_break() SIN pasar por userland
+        // Llamar directamente a sys_debug_break()
         extern int64_t sys_debug_break(void);
         sys_debug_break();
-        return;  // NO procesar más, interrumpir todo
+        return;  
     }
 
     // Manejar teclas modificadoras inmediatamente
@@ -301,10 +301,10 @@ void keyboard_handler() {
         case RSHIFT_SCANCODE | 0x80:
             shift_pressed = 0;
             return;
-        case LCTRL_SCANCODE:  // ← AGREGAR manejo de Ctrl
+        case LCTRL_SCANCODE: 
             ctrl_pressed = 1;
             return;
-        case LCTRL_SCANCODE | 0x80:  // ← AGREGAR manejo de Ctrl release
+        case LCTRL_SCANCODE | 0x80:  
             ctrl_pressed = 0;
             return;
         case LALT_SCANCODE:
@@ -372,11 +372,8 @@ void process_keyboard() {
                     ascii = ascii - 'A' + 1;
                 }
                 
-                // Declarar la función del kernel
                 extern void kernel_stdin_push(unsigned char c);
                 
-                // SOLO agregar al buffer - NO hacer echo aquí
-                // El echo lo hará userland con putchar()
                 kernel_stdin_push(ascii);
             }
         }

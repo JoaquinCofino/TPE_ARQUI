@@ -17,8 +17,8 @@
 void keyboard_handler(void);
 void process_keyboard(void);
 
-// Función auxiliar para leer puertos (debe estar definida en otro lado)
+// Función auxiliar para leer puertos
 extern uint8_t read_port(uint16_t num);
 extern void write_port(uint16_t port, uint8_t value);
 
-#endif // INT_KEYBOARD_H
+#endif 
