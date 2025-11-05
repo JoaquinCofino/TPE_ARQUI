@@ -5,11 +5,9 @@
 #define KB 1024
 #define BM_BUFF 32
 
-// Forward declarations para funciones auxiliares
 static void print_benchmark_number(const char* label, uint64_t value);
 static void print_operations_per_tick(uint64_t operations, uint64_t delta);
 
-// Benchmark de CPU (operaciones int/float)
 void benchmark_cpu(void) {
     /*
      * benchmark_cpu - benchmark simple de CPU
@@ -49,7 +47,6 @@ void benchmark_cpu(void) {
         puts("Tiempo transcurrido = 0, no se puede calcular ops/tick.");
     }
 
-    // Usar los resultados para evitar optimización del compilador
     if(result == 0 && float_result == 0.0) {
         puts("(resultados procesados correctamente)");
     }
@@ -58,7 +55,6 @@ void benchmark_cpu(void) {
     getchar();
 }
 
-// Benchmark de video - dibuja cuadrados y calcula FPS
 void benchmark_fps(void) {    
     /*
      * benchmark_fps - benchmark de operaciones de video
@@ -74,19 +70,17 @@ void benchmark_fps(void) {
     
     // Pequeña pausa antes de empezar
     uint64_t pause_start = get_ticks();
-    while((get_ticks() - pause_start) < 36); // ~2 segundos
+    while((get_ticks() - pause_start) < 36); 
     
     clear_screen();
 
     uint64_t start_ticks = get_ticks();
     uint64_t frames = 0;
-    uint64_t duration = 18 * 3; // ~3 segundos
+    uint64_t duration = 18 * 3; 
 
-    // Dimensiones del cuadrado
     const int square_size = 50;
     const int spacing = 10;
     
-    // Área de dibujo: arriba de la pantalla
     const int draw_area_height = 350;
     int x = 10;
     int y = 10;
@@ -102,14 +96,11 @@ void benchmark_fps(void) {
     };
     int color_index = 0;
 
-    // Loop principal - dibuja cuadrados
     while((get_ticks() - start_ticks) < duration) {
-        // Dibujar cuadrado
         video_draw_rect(x, y, square_size, square_size, colors[color_index]);
         
         frames++;
         
-        // Mover posición para siguiente cuadrado
         x += square_size + spacing;
         if(x + square_size > 700) {
             x = 10;
@@ -125,10 +116,6 @@ void benchmark_fps(void) {
     uint64_t end_ticks = get_ticks();
     uint64_t actual_ticks = end_ticks - start_ticks;
 
-    // Calcular FPS reales
-    // FPS = frames / segundos
-    // segundos = ticks / 18
-    // FPS = frames / (ticks / 18) = (frames * 18) / ticks
     uint64_t fps = 0;
     uint64_t milliseconds = 0;
     
@@ -136,9 +123,6 @@ void benchmark_fps(void) {
         fps = (frames * 18) / actual_ticks;
         milliseconds = (actual_ticks * 1000) / 18;
     }
-
-    // Imprimir resultados ABAJO de los cuadrados
-    // Posición Y fija para resultados (debajo del área de dibujo)
     set_cursor_position(10, draw_area_height + 30);
     
     video_clear();
@@ -164,7 +148,6 @@ void benchmark_fps(void) {
     getchar();
 }
 
-// Benchmark simple de memoria (llenado/copia/checksum)
 void benchmark_mem(void) {
     /*
      * benchmark_mem - benchmark simple de memoria
@@ -181,19 +164,16 @@ void benchmark_mem(void) {
     const int iterations = 10000;
     
     for(int iteration = 0; iteration < iterations; iteration++) {
-        // Llenar buffer
         for(int i = 0; i < 4 * KB; i++) {
             buffer[i] = (i + iteration) % 256;
         }
 
-        // Calcular checksum
         volatile uint64_t checksum = 0;
         for(int i = 0; i < 4 * KB; i++) {
             checksum += (unsigned char)buffer[i];
             checksum = checksum % 1000000ULL;
         }
 
-        // Copiar mitad del buffer
         for(int i = 0; i < 2 * KB; i++) {
             buffer[i + 2 * KB] = buffer[i];
         }
@@ -205,7 +185,6 @@ void benchmark_mem(void) {
     print_benchmark_number("Tiempo", delta);
 
     if(delta > 0) {
-        // 3 operaciones por byte: write, read+checksum, copy
         uint64_t operations = (uint64_t)iterations * (uint64_t)(4 * KB) * 3ULL;
         print_operations_per_tick(operations, delta);
     }
@@ -214,7 +193,6 @@ void benchmark_mem(void) {
     getchar();
 }
 
-// Mide tiempo de reacción hasta presionar una tecla
 void benchmark_key(void) {
     clear_screen();
     puts("\n=== Key Response Benchmark ===");
@@ -222,7 +200,6 @@ void benchmark_key(void) {
     
     uint64_t start_ticks = get_ticks();
     
-    // Leer una tecla (blocking)
     getchar();
     
     uint64_t end_ticks = get_ticks();
@@ -230,7 +207,6 @@ void benchmark_key(void) {
     
     print_benchmark_number("Tiempo de respuesta", delta);
     
-    // Convertir a milisegundos aproximados (18 ticks = 1000ms)
     if(delta > 0) {
         uint64_t milliseconds = (delta * 1000) / 18;
         print_benchmark_number("Milisegundos aprox", milliseconds);
@@ -252,16 +228,12 @@ void benchmark_run_all(void) {
     
     benchmark_fps();
     
-    // benchmark_key();
+
     
     puts("\n========================================");
     puts("    BENCHMARKS COMPLETADOS");
     puts("========================================\n");
 }
-
-// ============================================================================
-// Funciones auxiliares
-// ============================================================================
 
 static void print_benchmark_number(const char* label, uint64_t value) {
     printf(label);

@@ -9,7 +9,7 @@ int64_t read(int fd, char *buf, uint64_t count) {
 }
 
 int64_t read_nb(int fd, char *buf, uint64_t count) {
-    return syscall_read_nb(fd, buf, count);  // retorna 1 si leyó 1 byte, 0 si no hay
+    return syscall_read_nb(fd, buf, count); 
 }
 
 int64_t get_time(rtc_time_t *time_ptr) {
@@ -53,7 +53,6 @@ int64_t decrease_font_scale(void) {
 }
 
 int64_t debug_break(void) {
-    // Llama a la función ASM que hace int 0x80 con rax=14
     return syscall_debug_break();
 }
 

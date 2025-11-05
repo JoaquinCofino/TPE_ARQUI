@@ -22,7 +22,6 @@ void print_shell_header(void) {
     puts("Ctrl+R = Registros (incluso en TRON!)");
 }
 
-// Función para testear división por cero
 void test_division_by_zero(void) {
     puts("=== TEST: Division por Cero ===");
     puts("ADVERTENCIA: Esto causara una excepcion del sistema!");
@@ -36,12 +35,11 @@ void test_division_by_zero(void) {
         puts("Ejecutando division por cero...");
         puts("Preparando para la operacion...");
         
-        // Operación directa que causará división por cero
+
         volatile int a = 10;
         volatile int b = 0;
-        volatile int result = a / b;  // Esto causará excepción #0
+        volatile int result = a / b;  
         
-        // Si llegamos aquí, significa que la excepción fue manejada correctamente
         puts("========================================");
         puts("¡EXITO! El sistema manejo la excepcion correctamente");
         puts("La division por cero fue detectada y el sistema continuo");
@@ -52,7 +50,6 @@ void test_division_by_zero(void) {
     }
 }
 
-// Función para testear excepción de opcode inválido
 void test_invalid_opcode_exception(void) {
     puts("=== TEST: Excepcion de Opcode Invalido ===");
     puts("ADVERTENCIA: Esto causara una excepcion del sistema!");
@@ -66,10 +63,9 @@ void test_invalid_opcode_exception(void) {
         puts("Ejecutando instruccion con opcode invalido...");
         puts("Llamando a funcion en ASM que contiene opcode 0x0F 0xFF");
         
-        // Llamar a la función que contiene el opcode inválido
-        trigger_invalid_opcode();  // Causará excepción #6
+     
+        trigger_invalid_opcode();  
         
-        // Si llegamos aquí, significa que la excepción fue manejada correctamente
         puts("========================================");
         puts("¡EXITO! El sistema manejo la excepcion correctamente");
         puts("El opcode invalido fue detectado y el sistema continuo");
@@ -143,7 +139,7 @@ void execute_command(const char *cmd) {
     puts("Elige una opcion (0-9): ");
 
     int c = getchar();
-    putchar('\n');  // salto de línea visual
+    putchar('\n'); 
 
     switch (c) {
         case '1':
@@ -185,8 +181,8 @@ void execute_command(const char *cmd) {
     else if(strcmp(cmd, "tron") ==0){
         puts("Iniciando Tron...");
         puts("(Fuente sera ajustada automaticamente)");
-        tron_main();        // <-- corre el juego (debe RETORNAR)
-        clear_screen();     // limpia framebuffer
+        tron_main();       
+        clear_screen();    
         print_shell_header();
         puts("Fuente restaurada!");
     }
@@ -219,7 +215,6 @@ int consoleMain(void) {
     char buffer[256];
     int index = 0;
     
-    // Banner inicial
     print_shell_header();
     printf("> ");
 
@@ -228,31 +223,29 @@ int consoleMain(void) {
         
         if (c < 0) continue;
         
-        // Ctrl+R ahora se maneja directamente en el kernel - no necesario aquí
         
         if (c == '\n') {
-            putchar('\n');  // Nueva línea después del enter
+            putchar('\n'); 
             buffer[index] = '\0';
             execute_command(buffer);
             index = 0;
-            printf("> ");  // Usar printf para prompt sin salto de línea
+            printf("> ");  
         }
-        else if (c == '\b' || c == 127) {  // Backspace o DEL
+        else if (c == '\b' || c == 127) {  
             if (index > 0) {
                 index--;
-                // Secuencia completa de backspace visual
-                putchar('\b');  // Retrocede
-                putchar(' ');   // Escribe espacio
-                putchar('\b');  // Retrocede de nuevo
+                putchar('\b');  
+                putchar(' ');   
+                putchar('\b'); 
             }
         }
-        else if (c >= 32 && c <= 126) {  // Solo caracteres imprimibles
+        else if (c >= 32 && c <= 126) {  
             if (index < 127) {
                 buffer[index++] = c;
-                putchar(c);  // Echo del carácter
+                putchar(c);  
             }
         }
-        else if (c >= 160 && c <= 255) {  // Extended ASCII (ñ, á, etc)
+        else if (c >= 160 && c <= 255) { 
             if (index < 127) {
                 buffer[index++] = c;
                 putchar(c);
@@ -265,7 +258,6 @@ int consoleMain(void) {
 
 int main() {
     
-    //play_tetris();
     play_startup_sound();
     return consoleMain();
 }
