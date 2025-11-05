@@ -9,7 +9,6 @@ void benchmark_mem(void);    // Benchmark de memoria (escritura/lectura/copia)
 void benchmark_fps(void);    // Benchmark de FPS (limpieza de pantalla)
 void benchmark_key(void);    // Benchmark de tiempo de respuesta de teclado
 
-// Función principal para ejecutar todos los benchmarks
 void benchmark_run_all(void);
 
 #endif // BENCHMARK_H

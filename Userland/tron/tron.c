@@ -14,40 +14,33 @@ double turn_chance = 2;
 int reaction_delay = 5;
 
 static void wait_tick(void) {
-    // MISMA LÓGICA QUE CPU PERO PARA VELOCIDAD GENERAL
-    // current_level/2 da: 0, 0, 1, 1, 2, 2, 3, 3...
     
-    int speed_boost = current_level / 3;  // 0, 0, 1, 1, 2, 2...
-    int speed_delay = TICK_DELAY / (1 + 0.5*speed_boost);  // Divide por 1, 1, 2, 2, 3, 3...
+    int speed_boost = current_level / 3;  
+    int speed_delay = TICK_DELAY / (1 + 0.5*speed_boost);  
     
-    // Mínimo de delay
     if (speed_delay < 1000) speed_delay = 1000;
     
     for (volatile int i = 0; i < speed_delay; i++);
 }
 
-// Drenar teclas pendientes (evita salir inmediatamente)
 static inline void kbd_drain(void) {
-    while (getchar_nb() >= 0) { /* discard */ }
+    while (getchar_nb() >= 0) { }
 }
 
-// Borde con draw_rect para evitar dudas con putpixel
 static void draw_border(void) {
     video_info_t v; get_video_data(&v);
     uint16_t w = v.width, h = v.height;
     uint32_t c = 0xFFFFFF;
-    video_draw_rect(0, 0, w, 1, c);           // top
-    video_draw_rect(0, h-1, w, 1, c);         // bottom
-    video_draw_rect(0, 0, 1, h, c);           // left
-    video_draw_rect(w-1, 0, 1, h, c);         // right
+    video_draw_rect(0, 0, w, 1, c);
+    video_draw_rect(0, h-1, w, 1, c);
+    video_draw_rect(0, 0, 1, h, c);
+    video_draw_rect(w-1, 0, 1, h, c);
 }
 
-// Cabeza 3x3 usando draw_rect
 static inline void draw_head(Player *p) {
     video_draw_rect(p->x - 1, p->y - 1, 3, 3, p->color);
 }
 
-// Cola 1x1 en la posición anterior
 static inline void draw_trail(int x, int y, uint32_t color) {
     video_draw_rect(x, y, 1, 1, color);
 }
@@ -60,27 +53,24 @@ static void move_player(Player *p) {
         case 'L': p->x--; break;
         case 'R': p->x++; break;
     }
-    // Deja cola en el píxel central anterior
     draw_trail(old_x, old_y, p->color);
 }
 
 static int check_collision(int x, int y, int direction, uint32_t color1, uint32_t color2) {
-    // Calcular la posición adelante según la dirección
     int check_x = x, check_y = y;
     
     switch (direction) {
-        case 'U':    check_y = y - 1; break;  // Arriba
-        case 'D':    check_y = y + 1; break;  // Abajo
-        case 'L':    check_x = x - 1; break;  // Izquierda
-        case 'R':    check_x = x + 1; break;  // Derecha
+        case 'U':    check_y = y - 1; break;  
+        case 'D':    check_y = y + 1; break; 
+        case 'L':    check_x = x - 1; break;  
+        case 'R':    check_x = x + 1; break;  
     }
     
     uint32_t pixel_color = video_getpixel(check_x, check_y);
-    return (pixel_color == color1 || pixel_color == color2);  // Chequea ambos colores
+    return (pixel_color == color1 || pixel_color == color2); 
 }
 
 static int check_border_collision(Player *p, uint16_t w, uint16_t h) {
-    // margen por cabeza 3x3
     return (p->x <= 1 || p->x >= (int)w - 2 || p->y <= 1 || p->y >= (int)h - 2);
 }
 
@@ -102,7 +92,6 @@ static int rnd(void) {
     return (int)(rnd_state >> 16); 
 }
 
-// --- Función auxiliar: chequea si hay espacio libre adelante ---
     int is_safe(int x, int y) {
          video_info_t v; 
     get_video_data(&v);
@@ -122,9 +111,8 @@ static void cpu_move(Player *cpu) {
     static int frame_counter = 0;
     frame_counter++;
     if (frame_counter % reaction_delay != 0)
-        return;  // se mueve solo cada algunos frames
+        return;  
 
-    // --- Calcular puntos a verificar ---
     int fx = cpu->x, fy = cpu->y;
     int lx = cpu->x, ly = cpu->y;
     int rx = cpu->x, ry = cpu->y;
@@ -148,9 +136,7 @@ static void cpu_move(Player *cpu) {
     int left_safe = is_safe(lx, ly);
     int right_safe = is_safe(rx, ry);
 
-    // --- Decisión de dirección ---
     if (!forward_safe) {
-        // Si hay peligro al frente → elegir lado libre
         if (left_safe && !right_safe) {
             cpu->dir = (cpu->dir == 'U') ? 'L' :
                        (cpu->dir == 'D') ? 'R' :
@@ -169,7 +155,6 @@ static void cpu_move(Player *cpu) {
                            (cpu->dir == 'D') ? 'L' :
                            (cpu->dir == 'L') ? 'U' : 'D';
         } else {
-            // sin salida: último recurso → giro aleatorio
             int m = rnd() & 3;
             if (m == 0 && cpu->dir != 'D') cpu->dir = 'U';
             else if (m == 1 && cpu->dir != 'U') cpu->dir = 'D';
@@ -177,7 +162,6 @@ static void cpu_move(Player *cpu) {
             else if (m == 3 && cpu->dir != 'L') cpu->dir = 'R';
         }
     } else if ((rnd() % 100) < turn_chance) {
-        // chance baja de girar por decisión táctica
         if (left_safe && (rnd() & 1)) {
             cpu->dir = (cpu->dir == 'U') ? 'L' :
                        (cpu->dir == 'D') ? 'R' :
@@ -191,7 +175,6 @@ static void cpu_move(Player *cpu) {
 }
 
 static int select_mode(void) {
-    // Mostrar pantalla gráfica de modo
     mode_screen();
     
 
@@ -205,7 +188,7 @@ static int select_mode(void) {
 
     clear_screen();
     draw_border();
-    kbd_drain(); // limpia buffer para evitar arrastre de teclas
+    kbd_drain();
     return option;
 }
 
@@ -233,13 +216,11 @@ char tron_match(int mode) {
         clear_screen();
         draw_border();
 
-        // Marcador visible (cuadrados por victoria)
         for (int i = 0; i < p1.score; i++)
             video_draw_rect(10 + i*(box_size+margin), 10, box_size, box_size, 0xFF0000);
         for (int i = 0; i < p2.score; i++)
             video_draw_rect(W - (10 + (i+1)*(box_size+margin)), 10, box_size, box_size, 0x0000FF);
 
-        // Inicialización de jugadores
         init_player(&p1, &p2);
         
 
@@ -248,7 +229,6 @@ char tron_match(int mode) {
         draw_head(&p2);
         kbd_drain();
 
-        // Bucle de una ronda
         while (p1.alive && p2.alive) {
             int k = getchar_nb();
             if (k >= 0) {
@@ -279,7 +259,6 @@ char tron_match(int mode) {
             if (check_collision(p1.x, p1.y, p1.dir, p2.color, p1.color)) p1.alive = 0;
             if (check_collision(p2.x, p2.y, p2.dir, p1.color, p2.color)) p2.alive = 0;
 
-            // Reproducir sonido de colisión si ocurrió
             if (p1_collided || p2_collided) {
                 play_game_sound(SND_CRASH);
             }
@@ -290,17 +269,16 @@ char tron_match(int mode) {
             wait_tick();
         }
 
-        // Resultado de ronda
         if (p1.alive && !p2.alive) {
             p1.score++;
-            play_game_sound(SND_WIN);  // Sonido de victoria
+            play_game_sound(SND_WIN);  
             video_draw_rect(10 + (p1.score-1)*(box_size+margin), 10, box_size, box_size, 0xFF0000);
         } else if (!p1.alive && p2.alive) {
             p2.score++;
             if (mode == 1) {
-                play_game_sound(SND_LOSE);  // Sonido de derrota solo contra CPU
+                play_game_sound(SND_LOSE);  
             } else {
-                play_game_sound(SND_WIN);   // En multiplayer, ambos ganan con sonido de victoria
+                play_game_sound(SND_WIN); 
             }
             video_draw_rect(W - (10 + p2.score*(box_size+margin)), 10, box_size, box_size, 0x0000FF);
         }else{
@@ -314,10 +292,9 @@ char tron_match(int mode) {
     clear_screen();
     victory_screen( &p1, &p2, &current_level);
     
-    // -Verificar si alcanzamos el nivel máximo ---
     if (current_level >= 9) {
         finalWin_screen(&p1, &p2);
-        return 'q'; // Indicar que debemos volver al menú principal
+        return 'q';
     }
     
     puts("Presiona cualquier tecla para continuar...");
@@ -330,16 +307,12 @@ void tron_level(int mode){
 
         c = tron_match(mode);
 
-        //const int lookahead = 20;    // mira varios píxeles adelante
-        //const int turn_chance = 1;  // baja chance de girar "porque sí"
-
-        // MIRA MÁS LEJOS EN NIVELES ALTOS
-        lookahead += current_level * 2;  // +2 píxeles por nivel
-        if (lookahead > 40) lookahead = 40;  // máximo 40 píxeles
+       
+        lookahead += current_level * 2;  
+        if (lookahead > 40) lookahead = 40; 
         
         turn_chance = (turn_chance>0) ? turn_chance - 0.25 : 0.5;
         
-        // REACCIÓN MÁS RÁPIDA
         reaction_delay = 5 - current_level / 2;
         if (reaction_delay < 1) reaction_delay = 1;
     }

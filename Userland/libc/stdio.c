@@ -10,15 +10,13 @@ int getchar(void) {
     return -1;
 }
 
-// NO bloqueante: -1 si no hay tecla
 int getchar_nb(void) {
     unsigned char c;
     int64_t r = read_nb(0, (char*)&c, 1);
-    if (r == 1) return (int)c;  // Cast explícito a int
+    if (r == 1) return (int)c; 
     return -1;
 }
 
-// --- Utilidades de E/S ---
 void putchar(char c) {
     write(1, &c, 1);
 }
@@ -32,7 +30,6 @@ void printf(const char *s) {
     write(1, s, strlen(s));
 }
 
-// --- Función auxiliar para imprimir números ---
 void puts_number(unsigned int num) {
     if (num == 0) {
         putchar('0');
@@ -47,12 +44,10 @@ void puts_number(unsigned int num) {
         num /= 10;
     }
 
-    // Imprimir en orden correcto
     for (int j = i - 1; j >= 0; j--)
         putchar(buffer[j]);
 }
 
-// --- Imprimir fecha y hora formateada (ajustada UTC-3) ---
 void print_date(void) {
     rtc_datetime_t dt = {0};
 
@@ -64,11 +59,10 @@ void print_date(void) {
     int dia = dt.date.day;
     int mes = dt.date.month;
     int anio = dt.date.year;
-    int hora = dt.time.hours - 3;  // Ajuste UTC-3
+    int hora = dt.time.hours - 3;  
     int min = dt.time.minutes;
     int seg = dt.time.seconds;
 
-    // Ajustar día si la hora es negativa
     if (hora < 0) {
         hora += 24;
         dia--;
@@ -86,7 +80,6 @@ void print_date(void) {
         }
     }
 
-    // === Formato: DD/MM/YYYY - HH:MM:SS ===
     if (dia < 10) putchar('0'); 
     puts_number(dia); 
     putchar('/');
@@ -109,7 +102,6 @@ void print_date(void) {
 }
 
 
-// Imprimir registros del CPU
 void print_registers(void) {
     cpu_registers_t regs;
     
@@ -143,7 +135,6 @@ void print_registers(void) {
 }
 
 
-// Imprimir información de video
 void print_video_info(void) {
     video_info_t video;
     
@@ -165,7 +156,6 @@ void print_video_info(void) {
     }
 }
 
-// Función auxiliar para imprimir números hexadecimales
 void print_hex(uint64_t num) {
     char hex_chars[] = "0123456789ABCDEF";
     char buffer[17];
@@ -187,7 +177,6 @@ void print_hex(uint64_t num) {
     puts(&buffer[i + 1]);
 }
 
-// NUEVA: Limpiar pantalla usando la syscall
 void clear_screen(void) {
     video_clear();
 }
@@ -198,7 +187,7 @@ int scanf(char *buffer) {
     int idx = 0;
     
     while (1) {
-        int c = getchar();  // c ya es int, está bien
+        int c = getchar();  
         
         if (c == '\n') {
             buffer[idx] = '\0';
@@ -216,9 +205,8 @@ int scanf(char *buffer) {
             continue;
         }
         
-        // Agregar carácter al buffer si hay espacio
-        if (idx < MAX_SIZE - 1 && c >= 0 && c <= 255) {  // ← Validar rango extendido
-            buffer[idx++] = (unsigned char)c;  // ← Cast a unsigned char
+        if (idx < MAX_SIZE - 1 && c >= 0 && c <= 255) {  
+            buffer[idx++] = (unsigned char)c;
             putchar((char)c);
         }
     }

@@ -31,7 +31,7 @@
 
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
 extern int64_t syscall_read(int fd, char *buf, uint64_t count);
-extern int64_t syscall_read_nb(int fd, char *buf, uint64_t count);  // <-- agregar extern
+extern int64_t syscall_read_nb(int fd, char *buf, uint64_t count);
 extern int64_t syscall_get_time(void *time_ptr);
 extern int64_t syscall_get_datetime(void *datetime_ptr);
 extern int64_t syscall_get_registers(void *regs);
@@ -52,7 +52,6 @@ extern int64_t syscall_set_background_color(uint32_t color);
 extern int64_t syscall_get_ticks(void);
 extern int64_t syscall_set_cursor_position(int64_t x, int64_t y);
 
-// Estructuras para las nuevas syscalls
 typedef struct {
     uint64_t rax, rbx, rcx, rdx;
     uint64_t rsi, rdi, rbp, rsp;
@@ -68,7 +67,6 @@ typedef struct {
     uint32_t framebuffer;
 } video_info_t;
 
-// Syscalls disponibles
 int64_t write(int fd, const char *buf, uint64_t count);
 int64_t read(int fd, char *buf, uint64_t count);
 
@@ -102,34 +100,27 @@ int64_t video_clear(void);
 int64_t video_putpixel(uint32_t x, uint32_t y, uint32_t color);
 int64_t video_draw_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t color);
 int64_t play_sound(uint32_t freq, uint32_t dur_ms);
-int64_t read_nb(int fd, char *buf, uint64_t count);  // no bloqueante, devuelve 0 si no hay datos
+int64_t read_nb(int fd, char *buf, uint64_t count); 
 uint32_t video_getpixel(uint32_t x, uint32_t y);
 
 int64_t increase_font_scale(void);
 int64_t decrease_font_scale(void);
 
-// Debug de emergencia
 int64_t debug_break(void);
 
-// Manejo de estado de fuente
 void font_save_state(void);
 void font_restore_state(void);
 
-// Obtener tamaño de fuente actual
 int64_t getFontWidth(void);
 int64_t getFontHeight(void);
 
-// Control de colores de texto
 int64_t set_text_color(uint32_t color);
 int64_t set_background_color(uint32_t color);
 
-// Obtener ticks del timer
 int64_t get_ticks(void);
 
-// Control de posición del cursor
 void set_cursor_position(int x, int y);
 
-// Función para generar excepción de opcode inválido (test)
 extern void trigger_invalid_opcode(void);
 
 #endif

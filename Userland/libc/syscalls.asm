@@ -65,12 +65,8 @@ sys_put_pixel:
     ret
 
 syscall_video_draw_rect:
-    ; Necesitas mover los parámetros a los registros correctos
-    ; rdi, rsi, rdx ya tienen los primeros 3 parámetros
-    ; rcx tiene el 4to parámetro, pero necesita ir a r10
-    ; r8 tiene el 5to parámetro
-    mov r10, rcx    ; Mover 4to parámetro de rcx a r10
-    mov rax, 8      ; Número de syscall
+    mov r10, rcx  
+    mov rax, 8     
     int 0x80
     ret
 
@@ -80,7 +76,7 @@ syscall_play_sound:
     ret
 
 syscall_read_nb:
-    mov rax, 10       ; ID para read_nb (no bloqueante)
+    mov rax, 10       
     int 0x80
     ret
 
@@ -100,54 +96,52 @@ sys_video_getpixel:
     ret
 
 syscall_debug_break:
-    mov rax, 14       ; SYS_DEBUG_BREAK
+    mov rax, 14       
     int 0x80
     ret
 
 syscall_font_save_state:
-    mov rax, 15       ; SYS_FONT_SAVE_STATE
+    mov rax, 15      
     int 0x80
     ret
 
 syscall_font_restore_state:
-    mov rax, 16       ; SYS_FONT_RESTORE_STATE
+    mov rax, 16     
     int 0x80
     ret
 
 syscall_get_font_width:
-    mov rax, 17       ; SYS_GET_FONT_WIDTH
+    mov rax, 17      
     int 0x80
     ret
 
 syscall_get_font_height:
-    mov rax, 18       ; SYS_GET_FONT_HEIGHT
+    mov rax, 18    
     int 0x80
     ret
 
 syscall_set_text_color:
-    mov rax, 19       ; SYS_SET_TEXT_COLOR
+    mov rax, 19       
     int 0x80
     ret
 
 syscall_set_background_color:
-    mov rax, 20       ; SYS_SET_BACKGROUND_COLOR
+    mov rax, 20    
     int 0x80
     ret
 
 syscall_get_ticks:
-    mov rax, 21       ; SYS_GET_TICKS
+    mov rax, 21      
     int 0x80
     ret
 
-; Set cursor position (int x, int y)
-; Parameters: rdi = x, rsi = y
+
 syscall_set_cursor_position:
-    mov rax, 22       ; SYS_SET_CURSOR_POSITION  
+    mov rax, 22       
     int 0x80
     ret
 
-; Trigger invalid opcode exception
 global trigger_invalid_opcode
 trigger_invalid_opcode:
-    db 0x0F, 0xFF    ; Invalid opcode that will cause exception #6
-    ret              ; This line should never execute
+    db 0x0F, 0xFF    
+    ret            
