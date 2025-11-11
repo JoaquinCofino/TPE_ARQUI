@@ -80,10 +80,11 @@ void execute_command(const char *cmd) {
     if (strcmp(cmd, "help") == 0) {
         puts("Comandos disponibles:");
         puts("  help     - Muestra esta ayuda");
-        //puts("  info     - Informacion del sistema");
         puts("  date     - Obtener Fecha y Hora");
         puts("  clear    - Limpiar la pantalla");
         puts("  regs     - Mostrar registros del CPU");
+        puts("  uregs    - Mostrar registros de userland");  // Nuevo
+        puts("  registros- Mostrar registros de userland");  // Nuevo
         puts("  video    - Informacion de video");
         puts("  audio    - Reproducir sonidos de prueba");
         puts("  tron     - Iniciar juego Tron");
@@ -203,6 +204,7 @@ void execute_command(const char *cmd) {
         video_clear();
         print_shell_header();
     }
+    
     else if (cmd[0] != '\0') {
         printf("Comando no reconocido: '");
         printf(cmd);

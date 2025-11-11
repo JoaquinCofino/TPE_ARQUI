@@ -123,4 +123,7 @@ void set_cursor_position(int x, int y);
 
 extern void trigger_invalid_opcode(void);
 
+// Nuevas syscalls
+int64_t get_userland_registers(cpu_registers_t *regs);
+
 #endif

@@ -93,3 +93,7 @@ uint32_t video_getpixel(uint32_t x, uint32_t y) {
 void set_cursor_position(int x, int y) {
     syscall_set_cursor_position(x, y);
 }
+
+int64_t get_userland_registers(cpu_registers_t *regs) {
+    return syscall_get_userland_registers(regs);
+}

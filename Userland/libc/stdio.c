@@ -105,7 +105,7 @@ void print_date(void) {
 void print_registers(void) {
     cpu_registers_t regs;
     
-    if (get_registers(&regs) != 0) {
+    if (get_userland_registers(&regs) != 0) {
         puts("Error obteniendo registros");
         return;
     }

@@ -22,6 +22,7 @@ GLOBAL syscall_set_text_color
 GLOBAL syscall_set_background_color
 GLOBAL syscall_get_ticks
 GLOBAL syscall_set_cursor_position
+GLOBAL syscall_get_userland_registers
 
 SECTION .text
 
@@ -141,7 +142,12 @@ syscall_set_cursor_position:
     int 0x80
     ret
 
+syscall_get_userland_registers:
+    mov rax, 23
+    int 0x80
+    ret
+
 global trigger_invalid_opcode
 trigger_invalid_opcode:
     db 0x0F, 0xFF    
-    ret            
+    ret

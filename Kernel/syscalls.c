@@ -12,7 +12,13 @@ static unsigned char stdin_buffer[STDIN_BUFFER_SIZE];
 static volatile uint16_t stdin_head = 0;
 static volatile uint16_t stdin_tail = 0;
 
+// Variables globales - MANTENER SOLO UNA DEFINICIÓN DE CADA UNA
+static uint8_t saved_font_scale = 1;
+static uint32_t current_text_color = 0xFFFFFF;      // Blanco por defecto
+static uint32_t current_background_color = 0x000000; // Negro por defecto
 
+cpu_registers_t last_captured_registers = {0};
+volatile cpu_registers_t userland_registers = {0};  // Nueva variable para registros de userland
 
 // Delegador principal de syscalls
 uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1, 
@@ -35,8 +41,7 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
         case SYS_VIDEO_PUTPIXEL:
             return sys_put_pixel((uint32_t)arg1, (uint32_t)arg2, (uint32_t)arg3);
         case SYS_VIDEO_DRAW_RECT:
-            return sys_video_draw_rect((uint32_t)arg1, (uint32_t)arg2,
-                                   (uint32_t)arg3, (uint32_t)arg4, (uint32_t)arg5);
+            return sys_video_draw_rect((uint32_t)arg1, (uint32_t)arg2, (uint32_t)arg3, (uint32_t)arg4, (uint32_t)arg5);
         case SYS_PLAY_SOUND:
             return sys_play_sound((uint32_t)arg1, (uint32_t)arg2);
         case SYS_READ_NB: 
@@ -65,11 +70,12 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
             return sys_get_ticks();
         case SYS_SET_CURSOR_POSITION:
             return sys_set_cursor_position((int)arg1, (int)arg2);
+        case SYS_GET_USERLAND_REGISTERS:
+            return sys_get_userland_registers((cpu_registers_t*)arg1);
         default:
-            return -1; 
+            return -1;
     }
 }
-
 
 // SYS_WRITE: Escribir a stdout/stderr
 int64_t sys_write(int fd, const char *buf, uint64_t count) {
@@ -171,8 +177,6 @@ int64_t sys_get_datetime(rtc_datetime_t *datetime_ptr) {
     return 0; 
 }
 
-
-cpu_registers_t last_captured_registers = {0};
 
 int64_t sys_get_registers(cpu_registers_t *regs) {
     *regs = last_captured_registers;
@@ -321,8 +325,6 @@ int64_t sys_debug_break(void) {
     return 0;
 }
 
-// Variable para guardar el estado de la fuente
-static uint8_t saved_font_scale = 1;
 
 int64_t sys_font_save_state(void) {
     extern uint8_t getFontScale(void);
@@ -344,9 +346,6 @@ int64_t sys_get_font_height(void) {
     return (int64_t)getFontHeight();
 }
 
-// Variables globales para colores de texto
-static uint32_t current_text_color = 0xFFFFFF;      // Blanco por defecto
-static uint32_t current_background_color = 0x000000; // Negro por defecto
 
 int64_t sys_set_text_color(uint32_t color) {
     current_text_color = color;
@@ -374,5 +373,12 @@ int64_t sys_get_ticks(void) {
 
 int64_t sys_set_cursor_position(int x, int y) {
     ncSetCursorPosition(x, y);
+    return 0;
+}
+
+// Nueva implementación para obtener registros de userland
+int64_t sys_get_userland_registers(cpu_registers_t *regs) {
+    if (regs == 0) return -1;
+    *regs = userland_registers;
     return 0;
 }

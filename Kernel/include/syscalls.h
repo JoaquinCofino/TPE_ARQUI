@@ -27,6 +27,7 @@
 #define SYS_SET_BACKGROUND_COLOR 20
 #define SYS_GET_TICKS 21
 #define SYS_SET_CURSOR_POSITION 22
+#define SYS_GET_USERLAND_REGISTERS 23  // Nueva syscall
 
 // Estructuras para las nuevas syscalls
 typedef struct {
@@ -65,6 +66,7 @@ int64_t sys_decrease_font_scale(void);
 int64_t sys_debug_break(void);
 int64_t sys_font_save_state(void);
 int64_t sys_font_restore_state(void);
+int64_t sys_get_userland_registers(cpu_registers_t *regs);
 
 void capture_registers_on_tick(void);
 extern void timer_capture_registers(cpu_registers_t *regs);
@@ -84,6 +86,7 @@ uint32_t getCurrentBackgroundColor(void);
 
 void kernel_stdin_push(unsigned char c);
 
-
+// Asegúrate de que esté declarado extern
+extern volatile cpu_registers_t userland_registers;
 
 #endif
