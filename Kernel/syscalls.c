@@ -23,6 +23,10 @@ volatile cpu_registers_t userland_registers = {0};  // Nueva variable para regis
 // Delegador principal de syscalls
 uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1, 
                           uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {
+    
+    // Capturar registros de userland cada vez que se hace una syscall
+    timer_capture_registers((cpu_registers_t*)&userland_registers);
+    
     switch (syscall_num) {
         case SYS_READ:
             return sys_read(arg1, (char *)arg2, arg3);
@@ -320,6 +324,56 @@ int64_t sys_debug_break(void) {
     }
     
     ncPrint("========================");
+    ncNewline();
+    
+    return 0;
+}
+
+// Debug específico para registros de userland capturados por Ctrl+R
+int64_t sys_debug_break_userland(void) {
+    extern void ncPrint(const char*);
+    extern void ncNewline(void);
+    extern void ncPrintHex(uint64_t);
+    
+    // Limpiar línea actual y mostrar mensaje de debug
+    ncNewline();
+    ncPrint("=== USERLAND REGS (Ctrl+R) ===");
+    ncNewline();
+    
+    // Mostrar registros capturados de userland
+    cpu_registers_t regs;
+    if (sys_get_userland_registers(&regs) == 0) {
+        // Imprimir todos los registros en una línea secuencial separados por ;
+        ncPrint("RAX:0x"); ncPrintHex(regs.rax); ncPrint(";");
+        ncPrint("RBX:0x"); ncPrintHex(regs.rbx); ncPrint(";");
+        ncPrint("RCX:0x"); ncPrintHex(regs.rcx); ncPrint(";");
+        ncPrint("RDX:0x"); ncPrintHex(regs.rdx); ncPrint(";");
+        ncNewline();
+        
+        ncPrint("RSI:0x"); ncPrintHex(regs.rsi); ncPrint(";");
+        ncPrint("RDI:0x"); ncPrintHex(regs.rdi); ncPrint(";");
+        ncPrint("RBP:0x"); ncPrintHex(regs.rbp); ncPrint(";");
+        ncPrint("RSP:0x"); ncPrintHex(regs.rsp); ncPrint(";");
+        ncNewline();
+        
+        ncPrint("R8:0x"); ncPrintHex(regs.r8); ncPrint(";");
+        ncPrint("R9:0x"); ncPrintHex(regs.r9); ncPrint(";");
+        ncPrint("R10:0x"); ncPrintHex(regs.r10); ncPrint(";");
+        ncPrint("R11:0x"); ncPrintHex(regs.r11); ncPrint(";");
+        ncNewline();
+        
+        ncPrint("R12:0x"); ncPrintHex(regs.r12); ncPrint(";");
+        ncPrint("R13:0x"); ncPrintHex(regs.r13); ncPrint(";");
+        ncPrint("R14:0x"); ncPrintHex(regs.r14); ncPrint(";");
+        ncPrint("R15:0x"); ncPrintHex(regs.r15); ncPrint(";");
+        ncNewline();
+        
+        ncPrint("RIP:0x"); ncPrintHex(regs.rip); ncPrint(";");
+        ncPrint("RFLAGS:0x"); ncPrintHex(regs.rflags); ncPrint(";");
+        ncNewline();
+    }
+    
+    ncPrint("==============================");
     ncNewline();
     
     return 0;

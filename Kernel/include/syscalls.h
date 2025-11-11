@@ -64,6 +64,7 @@ int64_t sys_read_nb(int fd, char *buf, uint64_t count);
 int64_t sys_increase_font_scale(void);
 int64_t sys_decrease_font_scale(void);
 int64_t sys_debug_break(void);
+int64_t sys_debug_break_userland(void);
 int64_t sys_font_save_state(void);
 int64_t sys_font_restore_state(void);
 int64_t sys_get_userland_registers(cpu_registers_t *regs);

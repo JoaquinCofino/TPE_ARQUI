@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <naiveConsole.h>
+#include "../include/syscalls.h"
 
 extern uint8_t read_port(uint16_t num);
 extern void write_port(uint16_t port, uint8_t value);
@@ -285,10 +286,12 @@ void keyboard_handler() {
     // === DEBUG INMEDIATO: Ctrl+R ===
     // Detectar Ctrl+R ANTES de procesar otras teclas
     if (ctrl_pressed && scancode == 0x13) {  // 0x13 = scancode de 'R'
-        // Llamar directamente a sys_debug_break()
-        extern int64_t sys_debug_break(void);
-        sys_debug_break();
-        return;  
+        // Los registros ya están capturados en userland_registers por las syscalls
+        // Solo llamar a sys_debug_break_userland para mostrarlos
+        extern int64_t sys_debug_break_userland(void);
+        sys_debug_break_userland();
+        
+        return;
     }
 
     // Manejar teclas modificadoras inmediatamente

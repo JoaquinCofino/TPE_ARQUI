@@ -36,26 +36,26 @@ void timer_handler(void) {
     system_ticks++;
     ticks++;
     
-    if (ticks >= TIMER_FREQUENCY) {
-        ticks = 0;
-        current_seconds++;
+    // if (ticks >= TIMER_FREQUENCY) {
+    //     ticks = 0;
+    //     current_seconds++;
         
-        if (current_seconds >= 60) {
-            current_seconds = 0;
-            current_minutes++;
+    //     if (current_seconds >= 60) {
+    //         current_seconds = 0;
+    //         current_minutes++;
             
-            if (current_minutes >= 60) {
-                current_minutes = 0;
-                current_hours++;
+    //         if (current_minutes >= 60) {
+    //             current_minutes = 0;
+    //             current_hours++;
                 
-                if (current_hours >= 24) {
-                    current_hours = 0;
-                }
-            }
-        }
-    }
+    //             if (current_hours >= 24) {
+    //                 current_hours = 0;
+    //             }
+    //         }
+    //     }
+    // }
 
-    capture_registers_on_tick();
+    // capture_registers_on_tick();
 }
 
 void get_current_time(rtc_time_t *time) {
