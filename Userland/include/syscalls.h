@@ -8,7 +8,6 @@
 #define SYS_WRITE 1
 #define SYS_GET_TIME 2
 #define SYS_GET_DATETIME 3
-#define SYS_GET_REGISTERS 4
 #define SYS_GET_VIDEO_DATA 5
 #define SYS_VIDEO_CLEAR 6
 #define SYS_VIDEO_PUTPIXEL 7
@@ -28,7 +27,23 @@
 #define SYS_GET_TICKS 21
 #define SYS_SET_CURSOR_POSITION 22
 
+// Definir tipos primero antes de usarlos
+typedef struct {
+    uint64_t rax, rbx, rcx, rdx;
+    uint64_t rsi, rdi, rbp, rsp;
+    uint64_t r8, r9, r10, r11;
+    uint64_t r12, r13, r14, r15;
+    uint64_t rip, rflags;
+} cpu_registers_t;
 
+typedef struct {
+    uint16_t width;
+    uint16_t height;
+    uint8_t bpp;
+    uint32_t framebuffer;
+} video_info_t;
+
+// Ahora las declaraciones extern
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
 extern int64_t syscall_read(int fd, char *buf, uint64_t count);
 extern int64_t syscall_read_nb(int fd, char *buf, uint64_t count);
@@ -51,21 +66,7 @@ extern int64_t syscall_set_text_color(uint32_t color);
 extern int64_t syscall_set_background_color(uint32_t color);
 extern int64_t syscall_get_ticks(void);
 extern int64_t syscall_set_cursor_position(int64_t x, int64_t y);
-
-typedef struct {
-    uint64_t rax, rbx, rcx, rdx;
-    uint64_t rsi, rdi, rbp, rsp;
-    uint64_t r8, r9, r10, r11;
-    uint64_t r12, r13, r14, r15;
-    uint64_t rip, rflags;
-} cpu_registers_t;
-
-typedef struct {
-    uint16_t width;
-    uint16_t height;
-    uint8_t bpp;
-    uint32_t framebuffer;
-} video_info_t;
+extern int64_t syscall_get_userland_registers(cpu_registers_t *regs);
 
 int64_t write(int fd, const char *buf, uint64_t count);
 int64_t read(int fd, char *buf, uint64_t count);

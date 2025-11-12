@@ -7,6 +7,7 @@
 #define INVALID_OPCODE_ID 6
 
 extern void haltcpu(void);
+extern volatile cpu_registers_t userland_registers;
 
 static void zero_division(uint64_t rip);
 static void invalid_opcode(uint64_t rip);
@@ -45,28 +46,23 @@ void exceptionDispatcher(uint64_t exception, uint64_t rip) {
     ncPrint("========================================");
     ncNewline();
     
-    cpu_registers_t registers;
-    if (sys_get_registers(&registers) == 0) {
-        ncPrint("RAX: 0x"); ncPrintHex(registers.rax); ncNewline();
-        ncPrint("RBX: 0x"); ncPrintHex(registers.rbx); ncNewline();
-        ncPrint("RCX: 0x"); ncPrintHex(registers.rcx); ncNewline();
-        ncPrint("RDX: 0x"); ncPrintHex(registers.rdx); ncNewline();
-        ncPrint("RSI: 0x"); ncPrintHex(registers.rsi); ncNewline();
-        ncPrint("RDI: 0x"); ncPrintHex(registers.rdi); ncNewline();
-        ncPrint("RBP: 0x"); ncPrintHex(registers.rbp); ncNewline();
-        ncPrint("RSP: 0x"); ncPrintHex(registers.rsp); ncNewline();
-        ncPrint("R8:  0x"); ncPrintHex(registers.r8);  ncNewline();
-        ncPrint("R9:  0x"); ncPrintHex(registers.r9);  ncNewline();
-        ncPrint("R10: 0x"); ncPrintHex(registers.r10); ncNewline();
-        ncPrint("R11: 0x"); ncPrintHex(registers.r11); ncNewline();
-        ncPrint("R12: 0x"); ncPrintHex(registers.r12); ncNewline();
-        ncPrint("R13: 0x"); ncPrintHex(registers.r13); ncNewline();
-        ncPrint("R14: 0x"); ncPrintHex(registers.r14); ncNewline();
-        ncPrint("R15: 0x"); ncPrintHex(registers.r15); ncNewline();
-    } else {
-        ncPrint("Error: No se pudieron obtener los registros");
-        ncNewline();
-    }
+    cpu_registers_t registers = userland_registers;
+    ncPrint("RAX: 0x"); ncPrintHex(registers.rax); ncNewline();
+    ncPrint("RBX: 0x"); ncPrintHex(registers.rbx); ncNewline();
+    ncPrint("RCX: 0x"); ncPrintHex(registers.rcx); ncNewline();
+    ncPrint("RDX: 0x"); ncPrintHex(registers.rdx); ncNewline();
+    ncPrint("RSI: 0x"); ncPrintHex(registers.rsi); ncNewline();
+    ncPrint("RDI: 0x"); ncPrintHex(registers.rdi); ncNewline();
+    ncPrint("RBP: 0x"); ncPrintHex(registers.rbp); ncNewline();
+    ncPrint("RSP: 0x"); ncPrintHex(registers.rsp); ncNewline();
+    ncPrint("R8:  0x"); ncPrintHex(registers.r8);  ncNewline();
+    ncPrint("R9:  0x"); ncPrintHex(registers.r9);  ncNewline();
+    ncPrint("R10: 0x"); ncPrintHex(registers.r10); ncNewline();
+    ncPrint("R11: 0x"); ncPrintHex(registers.r11); ncNewline();
+    ncPrint("R12: 0x"); ncPrintHex(registers.r12); ncNewline();
+    ncPrint("R13: 0x"); ncPrintHex(registers.r13); ncNewline();
+    ncPrint("R14: 0x"); ncPrintHex(registers.r14); ncNewline();
+    ncPrint("R15: 0x"); ncPrintHex(registers.r15); ncNewline();
     
     ncPrint("========================================");
     ncNewline();
