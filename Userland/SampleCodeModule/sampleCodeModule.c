@@ -206,6 +206,7 @@ void execute_command(const char *cmd) {
     }
     else if (cmd[0] != '\0') {
         puts("Comando no reconocido");
+        puts(cmd);
         puts("Escribe 'help' para ayuda.");
     }
 }
