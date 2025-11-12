@@ -204,11 +204,8 @@ void execute_command(const char *cmd) {
         video_clear();
         print_shell_header();
     }
-    
     else if (cmd[0] != '\0') {
-        printf("Comando no reconocido: '");
-        printf(cmd);
-        puts("'");
+        puts("Comando no reconocido");
         puts("Escribe 'help' para ayuda.");
     }
 }
