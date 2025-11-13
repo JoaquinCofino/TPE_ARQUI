@@ -34,8 +34,7 @@ _syscall_handler:
     mov [rel userland_registers + 128], r11
 
     ; Capturar RFLAGS
-    pushfq
-    pop r11
+    mov r11, qword [rsp + 16]
     mov [rel userland_registers + 136], r11
 
     sti                     ; Re-habilitar IRQs inmediatamente después del snapshot

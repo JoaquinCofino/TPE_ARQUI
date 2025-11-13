@@ -63,6 +63,7 @@ void exceptionDispatcher(uint64_t exception, uint64_t rip) {
         ncPrint("R13: 0x"); ncPrintHex(registers.r13); ncNewline();
         ncPrint("R14: 0x"); ncPrintHex(registers.r14); ncNewline();
         ncPrint("R15: 0x"); ncPrintHex(registers.r15); ncNewline();
+        ncPrint("RFlags: 0x"); ncPrintHex(registers.rflags); ncNewline();
     } else {
         ncPrint("Error: No se pudieron obtener los registros");
         ncNewline();
