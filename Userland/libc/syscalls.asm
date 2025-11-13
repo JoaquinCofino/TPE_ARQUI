@@ -45,6 +45,8 @@ syscall_get_datetime:
     mov rax, 3
     int 0x80
     ret
+
+syscall_get_registers:
     mov rax, 4
     int 0x80
     ret
