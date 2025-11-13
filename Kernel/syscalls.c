@@ -16,8 +16,6 @@ static volatile uint16_t stdin_tail = 0;
 static uint8_t saved_font_scale = 1;
 static uint32_t current_text_color = 0xFFFFFF;      // Blanco por defecto
 static uint32_t current_background_color = 0x000000; // Negro por defecto
-
-cpu_registers_t last_captured_registers = {0};
 volatile cpu_registers_t userland_registers = {0};  // Nueva variable para registros de userland
 
 // Delegador principal de syscalls
@@ -36,8 +34,6 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
             return sys_get_time((rtc_time_t*)arg1);
         case SYS_GET_DATETIME:
             return sys_get_datetime((rtc_datetime_t*)arg1);
-        case SYS_GET_REGISTERS:
-            return sys_get_registers((cpu_registers_t*)arg1);
         case SYS_GET_VIDEO_DATA:
             return sys_get_video_data((video_info_t*)arg1);
         case SYS_VIDEO_CLEAR:
@@ -56,8 +52,6 @@ uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1,
             return sys_decrease_font_scale();  
         case SYS_VIDEO_GETPIXEL:
             return sys_video_getpixel((uint32_t)arg1, (uint32_t)arg2);  
-        case SYS_DEBUG_BREAK:
-            return sys_debug_break();
         case SYS_FONT_SAVE_STATE:
             return sys_font_save_state();
         case SYS_FONT_RESTORE_STATE:
@@ -182,15 +176,6 @@ int64_t sys_get_datetime(rtc_datetime_t *datetime_ptr) {
 }
 
 
-int64_t sys_get_registers(cpu_registers_t *regs) {
-    *regs = last_captured_registers;
-    return 0;
-}
-
-void capture_registers_on_tick(void) {
-    timer_capture_registers(&last_captured_registers);
-}
-
 // SYS_GET_VIDEO_DATA
 int64_t sys_get_video_data(video_info_t *video_info) {
     video_info->width = getScreenWidth();
@@ -279,55 +264,6 @@ int64_t sys_video_getpixel(uint32_t x, uint32_t y) {
     return getPixel(x, y);  
 }
 
-// Debug de emergencia imprime registros y pausa temporalmente
-int64_t sys_debug_break(void) {
-    extern void ncPrint(const char*);
-    extern void ncNewline(void);
-    extern void ncPrintHex(uint64_t);
-    
-    // Limpiar línea actual y mostrar mensaje de debug
-    ncNewline();
-    ncPrint("=== REGS (Ctrl+R) ===");
-    ncNewline();
-    
-    // Mostrar registros capturados en el timer tick
-    cpu_registers_t regs;
-    if (sys_get_registers(&regs) == 0) {
-        // Imprimir todos los registros en una línea secuencial separados por ;
-        ncPrint("RAX:0x"); ncPrintHex(regs.rax); ncPrint(";");
-        ncPrint("RBX:0x"); ncPrintHex(regs.rbx); ncPrint(";");
-        ncPrint("RCX:0x"); ncPrintHex(regs.rcx); ncPrint(";");
-        ncPrint("RDX:0x"); ncPrintHex(regs.rdx); ncPrint(";");
-        ncNewline();
-        
-        ncPrint("RSI:0x"); ncPrintHex(regs.rsi); ncPrint(";");
-        ncPrint("RDI:0x"); ncPrintHex(regs.rdi); ncPrint(";");
-        ncPrint("RBP:0x"); ncPrintHex(regs.rbp); ncPrint(";");
-        ncPrint("RSP:0x"); ncPrintHex(regs.rsp); ncPrint(";");
-        ncNewline();
-        
-        ncPrint("R8:0x"); ncPrintHex(regs.r8); ncPrint(";");
-        ncPrint("R9:0x"); ncPrintHex(regs.r9); ncPrint(";");
-        ncPrint("R10:0x"); ncPrintHex(regs.r10); ncPrint(";");
-        ncPrint("R11:0x"); ncPrintHex(regs.r11); ncPrint(";");
-        ncNewline();
-        
-        ncPrint("R12:0x"); ncPrintHex(regs.r12); ncPrint(";");
-        ncPrint("R13:0x"); ncPrintHex(regs.r13); ncPrint(";");
-        ncPrint("R14:0x"); ncPrintHex(regs.r14); ncPrint(";");
-        ncPrint("R15:0x"); ncPrintHex(regs.r15); ncPrint(";");
-        ncNewline();
-        
-        ncPrint("RIP:0x"); ncPrintHex(regs.rip); ncPrint(";");
-        ncPrint("RFLAGS:0x"); ncPrintHex(regs.rflags); ncPrint(";");
-        ncNewline();
-    }
-    
-    ncPrint("========================");
-    ncNewline();
-    
-    return 0;
-}
 
 // Debug específico para registros de userland capturados por Ctrl+R
 int64_t sys_debug_break_userland(void) {

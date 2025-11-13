@@ -20,9 +20,6 @@ int64_t get_datetime(rtc_datetime_t *datetime_ptr) {
     return syscall_get_datetime(datetime_ptr);
 }
 
-int64_t get_registers(cpu_registers_t *regs) {
-    return syscall_get_registers(regs);
-}
 
 int64_t get_video_data(video_info_t *video_info) {
     return syscall_get_video_data(video_info);
@@ -52,9 +49,6 @@ int64_t decrease_font_scale(void) {
     return syscall_decrease_font_scale();
 }
 
-int64_t debug_break(void) {
-    return syscall_debug_break();
-}
 
 void font_save_state(void) {
     syscall_font_save_state();
