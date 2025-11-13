@@ -46,7 +46,7 @@ void exceptionDispatcher(uint64_t exception, uint64_t rip) {
     ncNewline();
     
     cpu_registers_t registers;
-    if (sys_get_registers(&registers) == 0) {
+    if (sys_get_userland_registers(&registers) == 0) {
         ncPrint("RAX: 0x"); ncPrintHex(registers.rax); ncNewline();
         ncPrint("RBX: 0x"); ncPrintHex(registers.rbx); ncNewline();
         ncPrint("RCX: 0x"); ncPrintHex(registers.rcx); ncNewline();

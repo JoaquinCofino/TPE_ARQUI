@@ -46,11 +46,6 @@ syscall_get_datetime:
     int 0x80
     ret
 
-syscall_get_registers:
-    mov rax, 4
-    int 0x80
-    ret
-
 syscall_get_video_data:
     mov rax, 5
     int 0x80
@@ -143,7 +138,7 @@ syscall_set_cursor_position:
     ret
 
 syscall_get_userland_registers:
-    mov rax, 23
+    mov rax, 4
     int 0x80
     ret
 

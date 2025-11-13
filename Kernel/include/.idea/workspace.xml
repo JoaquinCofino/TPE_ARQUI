@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BackendCodeEditorMiscSettings">
+    <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="08592c97-97f1-4090-931a-e0791f123807" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../exceptions.c" beforeDir="false" afterPath="$PROJECT_DIR$/../exceptions.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/syscalls.h" beforeDir="false" afterPath="$PROJECT_DIR$/syscalls.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../interrupciones/int_keyboard.c" beforeDir="false" afterPath="$PROJECT_DIR$/../interrupciones/int_keyboard.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../syscalls.c" beforeDir="false" afterPath="$PROJECT_DIR$/../syscalls.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Userland/include/syscalls.h" beforeDir="false" afterPath="$PROJECT_DIR$/../../Userland/include/syscalls.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Userland/libc/syscalls.asm" beforeDir="false" afterPath="$PROJECT_DIR$/../../Userland/libc/syscalls.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../Userland/libc/syscalls.c" beforeDir="false" afterPath="$PROJECT_DIR$/../../Userland/libc/syscalls.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../compile.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../compile.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../run.sh" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2025" />
+    <option name="minorVersion" value="2.4" />
+    <option name="productBranch" value="Classic" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="35PGMP9SChMCkCmEfi12p83jVe1" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultAutoModeForALLUsers.v1": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="08592c97-97f1-4090-931a-e0791f123807" name="Changes" comment="" />
+      <created>1763004244746</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763004244746</updated>
+      <workItem from="1763004245823" duration="1000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

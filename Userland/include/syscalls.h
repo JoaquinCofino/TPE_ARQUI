@@ -8,7 +8,6 @@
 #define SYS_WRITE 1
 #define SYS_GET_TIME 2
 #define SYS_GET_DATETIME 3
-#define SYS_GET_REGISTERS 4
 #define SYS_GET_VIDEO_DATA 5
 #define SYS_VIDEO_CLEAR 6
 #define SYS_VIDEO_PUTPIXEL 7
@@ -27,6 +26,7 @@
 #define SYS_SET_BACKGROUND_COLOR 20
 #define SYS_GET_TICKS 21
 #define SYS_SET_CURSOR_POSITION 22
+#define SYS_GET_USERLAND_REGISTERS 4
 
 
 extern int64_t syscall_write(int fd, const char *buf, uint64_t count);
@@ -93,7 +93,6 @@ int64_t get_datetime(rtc_datetime_t *datetime_ptr);
 int64_t get_time(rtc_time_t *time_ptr);
 
 // Nuevas syscalls
-int64_t get_registers(cpu_registers_t *regs);
 int64_t get_video_data(video_info_t *video_info);
 int64_t video_clear(void);
 

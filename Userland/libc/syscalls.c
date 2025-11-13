@@ -20,9 +20,6 @@ int64_t get_datetime(rtc_datetime_t *datetime_ptr) {
     return syscall_get_datetime(datetime_ptr);
 }
 
-int64_t get_registers(cpu_registers_t *regs) {
-    return syscall_get_registers(regs);
-}
 
 int64_t get_video_data(video_info_t *video_info) {
     return syscall_get_video_data(video_info);

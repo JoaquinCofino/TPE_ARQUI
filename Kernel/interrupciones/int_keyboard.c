@@ -288,8 +288,8 @@ void keyboard_handler() {
     if (ctrl_pressed && scancode == 0x13) {  // 0x13 = scancode de 'R'
         // Los registros ya están capturados en userland_registers por las syscalls
         // Solo llamar a sys_debug_break_userland para mostrarlos
-        extern int64_t sys_debug_break_userland(void);
-        sys_debug_break_userland();
+        extern int64_t sys_debug_break(void);
+        sys_debug_break();
         
         return;
     }
