@@ -79,12 +79,11 @@ void test_invalid_opcode_exception(void) {
 void execute_command(const char *cmd) {
     if (strcmp(cmd, "help") == 0) {
         puts("Comandos disponibles:");
+        puts("==============================================="); 
         puts("  help     - Muestra esta ayuda");
         puts("  date     - Obtener Fecha y Hora");
         puts("  clear    - Limpiar la pantalla");
         puts("  regs     - Mostrar registros del CPU");
-        puts("  uregs    - Mostrar registros de userland");  // Nuevo
-        puts("  registros- Mostrar registros de userland");  // Nuevo
         puts("  video    - Informacion de video");
         puts("  audio    - Reproducir sonidos de prueba");
         puts("  tron     - Iniciar juego Tron");
@@ -93,6 +92,7 @@ void execute_command(const char *cmd) {
         puts("  bench    - Ejecutar benchmarks del sistema");
         puts("  div0     - Test de excepcion division por 0");
         puts("  invop    - Test de excepcion opcode invalido");
+        puts("===============================================");  // Nuevo
     }
     /*else if (strcmp(cmd, "info") == 0) {
         puts("Shell ejecutandose en USERLAND (Ring 3)");
@@ -205,10 +205,15 @@ void execute_command(const char *cmd) {
         print_shell_header();
     }
     else if (cmd[0] != '\0') {
-        puts("Comando no reconocido");
-        puts(cmd);
-        puts("Escribe 'help' para ayuda.");
+    printf("Comando no reconocido: ");
+    
+    for (int i = 0; cmd[i] != '\0'; i++) {
+        putchar(cmd[i]);
     }
+    putchar('\n');
+    
+    puts("Escribe 'help' para ayuda.");
+}
 }
 
 int consoleMain(void) {
