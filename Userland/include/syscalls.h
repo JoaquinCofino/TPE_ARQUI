@@ -26,6 +26,7 @@
 #define SYS_SET_BACKGROUND_COLOR 20
 #define SYS_GET_TICKS 21
 #define SYS_SET_CURSOR_POSITION 22
+#define SYS_GET_REGISTERS 23
 
 // Definir tipos primero antes de usarlos
 typedef struct {
