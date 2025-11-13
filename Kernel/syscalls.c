@@ -22,10 +22,7 @@ volatile cpu_registers_t userland_registers = {0};  // Nueva variable para regis
 // Delegador principal de syscalls
 uint64_t syscall_delegator(uint64_t syscall_num, uint64_t arg1, 
                           uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {
-    
-    // Capturar registros de userland cada vez que se hace una syscall
-    timer_capture_registers((cpu_registers_t*)&userland_registers);
-    
+        
     switch (syscall_num) {
         case SYS_READ:
             return sys_read(arg1, (char *)arg2, arg3);
