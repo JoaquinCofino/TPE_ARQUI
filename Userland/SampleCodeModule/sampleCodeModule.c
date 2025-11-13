@@ -203,8 +203,9 @@ void execute_command(const char *cmd) {
         print_shell_header();
     }
     else if (cmd[0] != '\0') {
-        puts("Comando no reconocido \n Escribe 'help' para ver la lista de comandos");
-        //puts("Escribe 'help' para ver la lista de comandos");
+        puts("Comando no reconocido");
+        puts(cmd);
+        puts("Escribe 'help' para ayuda.");
     }
 }
 
